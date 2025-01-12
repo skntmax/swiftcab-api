@@ -1,4 +1,5 @@
 import  Express ,  {  Request , Response  } from "express";
+import './config/loadingEnv'
 import './config/dotenv'
 import './db/index'
 import authRouter from "./routes/auth/auth";

@@ -1,12 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the `Vhicle` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropTable
-DROP TABLE "Vhicle";
-
 -- CreateTable
 CREATE TABLE "vhicle" (
     "id" SERIAL NOT NULL,
