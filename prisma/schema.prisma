@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,24 +7,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model vhicle {
-   id  Int @id @default(autoincrement())
-   username String 
-   name  String 
-   rc  String
-   type String
-   created_on DateTime
-   updated_on DateTime
-}
+  id         Int      @id @default(autoincrement())
+  username   String
+  name       String
+  rc         String
+  type       String
+ 
+  created_on DateTime @default(now())
+  updated_on DateTime
 
+  services   vhicle_provides_services[]
+}
 
 model vhicle_services {
-   id  Int @id @default(autoincrement())
-   service_name String 
-   created_on DateTime
-   updated_on DateTime
+  id           Int      @id @default(autoincrement())
+  service_name String
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+  
+  // Relation with vhicle_provides_services
+  providers    vhicle_provides_services[]
+  utils        services_have_utils[]
 }
+
+
+model vhicle_provides_services {
+  id           Int      @id @default(autoincrement())
+
+  vhicle_id        Int
+  service_id       Int
+
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+
+  // Relations
+  vhicle           vhicle           @relation(fields: [vhicle_id], references: [id])
+  vhicle_service   vhicle_services  @relation(fields: [service_id], references: [id])
+
+  @@unique([vhicle_id, service_id]) // Ensures unique combinations of vhicle and service
+
+}
+
+
+
+model services_have_utils {
+   id           Int                     @id @default(autoincrement())
+  service_id   Int
+  guide        Boolean                 @default(false)
+  food         Boolean                 @default(false)
+  water        Boolean                 @default(false)
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+
+  // Relation to vhicle_services
+  service      vhicle_services         @relation(fields: [service_id], references: [id])
+}
+
+
 
 
 
