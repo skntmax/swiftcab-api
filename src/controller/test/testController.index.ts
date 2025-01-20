@@ -50,11 +50,12 @@ const testController  = {
         
         }
          res.send({message:"added services utils" }) 
+    } ,
+    
+    getRandomName : async function (req:Request, res:Response){   
+         res.send({message:`${Math.ceil(Math.random()*100)}_random` }) 
     } 
-    
-    
-    
-    
+     
 }
 
 
