@@ -6,18 +6,18 @@ const testController  = {
     
     insertVhicle : async function (req:Request, res:Response){
    
-        let vh = await primsaClient.vhicle.create({
-            data: {
-                username: "skntmax", // Updated to lowercase
-                name: "name1",
-                rc: "rc",
-                type: "car",
-                created_on: new Date(),
-                updated_on: new Date(),
-              },
-        })
+        // let vh = await primsaClient.vhicle.create({
+        //     data: {
+        //         username: "skntmax", // Updated to lowercase
+        //         name: "name1",
+        //         rc: "rc",
+        //         type: "car",
+        //         created_on: new Date(),
+        //         updated_on: new Date(),
+        //       },
+        // })
          
-        console.log(vh)
+        // console.log(vh)
         res.send({message:"insert vchile"}) 
     } ,
     
@@ -54,7 +54,55 @@ const testController  = {
     
     getRandomName : async function (req:Request, res:Response){   
          res.send({message:`${Math.ceil(Math.random()*100)}_random`}) 
-    } 
+    }  ,
+
+    insertVhicleTypes : async function (req:Request, res:Response ) {
+
+        let arr = [ 
+            {vhicle_type :"2 Wheeler" , disc:"2 wheeler  vhicle"}, 
+            {vhicle_type :"3 Wheeler" , disc:"3 wheeler  vhicle"}, 
+            {vhicle_type :"4 Wheeler" , disc:"3 wheeler  vhicle"}, 
+        
+        ]
+
+        let current_date  = new Date() 
+        
+        for(let obj of arr) {
+
+            let type_of_vhicle = await primsaClient.type_of_vhicle.create({
+                data:{
+                    vhicle_type:obj.vhicle_type , 
+                     disc:obj.disc ,    
+                    created_on: current_date,
+                    updated_on: current_date,
+                }
+            })
+
+            console.log(type_of_vhicle)
+        
+        }
+
+            res.send({message:`inserted  vhile types `})
+    } ,
+
+    insertTypeOfUser : async function (req:Request, res:Response){   
+        let arr = [ "client" , "Owner" ]
+
+        for(let uerType of arr) {
+
+            let type_of_user = await primsaClient.type_of_user.create({
+                data:{
+                     user_type:uerType  ,
+                    created_on: new Date(),
+                    updated_on: new Date(),
+                }
+            })
+        
+        }
+        
+         res.send({message:`type of user inserted `}) 
+   }  ,
+
      
 }
 
