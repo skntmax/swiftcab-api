@@ -67,4 +67,135 @@ model services_have_utils {
 
 
 
+model users {
+   id         Int          @id @default(autoincrement())
+   username   String       @default("")
+      
+    user_type Int @unique
+    type_of_user  type_of_user @relation(fields: [user_type] , references: [id])    
+   
+   created_on DateTime      @default(now())
+   updated_on DateTime
+}
+
+model type_of_user {
+   id         Int     @id @default(autoincrement())
+   user_type  String
+   type_of_user users?
+   created_on DateTime @default(now())
+   updated_on DateTime
+}
+
+
+
+
+model countries {
+   id           Int                     @id @default(autoincrement())
+   country          String
+   cities  states[]  @relation("countries_have_many_states")
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+  }
+
+
+
+
+  model states {
+   id           Int                     @id @default(autoincrement())
+  state          String
+
+
+ // for countries 
+  country_id  Int
+  country countries @relation(fields: [country_id] , references: [id] , name:"countries_have_many_states")
+
+
+   // states have many cities 
+   states   cities[] @relation("states_have_many_cities")
+
+
+    state_cty_mapper states_have_cities[]
+   
+  
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+  }
+
+
+
+
+
+model cities {
+   id           Int                     @id @default(autoincrement())
+  city          String
+
+
+  // city 
+  state_id  Int
+  states  states @relation(fields: [state_id] ,  references: [id]  , name: "states_have_many_cities")
+
+
+   // city can have many localities
+   localities  localities[]  @relation("cities_have_many_localities")
+
+   state_cty_mapper states_have_cities[]
+
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+  }
+
+
+
+
+model localities {
+   id           Int                 @id @default(autoincrement())
+  city          String
+
+  //  city may have or more localitites
+  city_id Int
+  localities  cities   @relation(fields: [city_id] , references: [id] , name: "cities_have_many_localities")
+  
+
+  
+  
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+ }
+
+
+
+ model  states_have_cities {
+    @@id([state_id, city_id]) // Composite primary key
+
+   state_id  Int
+   city_id  Int
+
+   state      states   @relation(fields: [state_id], references: [id])
+   city       cities    @relation(fields: [city_id], references: [id])
+
+  //  state_have_cities  shc_have_localities[]
+
+ }
+
+
+
+
+
+//  model  shc_have_localities {
+//     @@id([shc_id, locality_id]) // Composite primary key
+
+     
+//      shc_id Int
+//      locality_id Int
+
+//      state_have_cities states_have_cities @relation(fields: [shc_id] , references: [id])
+//      localities localities @relation(fields: [locality_id] , references: [id])
+   
+//  }
+
+
+
+
+
+
 
