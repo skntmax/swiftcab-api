@@ -62,7 +62,8 @@ model vhicle_provides_services {
   // Relations
   vhicle         vhicle          @relation(fields: [vhicle_id], references: [id])
   vhicle_service vhicle_services @relation(fields: [service_id], references: [id])
-
+ 
+   vh_service  users_have_rides?
   @@unique([vhicle_id, service_id]) // Ensures unique combinations of vhicle and service
 }
 
@@ -97,6 +98,7 @@ model users {
   users_city cities @relation(fields: [city_id] , references: [id])
   users_locality localities? @relation(fields: [locality_id] , references: [id])
   vh_owner vhicle?
+  user_has_rides users_have_rides[]
  
   created_on DateTime @default(now())
   updated_on DateTime
@@ -184,14 +186,17 @@ id   Int    @id @default(autoincrement())
 }
 
  model  shc_have_localities {
-    @@id([shc_id, locality_id]) // Composite primary key
+     id   Int    @id @default(autoincrement()) 
 
      shc_id Int
      locality_id Int
+     price_per_km Int
 
      state_have_cities states_have_cities @relation(fields: [shc_id] , references: [id])
      localities_r1 localities @relation(fields: [locality_id] , references: [id])
 
+      source_location users_have_rides[] @relation("source_address")
+      destination_location users_have_rides[] @relation("destination_address")
      created_on DateTime @default(now())
      updated_on DateTime
 
@@ -237,5 +242,38 @@ model utils_config {
   created_on DateTime @default(now())
   updated_on DateTime
    
+
+}
+
+
+
+
+
+model users_have_rides {
+  id Int @id @default(autoincrement())
+  
+  vh_service_id Int @unique  
+  vh_service vhicle_provides_services @relation(fields: [vh_service_id] , references: [id])
+  
+  pickup_time DateTime
+  drop_time  DateTime
+  distance String
+  
+  user_id Int
+  user_has_rides users @relation(fields: [user_id] , references: [id])
+
+
+  source Int 
+  source_location shc_have_localities @relation(fields: [source] , references: [id] ,name: "source_address") 
+
+  destination  Int
+  destination_location shc_have_localities @relation(fields: [destination] , references: [id], name: "destination_address")
+
+  is_active Boolean @default(true)
+
+  total_price Int
+
+  created_on DateTime @default(now())
+  updated_on DateTime
 
 }
