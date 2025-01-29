@@ -18,12 +18,11 @@ const testController  = {
         })
          
         console.log(vh)
-
         res.send({message:"insert vchile"}) 
     } ,
     
     addVhicleServices : async function (req:Request, res:Response){
-        let services = ['Commercial','Full Day' , 'Tourist plan' , 'Emergency/Night']
+        let services = ['Commercial','Full Day Book' , 'Tourist plan ' , 'Emergency/Night' , "ßCommercial/cross-ite/outer city"]
         for(let val of services ) {        
             let service = await primsaClient.vhicle_services.create({
                 data: {
@@ -45,15 +44,16 @@ const testController  = {
             {id:3 ,   food:true , water:true , guide:true },
             {id:4 ,   food:false , water:true , guide:false },
             ]
-
-        for(let val of services ) {        
+ 
+    //    for(let obj of  services) {
+    //     await  primsaClient.services_have_utils.create()
+    //   }
         
-        }
          res.send({message:"added services utils" }) 
     } ,
     
     getRandomName : async function (req:Request, res:Response){   
-         res.send({message:`${Math.ceil(Math.random()*100)}_random` }) 
+         res.send({message:`${Math.ceil(Math.random()*100)}_random`}) 
     } 
      
 }
