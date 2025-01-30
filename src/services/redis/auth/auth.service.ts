@@ -28,7 +28,7 @@ import {bcrypt , jwt } from './../../../packages/auth.package'
         return  failureReturn('Invalid credential')
     
         let payload = {id:newUser.id , username: newUser.username  }
-        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY || "something")
+        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY || "something", { expiresIn: "2h"})
 
         return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :    newUser.last_name}}  )  
     } , 
@@ -60,7 +60,9 @@ import {bcrypt , jwt } from './../../../packages/auth.package'
       
        
         let payload = {id:newUser.id , username: newUser.username  }
-        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY || "something")
+        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY || "something", {
+            expiresIn: "2h",
+        })
          
       
         return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :    newUser.last_name}}  )
