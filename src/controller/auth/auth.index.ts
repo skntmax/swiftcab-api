@@ -1,6 +1,6 @@
 import { Response , Request  } from "express"
 import primsaClient from "../../db"
-import authService from "../../services/redis/auth/auth.service"
+import authService from "../../services/auth/auth.service"
 import { failureResponse, succesResponse } from "../../config/utils"
 const authController  = {
     

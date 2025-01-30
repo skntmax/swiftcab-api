@@ -34,6 +34,7 @@ model type_of_vhicle {
   disc String
   
   v_type vhicle?   // 1-1 relation 
+  vhicle_type_relation  owner_has_vhicles[]
   created_on DateTime @default(now())
   updated_on DateTime
 
@@ -48,6 +49,18 @@ model vhicle_services {
   // Relation with vhicle_provides_services
   providers vhicle_provides_services[]
   utils     services_have_utils[]
+}
+
+
+model owner_has_vhicles{
+  id  Int @id @default(autoincrement())
+  owner Int
+  v_type Int
+
+  owner_of_vhicle users @relation(fields: [owner] , references: [id])
+  vhicle_type_relation type_of_vhicle @relation(fields: [v_type], references: [id])  
+  created_on DateTime @default(now())
+  updated_on DateTime
 }
 
 model vhicle_provides_services {
@@ -99,7 +112,7 @@ model users {
   users_locality localities? @relation(fields: [locality_id] , references: [id])
   vh_owner vhicle?
   user_has_rides users_have_rides[]
- 
+  owner_of_vhicle owner_has_vhicles[] 
   created_on DateTime @default(now())
   updated_on DateTime
 }

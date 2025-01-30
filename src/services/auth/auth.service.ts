@@ -1,8 +1,8 @@
-import dotenv from "../../../config/dotenv"
-import { failureReturn, succesResponse, successReturn } from "../../../config/utils"
-import primsaClient from "../../../db"
-import { loginPayload, userCreatePayload } from "../../../types/users.types"
-import {bcrypt , jwt } from './../../../packages/auth.package'
+import dotenv from "../../config/dotenv"
+import { failureReturn, succesResponse, successReturn } from "../../config/utils"
+import primsaClient from "../../db"
+import { loginPayload, userCreatePayload } from "../../types/users.types"
+import {bcrypt , jwt } from '../../packages/auth.package'
   
   const  authService = {
     
