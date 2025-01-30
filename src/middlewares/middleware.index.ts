@@ -1,6 +1,6 @@
 
 import cors from 'cors'
-import { Express } from 'express'
+import  express, { Express } from 'express'
 import bodyParser from 'body-parser'
 export const middlewares = {
 
@@ -12,7 +12,7 @@ export const middlewares = {
     globalMiddlewares: function (app:Express){
         app.use(cors(this.corsOptions))
         app.use(bodyParser.urlencoded({ extended: false }))
-        
+        app.use(express.json())        
     }
     
 }

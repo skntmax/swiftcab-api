@@ -3,8 +3,8 @@ import authController from "../../controller/auth/auth.index";
 
 let authRouter  =   Router()
 
-authRouter.get('/login', authController.getUser )
-authRouter.get('/signup', authController.signUp )
+authRouter.post('/login', authController.signin )
+authRouter.post('/signup', authController.signUp )
 authRouter.get('/send-otp', authController.sendOtp )
 
 
