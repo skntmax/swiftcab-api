@@ -84,18 +84,18 @@ model users {
   id       Int    @id @default(autoincrement())
   username String @default("")
   email String
-  first_name String
-  last_name String
-  phone_no String
+  first_name String?
+  last_name String?
+  phone_no String?
   is_active Boolean @default(false)
-  city_id  Int @unique
+  city_id  Int? @unique
   locality_id Int? @unique 
   password String
 
-  user_type    Int          @unique
+  user_type    Int         
   
   type_of_user type_of_user @relation(fields: [user_type], references: [id])
-  users_city cities @relation(fields: [city_id] , references: [id])
+  users_city cities? @relation(fields: [city_id] , references: [id])
   users_locality localities? @relation(fields: [locality_id] , references: [id])
   vh_owner vhicle?
   user_has_rides users_have_rides[]
@@ -107,7 +107,7 @@ model users {
 model type_of_user {
   id           Int      @id @default(autoincrement())
   user_type    String
-  type_of_user users?
+  type_of_user users[]
   created_on   DateTime @default(now())
   updated_on   DateTime
 }
@@ -272,7 +272,6 @@ model users_have_rides {
   is_active Boolean @default(true)
 
   total_price Int
-
   created_on DateTime @default(now())
   updated_on DateTime
 
