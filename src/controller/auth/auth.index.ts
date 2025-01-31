@@ -13,7 +13,6 @@ const authController  = {
         
           return succesResponse({data:user.data, message:"logged in " } , res )  
            
-
          }catch(err) {
           return  failureResponse({data:err}, res )
          }
