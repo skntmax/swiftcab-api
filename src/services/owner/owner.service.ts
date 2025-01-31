@@ -10,7 +10,6 @@ import { owner_vhicles_payload } from "../../types/owner.types"
 
     createOwnerHasVhicles : async function(ownerPayload:owner_vhicles_payload) {
 
-    
             try {
               let vhicleTypeInsert =await primsaClient.owner_has_vhicles.create({
                 data:{
@@ -25,13 +24,25 @@ import { owner_vhicles_payload } from "../../types/owner.types"
                 }catch(err) {   
                      console.log(err) 
                     return failureReturn(err)
-                }
+                }    
+        } , 
+    
 
-        
-    
+
+    getUseTypes : async function() {
+
+          try {
+
+            let userTyes  =await primsaClient.type_of_user.findMany({
+              select:{id:true , user_type:true}
+            })                
+              return successReturn(userTyes)
+              }catch(err) {
+                    return failureReturn(err)
+              }
     } , 
-    
-     
+
+
   }
 
 

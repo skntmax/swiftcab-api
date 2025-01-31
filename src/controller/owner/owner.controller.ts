@@ -13,18 +13,26 @@ const ownerController  = {
                return succesResponse({data:ownerVhicle.data, message:"" } , res )  
           
             return succesResponse({data:ownerVhicle.data, message:"Inserted " } , res )  
-             
-  
+           
            }catch(err) {
             return  failureResponse({data:err}, res )
            }
-
       
        } ,
 
-      signUp : async  function (req:Request, res:Response):Promise<any> {
+       
+       getUserTypes : async  function (req:Request, res:Response):Promise<any> {
 
+          try {
+            
+            let userTypes =await ownerService.getUseTypes() 
+            return succesResponse({data:userTypes.data, message:"Inserted " } , res )  
           
+          }catch(err) {
+            return  failureResponse({data:err}, res )
+          }
+    
+
        },
 
    
