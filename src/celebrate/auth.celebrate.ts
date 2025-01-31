@@ -19,7 +19,5 @@ export const authCelebrate = {
               password: Joi.string().required(),
               userType:Joi.number().required()
             }),
-          })
-
-    
+          })    
 }

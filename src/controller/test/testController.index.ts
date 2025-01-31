@@ -4,6 +4,13 @@ import {redisClient1} from "../../services/redis/redis.index"
 // import redisClient from "../../services/redis/redis.index"
 const testController  = {
     
+
+    checkStatus : async function (req:Request, res:Response){
+
+        // console.log(vh)
+        res.send({message:"ok"}) 
+    } ,
+
     insertVhicle : async function (req:Request, res:Response){
    
         // let vh = await primsaClient.vhicle.create({
