@@ -7,7 +7,7 @@ const authController  = {
       signin : async function (req:Request, res:Response):Promise<any> {
             
         try {
-          let user =await authService.loginUser({email:req.body.email, password:req.body.password, username:req.body.username , userType:req.body.userType })
+          let user =await authService.loginUser({emailOrUsername:req.body.emailOrUsername, password:req.body.password , userType:req.body.userType })
           if(!user.status)
              return succesResponse({data:user.data, message:"" } , res )  
         
