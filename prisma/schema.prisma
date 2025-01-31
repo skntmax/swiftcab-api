@@ -96,7 +96,7 @@ model services_have_utils {
 model users {
   id       Int    @id @default(autoincrement())
   username String @default("")
-  email String
+  email String @unique
   first_name String?
   last_name String?
   phone_no String?
