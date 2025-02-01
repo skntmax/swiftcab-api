@@ -1,7 +1,7 @@
 import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import primsaClient from "../../db"
-import { loginPayload, userCreatePayload } from "../../types/users.types"
+import { checkValidUser, loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
   
 const  authService = {
@@ -59,7 +59,7 @@ const  authService = {
       
        
         let payload = {id:newUser.id , username: newUser.username  }
-        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY || "something", {
+        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
             expiresIn: "2h",
         })
          
@@ -70,8 +70,24 @@ const  authService = {
                return failureReturn(err)
          }
 
+     },
+     
+     checkValidUser:async function(payload:checkValidUser ) {
+       try{
+
+        let userExistOrNot =await primsaClient.users.findFirst({ where:{ username:payload.username }})
+         if(!userExistOrNot)
+          return failureReturn(false)
         
+         return successReturn(true)
+
+           
+       }catch(err) {
+        console.log(err)
+        return failureReturn(err)
+       }
      }
+
      
   }
 
