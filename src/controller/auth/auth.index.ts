@@ -38,6 +38,21 @@ const authController  = {
     sendOtp : function (req:Request, res:Response){
       res.send({message:"ok"})      
     },
+
+    checkValidUser : async function (req:Request, res:Response):Promise<any>{
+      try {
+        let validUser =await authService.checkValidUser({username:req.body.username })
+        if(!validUser.status)
+           return succesResponse({data:validUser.data, message:"Not a valid user " } , res )  
+      
+        return succesResponse({data:validUser.data, message:"valid user" } , res )  
+         
+
+       }catch(err) {
+        return  failureResponse({data:err}, res )
+       }   
+    },
+
     
 }
 
