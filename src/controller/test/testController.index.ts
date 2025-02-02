@@ -110,6 +110,132 @@ const testController  = {
          res.send({message:`type of user inserted `}) 
    }  ,
 
+   insertRoles : async function (req:Request, res:Response){   
+    let roles = [  // Administrative Roles
+        "Super Admin",
+        "Admin",
+      
+        // Sales Roles
+        "Sales Manager",
+        "Sales Executive",
+        "Sales Representative",
+        "Account Manager",
+      
+        // Marketing Roles
+        "Marketing Manager",
+        "Marketing Executive",
+        "Marketing Specialist",
+      
+        // Customer Support Roles
+        "Customer Support Manager",
+        "Support Agent",
+        "Helpdesk Agent",
+        "Technical Support Engineer",
+      
+        // Operations & Finance Roles
+        "Operations Manager",
+        "Finance Manager",
+      
+        // IT & Development Roles
+        "CRM Developer",
+        "CRM Analyst",
+      
+        // Partner & Vendor Management Roles
+        "Partner Manager",
+        "Vendor Coordinator" ]
+
+    for(let role of roles) {
+
+        let roleInserted = await primsaClient.roles.create({
+            data:{
+                 name:role  ,
+                created_on: new Date(),
+                updated_on: new Date(),
+            }
+        })
+    
+    }
+    
+     res.send({message:`role inserted  `}) 
+}  ,
+
+
+
+insertPermissions : async function (req:Request, res:Response){   
+    let permissions = [  // Administrative Roles
+                        // User Management
+                "Create Users",
+                "Edit Users",
+                "Delete Users",
+                "View Users",
+                "Assign Roles",
+
+                // Lead Management
+                "Create Leads",
+                "Edit Leads",
+                "Delete Leads",
+                "View Leads",
+                "Assign Leads",
+
+                // Contact & Customer Management
+                "Create Contacts",
+                "Edit Contacts",
+                "Delete Contacts",
+                "View Contacts",
+
+                // Deal & Opportunity Management
+                "Create Deals",
+                "Edit Deals",
+                "Delete Deals",
+                "View Deals",
+                "Assign Deals",
+
+                // Task & Activity Management
+                "Create Tasks",
+                "Edit Tasks",
+                "Delete Tasks",
+                "View Tasks",
+                "Assign Tasks",
+
+                // Marketing & Campaigns
+                "Create Campaigns",
+                "Edit Campaigns",
+                "Delete Campaigns",
+                "View Campaigns",
+                "Send Marketing Emails",
+
+                // Reports & Analytics
+                "View Reports",
+                "Generate Reports",
+                "Export Reports",
+
+                // Billing & Finance
+                "Manage Invoices",
+                "View Transactions",
+                "Process Payments",
+
+                // System Settings & Customization
+                "Access CRM Settings",
+                "Manage Integrations",
+                "Customize Workflows",
+                "Configure Automations"]
+
+    for(let perm of permissions) {
+
+        let permInserted = await primsaClient.permissions.create({
+            data:{
+                 permission_name:perm  ,
+                created_on: new Date(),
+                updated_on: new Date(),
+            }
+        })
+    
+    }
+    
+     res.send({message:`permissions inserted  `}) 
+}  ,
+
+
      
 }
 

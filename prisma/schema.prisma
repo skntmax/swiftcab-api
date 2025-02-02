@@ -113,6 +113,7 @@ model users {
   vh_owner vhicle?
   user_has_rides users_have_rides[]
   owner_of_vhicle owner_has_vhicles[] 
+  active_role user_has_roles[]
   created_on DateTime @default(now())
   updated_on DateTime
 }
@@ -287,5 +288,59 @@ model users_have_rides {
   total_price Int
   created_on DateTime @default(now())
   updated_on DateTime
+
+}
+
+
+model roles {
+  id Int @id @default(autoincrement())
+  name String 
+  
+   created_on DateTime @default(now())
+   updated_on DateTime
+
+   user_role user_has_roles[] @relation("user_has_roles")
+   role_perm role_has_permissions[] @relation("role_perm")
+}
+
+model permissions {
+  id Int @id @default(autoincrement())
+  permission_name String
+
+   created_on DateTime @default(now())
+   updated_on DateTime
+
+
+active_role_perm role_has_permissions[] @relation("active_role_perm")
+
+}
+
+model user_has_roles {
+  id Int @id @default(autoincrement())
+  
+  user_id Int
+  role_id Int
+
+   created_on DateTime @default(now())
+   updated_on DateTime
+
+  user_role roles @relation(fields: [role_id] , references: [id]  , name: "user_has_roles") 
+  active_role  users @relation(fields: [user_id], references: [id])    
+
+}
+
+
+
+model role_has_permissions {
+  id Int @id @default(autoincrement())
+  
+  role_id Int
+  perm_id Int
+
+  created_on DateTime @default(now())
+   updated_on DateTime
+
+  role_perm roles @relation(fields: [role_id] , references: [id] , name: "role_perm" )
+  active_role_perm  permissions @relation(fields: [perm_id], references: [id] , name:"active_role_perm")    
 
 }
