@@ -8,7 +8,7 @@ const testController  = {
     checkStatus : async function (req:Request, res:Response){
 
         // console.log(vh)
-        res.send({message:"ok"}) 
+        res.send({message:"ok", roles: req.user_has_roles || [] , perm:req.role_has_permissions || []}) 
     } ,
 
     insertVhicle : async function (req:Request, res:Response){

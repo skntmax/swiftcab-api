@@ -4,7 +4,7 @@ import cors from 'cors'
 import  express, { Express , Request, Response, NextFunction } from 'express'
 import bodyParser from 'body-parser'
 import dotenv from './../config/dotenv'
-import PrismaClient from './../db'
+import PrismaClient, { executeStoredProcedure } from './../db'
 import jwt from 'jsonwebtoken'
 import { failureResponse, succesResponse } from "../config/utils";
 import { JwtPayload } from 'jsonwebtoken';
@@ -55,24 +55,41 @@ export const middlewares = {
             user_id:decoded?.id
           } , 
           select:{
-            role_id:true
+            role_id:true, 
+            user_id:true,                    
           }
-        }) 
-    
-        //  if(!user_has_roles){
-        //    return succesResponse({data:"no roles"} , res );
-        //  } 
-    
-         
-         console.log("user_type>>",user_has_roles)
-        //  req.user_has_roles =   user_has_roles
+        })
+         req.user_has_roles =   user_has_roles.map(ele=> ele.role_id)
          next()
           }catch(err){
             // console.log("error message", err);
            failureResponse( {data:"un autherised user "} , res  );
           }
+    } ,
 
-    }
+
+    roleWisePermission :  async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+    
+        try{
+      
+          const token = req.headers['authorization']
+          if(!token) return 'Unauthorize user'
+          const bearer_token = token.split(' ')[1]  
+          let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
+  
+          let permissions =  await  executeStoredProcedure('role_has_permission', req.user_has_roles )
+         
+          req.role_has_permissions = permissions
+
+           next()
+            }catch(err){
+              // console.log("error message", err);
+             failureResponse( {data:"un autherised user "} , res  );
+            }
+      }
+    
+    
+   
     
 }
 

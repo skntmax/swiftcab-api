@@ -104,7 +104,8 @@ model users {
   city_id  Int? @unique
   locality_id Int? @unique 
   password String
-
+  opt String? 
+  isLoggedIn Boolean?
   user_type    Int         
   
   type_of_user type_of_user @relation(fields: [user_type], references: [id])
