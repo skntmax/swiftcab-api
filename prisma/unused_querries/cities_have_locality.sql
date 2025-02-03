@@ -1,6 +1,5 @@
 -- vishakhpatnam 
 
-
 INSERT INTO localities (locality, city_id, created_on, updated_on) VALUES
 ('MG Road', 66, NOW(), NOW()),
 ('Indiranagar', 66, NOW(), NOW()),

@@ -1,3 +1,4 @@
+-- truncate table countries  RESTART IDENTITY CASCADE;  
 INSERT INTO countries (country, created_on, updated_on) VALUES
 ('Afghanistan', NOW(), NOW()),
 ('Albania', NOW(), NOW()),

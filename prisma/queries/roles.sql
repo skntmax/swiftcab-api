@@ -1,0 +1,21 @@
+-- truncate table public.roles RESTART IDENTITY CASCADE  ;  
+INSERT INTO public.roles (id, "name", created_on, updated_on) VALUES
+(1, 'Super Admin', NOW(), NOW()),
+(2, 'Admin', NOW(), NOW()),
+(3, 'Sales Manager', NOW(), NOW()),
+(4, 'Sales Executive', NOW(), NOW()),
+(5, 'Sales Representative', NOW(), NOW()),
+(6, 'Account Manager', NOW(), NOW()),
+(7, 'Marketing Manager', NOW(), NOW()),
+(8, 'Marketing Executive', NOW(), NOW()),
+(9, 'Marketing Specialist', NOW(), NOW()),
+(10, 'Customer Support Manager', NOW(), NOW()),
+(11, 'Support Agent', NOW(), NOW()),
+(12, 'Helpdesk Agent', NOW(), NOW()),
+(13, 'Technical Support Engineer', NOW(), NOW()),
+(14, 'Operations Manager', NOW(), NOW()),
+(15, 'Finance Manager', NOW(), NOW()),
+(16, 'CRM Developer', NOW(), NOW()),
+(17, 'CRM Analyst', NOW(), NOW()),
+(18, 'Partner Manager', NOW(), NOW()),
+(19, 'Vendor Coordinator', NOW(), NOW());
