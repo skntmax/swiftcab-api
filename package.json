@@ -8,6 +8,8 @@
     "dev": "cross-env NODE_ENV=DEV nodemon ./src/server.ts",
     "migrate:dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development  -- npx prisma migrate dev",
     "migrate:prod": "cross-env NODE_ENV=PROD  dotenv -e .env.production  -- npx prisma migrate deploy",
+    "seed:dev": "  dotenv -e .env.development ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "seed:prod": "  dotenv -e .env.production ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
     "prod": "npx tsc  && cross-env NODE_ENV=PROD node ./dist/server.js"
   },
   "author": "",
