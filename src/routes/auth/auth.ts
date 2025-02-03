@@ -8,6 +8,7 @@ authRouter.post('/login',authCelebrate.login,  authController.signin )
 authRouter.post('/signup', authCelebrate.signup, authController.signUp )
 authRouter.get('/send-otp', authController.sendOtp )
 authRouter.post('/check-valid-user', authController.checkValidUser )
+authRouter.get('/get-all-roles', authController.getAllRoles )
 
 
 export default authRouter 
