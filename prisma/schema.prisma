@@ -15,6 +15,7 @@ model vhicle {
   vhicle_type_id  Int @unique
   v_owner_id  Int @unique 
   
+  random_name String @default("")
 
   // relations 
   v_type  type_of_vhicle @relation(fields: [vhicle_type_id] , references: [id ])

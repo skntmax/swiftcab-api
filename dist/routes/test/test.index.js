@@ -5,10 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const testController_index_1 = __importDefault(require("../../controller/test/testController.index"));
+const middleware_index_1 = __importDefault(require("../../middlewares/middleware.index"));
 let testRouter = (0, express_1.Router)();
-testRouter.get('/status', 
-//   middlewares.checkRoles,
-testController_index_1.default.checkStatus);
+testRouter.get('/status', middleware_index_1.default.checkRoles, middleware_index_1.default.roleWisePermission, testController_index_1.default.checkStatus);
 testRouter.get('/insert-vhicle', testController_index_1.default.insertVhicle);
 testRouter.get('/add-services', testController_index_1.default.addVhicleServices);
 testRouter.get('/add-servies-utils', testController_index_1.default.addServicesUtils);

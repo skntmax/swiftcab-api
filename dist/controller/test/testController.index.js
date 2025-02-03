@@ -18,7 +18,7 @@ const testController = {
     checkStatus: function (req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             // console.log(vh)
-            res.send({ message: "ok" });
+            res.send({ message: "ok", roles: req.user_has_roles || [], perm: req.role_has_permissions || [] });
         });
     },
     insertVhicle: function (req, res) {

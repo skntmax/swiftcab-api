@@ -6,6 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cross-env NODE_ENV=DEV nodemon ./src/server.ts",
+    "migrate:dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development  -- npx prisma migrate dev",
+    "migrate:prod": "cross-env NODE_ENV=PROD  dotenv -e .env.production  -- npx prisma migrate deploy",
     "prod": "npx tsc  && cross-env NODE_ENV=PROD node ./dist/server.js"
   },
   "author": "",
@@ -29,6 +31,7 @@
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.7",
+    "dotenv-cli": "^8.0.0",
     "ioredis": "^5.4.2",
     "jsonwebtoken": "^9.0.2",
     "prisma": "^6.2.1",
