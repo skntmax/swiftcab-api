@@ -26,6 +26,23 @@ async function executeSQLFile(filePath: string) {
 }
 
 
+
+
+
+async function executeProcFile(filePath: string) {
+  try {
+    const proc = fs.readFileSync(filePath, "utf8");
+    await prisma.$executeRawUnsafe(proc);
+
+      // await prisma.$executeRawUnsafe(sql);
+    console.log(`✅ Executed: ${filePath}`);
+  } catch (error) {
+    console.error(`❌ Error executing ${filePath}:`, error);
+  }
+}
+
+
+
   async function  seedingProcedured() {
     console.log("🚀 Starting proc seeding...");
   
@@ -35,7 +52,7 @@ async function executeSQLFile(filePath: string) {
     console.log("proc files>>>>" ,procFiles , "proc files>>>>")
     for (const file of procFiles) {
       const filePath = path.join(seedDir, file);
-      await executeSQLFile(filePath);
+      await executeProcFile(filePath);
     }
 
     console.log("🚀  proc seeding completed...");
@@ -62,6 +79,7 @@ async function main() {
 
 
 
+    // procs 
     await seedingProcedured()
 
 
