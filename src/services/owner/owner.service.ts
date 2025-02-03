@@ -33,10 +33,12 @@ import { owner_vhicles_payload } from "../../types/owner.types"
 
           try {
 
-            let userTyes  =await primsaClient.type_of_user.findMany({
-              select:{id:true , user_type:true}
+            let userTyes  =await primsaClient.roles.findMany({
+              select:{id:true , name:true}
             })                
-              return successReturn(userTyes)
+
+              let  limitedUserTypesToProvideLogin =  userTyes.filter(ele=> ['Customer' , 'Owner'].includes(ele.name))
+              return successReturn(limitedUserTypesToProvideLogin)
               }catch(err) {
                     return failureReturn(err)
               }

@@ -1,44 +1,61 @@
 import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
-import primsaClient from "../../db"
+import primsaClient, { executeStoredProcedure } from "../../db"
 import { checkValidUser, loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
   
+type UserRole = {
+  username: string;
+  email: string;
+  role_id: number;
+};
+
 const  authService = {
     
-    
-
     loginUser : async function(userPayload:loginPayload) {
-        const {  emailOrUsername, password, userType=1 , } = userPayload  // default as client or customer , 1- customer , 2- owner 
-        
-      let newUser = await primsaClient.users.findFirst({
-          where:{ 
-              OR: [
-                  { email: emailOrUsername }, 
-                  { username: emailOrUsername }
-                ],
-              user_type:userType}
-      })
-  
-      if(!newUser)
-         return  failureReturn('Please register first ')
-        
-      let isPass = await bcrypt.compare(password ,newUser?.password)
-        
-      if(!isPass)
-        return  failureReturn('Invalid credential')
-    
-        let payload = {id:newUser.id , username: newUser.username  }
-        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
 
-        return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :    newUser.last_name}}  )  
+      try {
+
+        const {  emailOrUsername, password, userType } = userPayload  // default as client or customer , 1- customer , 2- owner 
+        
+        let newUser =await executeStoredProcedure('get_user_roles', [emailOrUsername, emailOrUsername, userType as number])
+        newUser= newUser[0]
+        console.log("newUser" ,newUser)
+        if(!newUser)
+           return  failureReturn('Please register first ')
+          
+        let isPass = await bcrypt.compare(password ,newUser?.password)
+          
+        if(!isPass)
+          return  failureReturn('Invalid credential')
+      
+          let payload = {id:newUser.id , username: newUser.username  }
+          let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
+  
+          return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name}}  )  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
     } , 
     createUser  : async function (userPayload: userCreatePayload) {
         
          try {
 
           const {  email , password, userType , username} = userPayload 
-          let userExist  =await  primsaClient.users.findFirst({ where:{ email }})
+          let userExist  =await  primsaClient.users.findFirst({ 
+            where:{ 
+             OR:[
+                 {
+                 email:email
+                },
+               {
+                username:username
+                }
+              ]
+             }})
 
           if(userExist)
             return failureReturn('user already exist') 
@@ -49,14 +66,21 @@ const  authService = {
                       username:username , 
                       password:hashPass ,
                       email:email,
-                      user_type: userType,
                       is_active:true,
                       created_on:new Date(),
                       updated_on:new Date() ,
                   }
               })  
+            
+           let userRoles =await primsaClient.user_has_roles.create({
+            data:{
+              user_id:newUser.id,
+              role_id:userType,
+              created_on:new Date(),
+              updated_on:new Date() ,
+            }
+           })
 
-      
        
         let payload = {id:newUser.id , username: newUser.username  }
         let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
@@ -64,7 +88,7 @@ const  authService = {
         })
          
       
-        return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :    newUser.last_name}}  )
+        return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :    newUser.last_name }}  )
          }catch(err) {
                 console.log(err)
                return failureReturn(err)
@@ -86,7 +110,20 @@ const  authService = {
         console.log(err)
         return failureReturn(err)
        }
-     }
+     },
+
+     getAllRoles :async function() {
+    
+      try {
+
+        let roles  =await primsaClient.roles.findMany({
+          select:{id:true , name:true}
+        })                
+          return successReturn(roles)
+          }catch(err) {
+                return failureReturn(err)
+          }
+    },
 
      
   }

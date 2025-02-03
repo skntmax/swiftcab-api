@@ -26,7 +26,7 @@ const ownerController  = {
           try {
             
             let userTypes =await ownerService.getUseTypes() 
-            return succesResponse({data:userTypes.data, message:"Inserted " } , res )  
+            return succesResponse({data:userTypes.data, message:"user roles" } , res )  
           
           }catch(err) {
             return  failureResponse({data:err}, res )

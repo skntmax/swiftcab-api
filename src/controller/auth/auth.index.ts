@@ -54,6 +54,22 @@ const authController  = {
     },
 
     
+    getAllRoles : async function (req:Request, res:Response):Promise<any>{
+      try {
+        let allRoles =await authService.getAllRoles()
+        if(!allRoles.status)
+           return succesResponse({data:allRoles.data, message:"all roles " } , res )  
+      
+        return succesResponse({data:allRoles.data, message:"" } , res )  
+         
+
+       }catch(err) {
+        return  failureResponse({data:err}, res )
+       }   
+    },
+
+
+    
 }
 
 

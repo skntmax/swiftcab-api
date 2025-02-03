@@ -1,36 +1,39 @@
 import { PrismaClient } from "@prisma/client";
-const primsaClient = new PrismaClient()
+const prismaClient = new PrismaClient()
 
 
-type ProcedureParams = (string | number | boolean | null)[];
+type ProcedureParams = any[]; // To support any parameter type
 
-/**
- * Executes a PostgreSQL stored procedure using Prisma.
- * @param procedureName - Name of the stored procedure.
- * @param params - Optional parameters for the procedure.
- * @returns The result of the stored procedure execution.
- */
-export const executeStoredProcedure = async (
+export async function executeStoredProcedure(
   procedureName: string,
-  params: ProcedureParams = []
-): Promise<any> => {
+  params: any[] = []
+): Promise<any> {
   try {
-    const paramPlaceholders = params.map((_, index) => `$${index + 1}`).join(', ');
-    
-    // If we are passing an array, cast it explicitly
-    const query = `SELECT * FROM ${procedureName}($1::integer[])`;
+    // Construct the query string with explicit type casting
+    const query = params.length > 0
+      ? `SELECT * FROM ${procedureName}(${params
+          .map((_, index) => `$${index + 1}::${getParameterType(index)}`)
+          .join(', ')})`
+      : `SELECT * FROM ${procedureName}()`;
 
-    const result = await primsaClient.$queryRawUnsafe(query, params);
+    // Execute the stored procedure using Prisma's $queryRawUnsafe
+    const result = await prismaClient.$queryRawUnsafe(query, ...params);
 
     return result;
   } catch (error) {
-    console.error(`Error executing stored procedure ${procedureName}:`, error);
+    console.error('Error executing stored procedure:', error);
     throw error;
+  } finally {
+    await prismaClient.$disconnect();
   }
-};
+}
 
-
-
+// Helper function to determine parameter types
+function getParameterType(index: number): string {
+  // Define the expected parameter types for the stored procedure
+  const parameterTypes = ['text', 'text', 'int']; // Adjust based on your stored procedure
+  return parameterTypes[index] || 'text'; // Default to 'text' if not specified
+}
   
-export default primsaClient
+export default prismaClient
 

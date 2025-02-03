@@ -107,9 +107,7 @@ model users {
   password String
   opt String? 
   isLoggedIn Boolean?
-  user_type    Int         
-  
-  type_of_user type_of_user @relation(fields: [user_type], references: [id])
+
   users_city cities? @relation(fields: [city_id] , references: [id])
   users_locality localities? @relation(fields: [locality_id] , references: [id])
   vh_owner vhicle?
@@ -123,7 +121,6 @@ model users {
 model type_of_user {
   id           Int      @id @default(autoincrement())
   user_type    String
-  type_of_user users[]
   created_on   DateTime @default(now())
   updated_on   DateTime
 }
@@ -300,7 +297,7 @@ model roles {
   
    created_on DateTime @default(now())
    updated_on DateTime
-
+   
    user_role user_has_roles[] @relation("user_has_roles")
    role_perm role_has_permissions[] @relation("role_perm")
 }
