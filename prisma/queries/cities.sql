@@ -1,3 +1,4 @@
+-- truncate table cities RESTART IDENTITY CASCADE ; 
 INSERT INTO cities (city, state_id, created_on, updated_on) VALUES
 -- Andhra Pradesh (1)
 ('Visakhapatnam', 1, NOW(), NOW()),

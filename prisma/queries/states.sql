@@ -1,3 +1,4 @@
+-- truncate table public.state RESTART IDENTITY CASCADE;
 INSERT INTO states (state, country_id, created_on, updated_on) VALUES
 ('Andhra Pradesh', 76, NOW(), NOW()),
 ('Arunachal Pradesh', 76, NOW(), NOW()),

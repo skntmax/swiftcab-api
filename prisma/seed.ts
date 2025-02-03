@@ -1,17 +1,41 @@
 import { PrismaClient } from "@prisma/client";
+import fs from "fs";
+import path from "path";
 
 const prisma = new PrismaClient();
 
+
+
+async function executeSQLFile(filePath: string) {
+  try {
+    const sql = fs.readFileSync(filePath, "utf8");
+    await prisma.$executeRawUnsafe(sql);
+    console.log(`✅ Executed: ${filePath}`);
+  } catch (error) {
+    console.error(`❌ Error executing ${filePath}:`, error);
+  }
+}
+
 async function main() {
-  console.log("Seeding database...");
+  console.log("🚀 Starting database seed...");
 
-  // Create default users
-  await prisma.users.create({
-    data: {email:"random222@gmail.com" ,password:"rdsdsdskd" , user_type:1 ,updated_on:new Date()}
-  });
 
- 
-  console.log("Database seeding complete.");
+  // Truncate tables (with CASCADE to remove dependencies) ,  makw sure to mentiona all the table before 
+  await prisma.$executeRawUnsafe(`
+    TRUNCATE TABLE   cities  , countries ,permissions ,roles ,states ,type_of_user , vhicle_services  RESTART IDENTITY CASCADE;
+  `);
+
+
+  const seedDir = path.join(__dirname, "./queries");
+  const files = fs.readdirSync(seedDir).sort(); // Ensure files run in order
+
+  console.log(">>",files,">>")
+  for (const file of files) {
+    const filePath = path.join(seedDir, file);
+    await executeSQLFile(filePath);
+  }
+
+  console.log("🎉 Database seeding complete.");
 }
 
 main()
