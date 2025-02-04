@@ -32,7 +32,7 @@ const ownerController = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 let userTypes = yield owner_service_1.default.getUseTypes();
-                return (0, utils_1.succesResponse)({ data: userTypes.data, message: "Inserted " }, res);
+                return (0, utils_1.succesResponse)({ data: userTypes.data, message: "user roles" }, res);
             }
             catch (err) {
                 return (0, utils_1.failureResponse)({ data: err }, res);

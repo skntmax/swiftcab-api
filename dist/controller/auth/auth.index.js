@@ -57,5 +57,18 @@ const authController = {
             }
         });
     },
+    getAllRoles: function (req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let allRoles = yield auth_service_1.default.getAllRoles();
+                if (!allRoles.status)
+                    return (0, utils_1.succesResponse)({ data: allRoles.data, message: "all roles " }, res);
+                return (0, utils_1.succesResponse)({ data: allRoles.data, message: "" }, res);
+            }
+            catch (err) {
+                return (0, utils_1.failureResponse)({ data: err }, res);
+            }
+        });
+    },
 };
 exports.default = authController;

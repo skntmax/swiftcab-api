@@ -37,10 +37,11 @@ const ownerService = {
     getUseTypes: function () {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                let userTyes = yield db_1.default.type_of_user.findMany({
-                    select: { id: true, user_type: true }
+                let userTyes = yield db_1.default.roles.findMany({
+                    select: { id: true, name: true }
                 });
-                return (0, utils_1.successReturn)(userTyes);
+                let limitedUserTypesToProvideLogin = userTyes.filter(ele => ['Customer', 'Owner'].includes(ele.name));
+                return (0, utils_1.successReturn)(limitedUserTypesToProvideLogin);
             }
             catch (err) {
                 return (0, utils_1.failureReturn)(err);

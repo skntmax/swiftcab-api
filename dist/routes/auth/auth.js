@@ -11,4 +11,5 @@ authRouter.post('/login', auth_celebrate_1.authCelebrate.login, auth_index_1.def
 authRouter.post('/signup', auth_celebrate_1.authCelebrate.signup, auth_index_1.default.signUp);
 authRouter.get('/send-otp', auth_index_1.default.sendOtp);
 authRouter.post('/check-valid-user', auth_index_1.default.checkValidUser);
+authRouter.get('/get-all-roles', auth_index_1.default.getAllRoles);
 exports.default = authRouter;
