@@ -28,7 +28,6 @@ export  const procs:procTypes = {
           WHERE x.role_id = p_role_id;
         END;
         $$ LANGUAGE plpgsql; `
-  
 }
 
 
