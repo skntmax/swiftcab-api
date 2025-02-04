@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
+import { procs } from "./procs/procs";
 
 const prisma = new PrismaClient();
 
@@ -29,15 +30,14 @@ async function executeSQLFile(filePath: string) {
 
 
 
-async function executeProcFile(filePath: string) {
+async function executeProcFile(procName:string , procBody:string) {
   try {
-    const proc = fs.readFileSync(filePath, "utf8");
-    await prisma.$executeRawUnsafe(proc);
 
+    await prisma.$executeRawUnsafe(procBody);
       // await prisma.$executeRawUnsafe(sql);
-    console.log(`✅ Executed: ${filePath}`);
+    console.log(`✅ seeder Executed of proc: ${procName}`);
   } catch (error) {
-    console.error(`❌ Error executing ${filePath}:`, error);
+    console.error(`❌ seeder Error in proc :  ${procName}:`, error);
   }
 }
 
@@ -46,14 +46,19 @@ async function executeProcFile(filePath: string) {
   async function  seedingProcedured() {
     console.log("🚀 Starting proc seeding...");
   
-  const seedDir = path.join(__dirname, "./procs");
-  const procFiles = fs.readdirSync(seedDir).sort(); // Ensure files run in order
+    for(let [procName ,  procBody] of Object.entries(procs)  ) {
+      await executeProcFile(procName ,  procBody  )
+     }
+
+
+  // const seedDir = path.join(__dirname, "./procs");
+  // const procFiles = fs.readdirSync(seedDir).sort(); // Ensure files run in order
   
-    console.log("proc files>>>>" ,procFiles , "proc files>>>>")
-    for (const file of procFiles) {
-      const filePath = path.join(seedDir, file);
-      await executeProcFile(filePath);
-    }
+  //   console.log("proc files>>>>" ,procFiles , "proc files>>>>")
+  //   for (const file of procFiles) {
+  //     const filePath = path.join(seedDir, file);
+  //     await executeProcFile(filePath);
+  //   }
 
     console.log("🚀  proc seeding completed...");
   }
@@ -66,6 +71,7 @@ async function main() {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE   cities  , countries ,permissions , roles ,states ,type_of_user ,type_of_vhicle, vhicle_services , cities ,localities  RESTART IDENTITY CASCADE;
   `);
+
 
   const seedDir = path.join(__dirname, "./queries");
   const files = fs.readdirSync(seedDir).sort(); // Ensure files run in order
