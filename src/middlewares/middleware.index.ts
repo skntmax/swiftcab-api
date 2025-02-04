@@ -8,6 +8,7 @@ import PrismaClient, { executeStoredProcedure } from './../db'
 import jwt from 'jsonwebtoken'
 import { failureResponse, succesResponse } from "../config/utils";
 import { JwtPayload } from 'jsonwebtoken';
+import authService from "../services/auth/auth.service";
 
 
 
@@ -46,7 +47,7 @@ export const middlewares = {
       try{
     
         const token = req.headers['authorization']
-        if(!token) return 'Unauthorize user'
+        if(!token) return  failureResponse( {data:"un autherised user "} , res  );
         const bearer_token = token.split(' ')[1]  
         let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
 
@@ -73,7 +74,7 @@ export const middlewares = {
         try{
       
           const token = req.headers['authorization']
-          if(!token) return 'Unauthorize user'
+          if(!token) return  failureResponse( {data:"un autherised user "} , res  );
           const bearer_token = token.split(' ')[1]  
           let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
   
@@ -86,7 +87,32 @@ export const middlewares = {
               // console.log("error message", err);
              failureResponse( {data:"un autherised user "} , res  );
             }
-      }
+      },
+
+      checkUserRoles : function(roleName:string) {
+        
+        return async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+    
+          try{
+        
+            const token = req.headers['authorization']
+            if(!token) return   failureResponse( {data:"un autherised user "} , res  );
+            const bearer_token = token.split(' ')[1]  
+            let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
+    
+            const { id:userId ,username} = decoded 
+            let doesRoleExist = await authService.userHasRolesOrNot({roleName:roleName ,userId:userId})
+            
+            console.log("isRoleExist",doesRoleExist)
+            if(!doesRoleExist) return failureResponse( {data:`you don't have accessed role : ${roleName} `} , res  );
+       
+             next()
+              }catch(err){
+                // console.log("error message", err);
+               failureResponse( {data:"un autherised user "} , res  );
+              }
+        } 
+      } 
     
     
    

@@ -19,10 +19,15 @@ export interface loginPayload  {
 
 
 
-
-
-
 export interface checkValidUser  {
     username : string , 
+}
+
+
+
+export interface doesUserHaveRoleOrNot  {
+    userId : number ,
+    roleName:string 
+
 }
 
