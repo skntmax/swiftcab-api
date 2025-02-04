@@ -1,7 +1,7 @@
 import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import primsaClient, { executeStoredProcedure } from "../../db"
-import { checkValidUser, loginPayload, userCreatePayload } from "../../types/users.types"
+import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
   
 type UserRole = {
@@ -20,7 +20,8 @@ const  authService = {
         
         let newUser =await executeStoredProcedure('get_user_roles', [emailOrUsername, emailOrUsername, userType as number])
         newUser= newUser[0]
-        console.log("newUser" ,newUser)
+
+            
         if(!newUser)
            return  failureReturn('Please register first ')
           
@@ -29,6 +30,7 @@ const  authService = {
         if(!isPass)
           return  failureReturn('Invalid credential')
       
+        console.log("newUser",newUser)
           let payload = {id:newUser.id , username: newUser.username  }
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
   
@@ -123,7 +125,28 @@ const  authService = {
           }catch(err) {
                 return failureReturn(err)
           }
-    },
+       },
+
+       userHasRolesOrNot :async function(param:doesUserHaveRoleOrNot) {
+    
+        try {
+  
+          let userrHasrole  =await primsaClient.$queryRawUnsafe(` 
+                  select uhr.role_id ,r."name" from users u 
+                  inner join user_has_roles uhr on uhr.user_id = u.id 
+                  inner join roles r on r.id = uhr.role_id 
+                  where u.id  =${param.userId} and  r."name" = '${param.roleName}'
+            `)
+
+  
+          if(userrHasrole && Array.isArray(userrHasrole) && userrHasrole.length==0)
+              return  false
+            
+          return true 
+            }catch(err) {
+                  return failureReturn(err)
+            }
+         },
 
      
   }

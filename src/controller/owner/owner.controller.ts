@@ -20,6 +20,20 @@ const ownerController  = {
       
        } ,
 
+       ownerOwnesVhicles : async function (req:Request, res:Response):Promise<any> {
+        try {
+            
+            let ownerVhicles =await ownerService.ownerVhicles({ownerId:6  })
+            if(!ownerVhicles.status)
+               return succesResponse({data:ownerVhicles.data, message:"" } , res )  
+          
+            return succesResponse({data:ownerVhicles.data, message:"got results" } , res )  
+           
+           }catch(err) {
+            return  failureResponse({data:err}, res )
+           }
+      
+       } ,
        
        getUserTypes : async  function (req:Request, res:Response):Promise<any> {
 
