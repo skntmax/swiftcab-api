@@ -9,27 +9,35 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.executeStoredProcedure = void 0;
-const client_1 = require("@prisma/client");
-const primsaClient = new client_1.PrismaClient();
-/**
- * Executes a PostgreSQL stored procedure using Prisma.
- * @param procedureName - Name of the stored procedure.
- * @param params - Optional parameters for the procedure.
- * @returns The result of the stored procedure execution.
- */
-const executeStoredProcedure = (procedureName_1, ...args_1) => __awaiter(void 0, [procedureName_1, ...args_1], void 0, function* (procedureName, params = []) {
-    try {
-        const paramPlaceholders = params.map((_, index) => `$${index + 1}`).join(', ');
-        // If we are passing an array, cast it explicitly
-        const query = `SELECT * FROM ${procedureName}($1::integer[])`;
-        const result = yield primsaClient.$queryRawUnsafe(query, params);
-        return result;
-    }
-    catch (error) {
-        console.error(`Error executing stored procedure ${procedureName}:`, error);
-        throw error;
-    }
-});
 exports.executeStoredProcedure = executeStoredProcedure;
-exports.default = primsaClient;
+const client_1 = require("@prisma/client");
+const prismaClient = new client_1.PrismaClient();
+function executeStoredProcedure(procedureName_1) {
+    return __awaiter(this, arguments, void 0, function* (procedureName, params = []) {
+        try {
+            // Construct the query string with explicit type casting
+            const query = params.length > 0
+                ? `SELECT * FROM ${procedureName}(${params
+                    .map((_, index) => `$${index + 1}::${getParameterType(index)}`)
+                    .join(', ')})`
+                : `SELECT * FROM ${procedureName}()`;
+            // Execute the stored procedure using Prisma's $queryRawUnsafe
+            const result = yield prismaClient.$queryRawUnsafe(query, ...params);
+            return result;
+        }
+        catch (error) {
+            console.error('Error executing stored procedure:', error);
+            throw error;
+        }
+        finally {
+            yield prismaClient.$disconnect();
+        }
+    });
+}
+// Helper function to determine parameter types
+function getParameterType(index) {
+    // Define the expected parameter types for the stored procedure
+    const parameterTypes = ['text', 'text', 'int']; // Adjust based on your stored procedure
+    return parameterTypes[index] || 'text'; // Default to 'text' if not specified
+}
+exports.default = prismaClient;
