@@ -6,30 +6,36 @@ import ownerService from "../../services/owner/owner.service"
 
 const ownerController  = {
     
-      ownerHasVhicles : async function (req:Request, res:Response):Promise<any> {
+   createOwnerHasVhicles : async function (req:Request, res:Response):Promise<any> {
         try {
-            let ownerVhicle =await ownerService.createOwnerHasVhicles({ownerId:req.body.ownerId , vhicleId:req.body.vhicleId })
+         
+             const {userId , username} = req.userObj
+
+            let ownerVhicle =await ownerService.createOwnerHasVhicles({ownerId:Number(userId)  , vhicleId:req.body.vhicleId })
             if(!ownerVhicle.status)
                return succesResponse({data:ownerVhicle.data, message:"" } , res )  
           
             return succesResponse({data:ownerVhicle.data, message:"Inserted " } , res )  
            
            }catch(err) {
+            console.log(err)
             return  failureResponse({data:err}, res )
            }
-      
        } ,
 
        ownerOwnesVhicles : async function (req:Request, res:Response):Promise<any> {
         try {
-            
-            let ownerVhicles =await ownerService.ownerVhicles({ownerId:6  })
+
+          const {userId , username} = req.userObj
+            let ownerVhicles =await ownerService.ownerVhicles({ownerId:Number(userId) })
             if(!ownerVhicles.status)
                return succesResponse({data:ownerVhicles.data, message:"" } , res )  
           
             return succesResponse({data:ownerVhicles.data, message:"got results" } , res )  
            
            }catch(err) {
+            console.log(err)
+
             return  failureResponse({data:err}, res )
            }
       
@@ -43,12 +49,46 @@ const ownerController  = {
             return succesResponse({data:userTypes.data, message:"user roles" } , res )  
           
           }catch(err) {
+            console.log(err)
             return  failureResponse({data:err}, res )
           }
-    
-
        },
 
+
+       vhicleProvidesServices : async  function (req:Request, res:Response):Promise<any> {
+
+         try {
+          const {userId , username} = req.userObj
+           let vhProvidesServices =await ownerService.vhicleProvidesServices({vhicleId:req.body.vhicleId , serviceId:req.body.serviceId}) 
+
+           if(!vhProvidesServices.status)  return succesResponse({data: "null" ,  message:vhProvidesServices?.data } , res )
+           
+            return succesResponse({data:vhProvidesServices.data, message:"vhicle serviced added" } , res )  
+
+         
+         }catch(err) {
+           console.log(err)
+           return  failureResponse({data:err}, res )
+         }
+      },
+   
+
+      getVhicleServicesList  : async  function (req:Request, res:Response):Promise<any> {
+
+         try {
+          const {userId , username} = req.userObj
+           let vhProvidesServices =await ownerService.getVhicleServicesList({ ownerId: Number(userId) } ) 
+
+           if(!vhProvidesServices.status)  return succesResponse({data: "null" ,  message:vhProvidesServices?.data } , res )
+           
+            return succesResponse({data:vhProvidesServices.data, message:"vhicle serviced added" } , res )  
+
+         
+         }catch(err) {
+           console.log(err)
+           return  failureResponse({data:err}, res )
+         }
+      },
    
     
 }

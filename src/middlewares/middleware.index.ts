@@ -42,14 +42,40 @@ export const middlewares = {
 
     } , 
 
-    checkRoles : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+    validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
       try{
-    
+        req.userObj={userId:"" , username:""}       
         const token = req.headers['authorization']
         if(!token) return  failureResponse( {data:"un autherised user "} , res  );
         const bearer_token = token.split(' ')[1]  
         let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
+
+        const { id:userId ,username} = decoded 
+
+        if(!userId || !username) return failureResponse( {data:` expired token or not a valid user `} , res  );
+
+         req.userObj.userId = userId 
+         req.userObj.username = username
+         next()
+          }catch(err){
+            console.log("error message", err);
+           failureResponse( {data:"un autherised user "} , res  );
+          }
+    } ,
+
+
+
+    checkRoles : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+    
+      try{
+        req.userObj={userId:"" , username:""}       
+        const token = req.headers['authorization']
+        if(!token) return  failureResponse( {data:"un autherised user "} , res  );
+        const bearer_token = token.split(' ')[1]  
+        let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
+
+        const { id:userId ,username} = decoded 
 
         const user_has_roles =await  PrismaClient.user_has_roles.findMany({
           where:{
@@ -60,10 +86,13 @@ export const middlewares = {
             user_id:true,                    
           }
         })
+         
+         req.userObj.userId = userId 
+         req.userObj.username = username
          req.user_has_roles =   user_has_roles.map(ele=> ele.role_id)
          next()
           }catch(err){
-            // console.log("error message", err);
+            console.log("error message", err);
            failureResponse( {data:"un autherised user "} , res  );
           }
     } ,
@@ -72,43 +101,53 @@ export const middlewares = {
     roleWisePermission :  async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
         try{
-      
+          req.userObj={userId:"" , username:""}       
           const token = req.headers['authorization']
           if(!token) return  failureResponse( {data:"un autherised user "} , res  );
           const bearer_token = token.split(' ')[1]  
           let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
-  
+          const { id:userId ,username} = decoded 
+          
           let permissions =  await  executeStoredProcedure('role_has_permission', req.user_has_roles )
          
           req.role_has_permissions = permissions
+          req.userObj.userId = userId 
+          req.userObj.username = username 
 
            next()
             }catch(err){
-              // console.log("error message", err);
+              console.log("error message", err);
              failureResponse( {data:"un autherised user "} , res  );
             }
       },
 
-      checkUserRoles : function(roleName:string) {
+      checkUserRoles : function(roleName:string ) {
         
         return async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
           try{
-        
+            req.userObj={userId:"" , username:""}       
             const token = req.headers['authorization']
             if(!token) return   failureResponse( {data:"un autherised user "} , res  );
             const bearer_token = token.split(' ')[1]  
             let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
     
-            const { id:userId ,username} = decoded 
-            let doesRoleExist = await authService.userHasRolesOrNot({roleName:roleName ,userId:userId})
+            let { id:userId ,username} = decoded 
+          
+            
+            if(!userId || !username) return failureResponse( {data:`Token expired`} , res  );   
+            
+             let doesRoleExist = await authService.userHasRolesOrNot({roleName:roleName ,userId:userId})
             
             console.log("isRoleExist",doesRoleExist)
             if(!doesRoleExist) return failureResponse( {data:`you don't have accessed role : ${roleName} `} , res  );
-       
+    
+
+            req.userObj.userId = decoded.id 
+            req.userObj.username = decoded.username             
              next()
               }catch(err){
-                // console.log("error message", err);
+                console.log("error message", err);
                failureResponse( {data:"un autherised user "} , res  );
               }
         } 

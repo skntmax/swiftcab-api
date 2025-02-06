@@ -6,6 +6,7 @@ import authRouter from "./routes/auth/auth";
 import middlewares from "./middlewares/middleware.index";
 import testRouter from "./routes/test/test.index";
 import ownerRouter from "./routes/owner/owner.index";
+import adminRouter from "./routes/admin/admin.index";
 let app = Express()
 
 let port =  process.env.PORT  || 4000  
@@ -16,6 +17,7 @@ middlewares.globalMiddlewares(app)
 app.use(`/${version}/auth`, authRouter )
 app.use(`/${version}/owner`, ownerRouter )
 app.use(`/${version}/test`, testRouter )
+app.use(`/${version}/admin`, adminRouter )
 
 
 
