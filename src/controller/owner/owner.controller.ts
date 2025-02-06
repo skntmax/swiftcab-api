@@ -72,6 +72,22 @@ const ownerController  = {
          }
       },
    
+       ownerActiveVhicleList  : async  function (req:Request, res:Response):Promise<any> {
+
+         try {
+          const {userId , username} = req.userObj
+           let ownerActiveVhicleList =await ownerService.ownerActiveVhicleList({ ownerId: Number(userId) } ) 
+
+           if(!ownerActiveVhicleList.status)  return succesResponse({data: "null" ,  message:ownerActiveVhicleList?.data } , res )
+           
+            return succesResponse({data:ownerActiveVhicleList.data, message:"vhicle serviced added" } , res )  
+         
+         }catch(err) {
+           console.log(err)
+           return  failureResponse({data:err}, res )
+         }
+      },
+
 
       getVhicleServicesList  : async  function (req:Request, res:Response):Promise<any> {
 
