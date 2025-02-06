@@ -18,7 +18,12 @@ ownerRouter.post('/create-vhicle-provide-services',
      ownerController.vhicleProvidesServices )
 
 
+    ownerRouter.get('/owner-active-vhicle-list',
+    middlewares.checkUserRoles(userRoles.owner) ,
+    ownerController.ownerActiveVhicleList )
 
+
+        
     ownerRouter.get('/get-vhicle-services-list',
     middlewares.checkUserRoles(userRoles.owner) ,
     ownerController.getVhicleServicesList )

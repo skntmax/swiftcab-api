@@ -115,7 +115,23 @@ import prismaClient from "../../db"
             }
         } , 
 
-        
+
+        ownerActiveVhicleList : async function(payload:owner_vhicles) {
+
+          try {
+    
+             let ownerVhicleList =await  prismaClient.$queryRawUnsafe(` 
+              select v.id ,   v.username as vhicle_username , tov.vhicle_type as name  from vhicle v 
+              inner join type_of_vhicle tov ON tov.id = v.vhicle_type_id 
+              where  v.vhicle_owner_id =${payload.ownerId}
+              `)
+                return successReturn(ownerVhicleList)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }
+          } , 
+  
 
 
   }
