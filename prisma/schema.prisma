@@ -220,7 +220,6 @@ model utils_status_names {
   id Int @id @default(autoincrement())
   name String
 
-
   service_utility_name_relation utils_config[]
   created_on DateTime @default(now())
   updated_on DateTime
@@ -242,13 +241,12 @@ model utils_status {
 model utils_config {
    id Int @id @default(autoincrement()) 
 
-   sun_id  Int
-   sus_id Int
+   usn_id  Int
+   us_id Int
 
-   
 
-   service_utility_name_relation utils_status_names @relation(fields: [sun_id]  , references: [id])
-   service_utility_status_relation utils_status @relation(fields: [sus_id]  , references: [id])
+   service_utility_name_relation utils_status_names @relation(fields: [usn_id]  , references: [id])
+   service_utility_status_relation utils_status @relation(fields: [us_id]  , references: [id])
 
 
   created_on DateTime @default(now())
