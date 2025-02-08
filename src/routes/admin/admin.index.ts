@@ -15,6 +15,12 @@ adminRouter.get('/service-list',
      adminController.serviceList )
 
 
+adminRouter.post('/approve-kyc', 
+     middlewares.validateUser,
+     // middlewares.checkUserRoles(userRoles.admin),
+     adminController.approveKyc )
+
+
      
 export default adminRouter 
 
