@@ -1,0 +1,6 @@
+INSERT INTO public.utils_status (status, created_on, updated_on)
+VALUES
+    ('Active', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Inactive', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('Archived', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
