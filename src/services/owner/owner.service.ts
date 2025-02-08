@@ -6,6 +6,7 @@ import {bcrypt , jwt } from '../../packages/auth.package'
 import { owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
+import { redisClient1 } from "../redis/redis.index"
   
   const  ownerService = {
     
@@ -56,20 +57,27 @@ import prismaClient from "../../db"
     
 
 
-    getUseTypes : async function() {
+    getUserTypes : async function(cacheKey?:string) {
 
           try {
-
+ 
             let userTyes  =await primsaClient.roles.findMany({
               select:{id:true , name:true}
             })                
 
               let  limitedUserTypesToProvideLogin =  userTyes.filter(ele=> [ userRoles.customer ,  userRoles.owner ].includes(ele.name))
+              
+
+              if(cacheKey)
+                await redisClient1.set(cacheKey, JSON.stringify(limitedUserTypesToProvideLogin))
+              
               return successReturn(limitedUserTypesToProvideLogin)
               }catch(err) {
                   console.log("err>>",err)
                     return failureReturn(err)
               }
+
+
     } , 
 
 

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import ownerController from "../../controller/owner/owner.controller";
 import middlewares from "../../middlewares/middleware.index";
-import { userRoles } from "../../config/constant";
+import { REDIS_KEYS, userRoles } from "../../config/constant";
 
 let ownerRouter   =   Router()
 
@@ -29,7 +29,9 @@ ownerRouter.post('/create-vhicle-provide-services',
     ownerController.getVhicleServicesList )
 
 
-ownerRouter.get('/get-roles', ownerController.getUserTypes )
+ownerRouter.get('/get-roles',
+    middlewares.inCache(REDIS_KEYS.USER_ROLE), 
+    ownerController.getUserTypes )
 
 
 

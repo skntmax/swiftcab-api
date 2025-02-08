@@ -9,6 +9,7 @@ import jwt from 'jsonwebtoken'
 import { failureResponse, succesResponse } from "../config/utils";
 import { JwtPayload } from 'jsonwebtoken';
 import authService from "../services/auth/auth.service";
+import { redisClient1 } from "../services/redis/redis.index";
 
 
 
@@ -145,6 +146,26 @@ export const middlewares = {
 
             req.userObj.userId = decoded.id 
             req.userObj.username = decoded.username             
+             next()
+              }catch(err){
+                console.log("error message", err);
+               failureResponse( {data:"un autherised user "} , res  );
+              }
+        } 
+      } ,
+
+
+      inCache : function(key:string ) {
+        return async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+    
+          try{
+              
+             let data = await redisClient1.get(key)
+              
+             if(data)
+                 return failureResponse( {data: JSON.parse(data) } , res  ); 
+
+              req.cacheKey= key
              next()
               }catch(err){
                 console.log("error message", err);

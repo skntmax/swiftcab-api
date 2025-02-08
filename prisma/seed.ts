@@ -15,7 +15,7 @@ async function executeSQLFile(filePath: string) {
        const statements = sql.split(/;\s*$/gm).filter(statement => statement.trim() !== '');
 
        for (const statement of statements) {
-         console.log("statments",statement )
+        //  console.log("statments",statement )
          await prisma.$executeRawUnsafe(statement);
        }
 
@@ -69,7 +69,10 @@ async function main() {
 
   // Truncate tables (with CASCADE to remove dependencies) ,  makw sure to mentiona all the table before 
   await prisma.$executeRawUnsafe(`
-    TRUNCATE TABLE   cities  , countries ,permissions , roles ,states ,type_of_user ,type_of_vhicle, vhicle_services , cities ,localities  RESTART IDENTITY CASCADE;
+    TRUNCATE TABLE   cities  , countries ,permissions , roles ,states ,
+    type_of_user ,type_of_vhicle, vhicle_services , cities ,localities ,
+    utils_status_names , utils_status , utils_config 
+    RESTART IDENTITY CASCADE;
   `);
 
 

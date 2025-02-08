@@ -3,6 +3,7 @@ import { failureReturn, succesResponse, successReturn } from "../../config/utils
 import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
+import ownerService from "../owner/owner.service"
 
 
 const  adminService = {
@@ -31,12 +32,12 @@ const  adminService = {
 
       try {
 
+
         let  sellService =await prismaClient.vhicle_services.findMany({
             select:{
                 id:true , service_name:true
             }
         })
-         
           return successReturn(sellService)  
       }catch(err) {
           console.log(err)

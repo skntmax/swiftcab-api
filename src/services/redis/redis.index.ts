@@ -38,7 +38,6 @@ class RedisConn {
 
 }
 
-
  const redisClient1 = (new  RedisConn()).redisClient // for common use with databse 0 
  
  export  {redisClient1}

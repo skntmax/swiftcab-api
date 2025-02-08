@@ -35,7 +35,6 @@ const ownerController  = {
            
            }catch(err) {
             console.log(err)
-
             return  failureResponse({data:err}, res )
            }
       
@@ -44,8 +43,9 @@ const ownerController  = {
        getUserTypes : async  function (req:Request, res:Response):Promise<any> {
 
           try {
-            
-            let userTypes =await ownerService.getUseTypes() 
+
+            const { cacheKey }  = req
+            let userTypes =await ownerService.getUserTypes(cacheKey) 
             return succesResponse({data:userTypes.data, message:"user roles" } , res )  
           
           }catch(err) {
