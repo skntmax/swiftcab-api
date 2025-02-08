@@ -1,3 +1,5 @@
+
+
 INSERT INTO public.cities (city, state_id, created_on, updated_on)
 VALUES
 ('Amaravati', 1, NOW(), NOW()),

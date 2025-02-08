@@ -51,15 +51,6 @@ async function executeProcFile(procName:string , procBody:string) {
      }
 
 
-  // const seedDir = path.join(__dirname, "./procs");
-  // const procFiles = fs.readdirSync(seedDir).sort(); // Ensure files run in order
-  
-  //   console.log("proc files>>>>" ,procFiles , "proc files>>>>")
-  //   for (const file of procFiles) {
-  //     const filePath = path.join(seedDir, file);
-  //     await executeProcFile(filePath);
-  //   }
-
     console.log("🚀  proc seeding completed...");
   }
 
@@ -68,12 +59,55 @@ async function main() {
   console.log("🚀 Starting database seed...");
 
   // Truncate tables (with CASCADE to remove dependencies) ,  makw sure to mentiona all the table before 
-  await prisma.$executeRawUnsafe(`
-    TRUNCATE TABLE   cities  , countries ,permissions , roles ,states ,
-    type_of_user , type_of_vhicle , vhicle_services , cities ,localities ,
-    utils_status_names , utils_status , utils_config 
-    RESTART IDENTITY CASCADE;
-  `);
+
+
+   let dltBeforeQueries = `
+   
+    SET session_replication_role = 'replica';
+
+  -- Step 1: DELETE all data from each table one by one
+  DELETE FROM cities;
+  DELETE FROM countries;
+  DELETE FROM permissions;
+  DELETE FROM roles;
+  DELETE FROM utils_status;
+  DELETE FROM utils_status_names;
+  DELETE FROM utils_config;
+  DELETE FROM states;
+  DELETE FROM type_of_user;
+  DELETE FROM type_of_vhicle;
+  DELETE FROM vhicle_services;
+  DELETE FROM localities;
+
+
+
+  -- Step 2: Reset ID sequences
+  ALTER SEQUENCE utils_status_id_seq RESTART WITH 1;
+  ALTER SEQUENCE utils_status_names_id_seq RESTART WITH 1;
+  ALTER SEQUENCE utils_config_id_seq RESTART WITH 1;
+  ALTER SEQUENCE countries_id_seq RESTART WITH 1;
+  ALTER SEQUENCE states_id_seq RESTART WITH 1;
+  ALTER SEQUENCE cities_id_seq RESTART WITH 1;
+  ALTER SEQUENCE permissions_id_seq RESTART WITH 1;
+  ALTER SEQUENCE type_of_user_id_seq RESTART WITH 1;
+  ALTER SEQUENCE type_of_vhicle_id_seq RESTART WITH 1;
+  ALTER SEQUENCE vhicle_services_id_seq RESTART WITH 1;
+  ALTER SEQUENCE roles_id_seq RESTART WITH 1;
+  ALTER SEQUENCE localities_id_seq RESTART WITH 1;
+  
+  -- Re-enable foreign key constraints
+  SET session_replication_role = 'origin';
+
+    `
+
+
+
+  const statements = dltBeforeQueries.split(/;\s*$/gm).filter(statement => statement.trim() !== '');
+        for (const statement of statements) {
+        //  console.log("statments",statement )
+          await prisma.$executeRawUnsafe(statement);
+        }
+
 
 
   const seedDir = path.join(__dirname, "./queries");
@@ -86,12 +120,8 @@ async function main() {
   }
   console.log("🎉 Database seeding complete.");
 
-
-
     // procs 
     await seedingProcedured()
-
-
 }
 
 main()
