@@ -1,5 +1,10 @@
 import dotenv from "./dotenv"
 const config =  {
+
+      cache_time: 7200, // 2 hrs in secods
+      quizCacheTime:36000, 
+      notification_cache_clear:60, 
+
     devEnv:"./.env.development",
     prodEnv:"./.env.production",
     qaEnv:"./.env.qa",
