@@ -12,7 +12,7 @@ adminRouter.get('/get-all-vhicles',
 
      
 adminRouter.get('/service-list', 
-     adminController.getAllVhicles )
+     adminController.serviceList )
 
 
      

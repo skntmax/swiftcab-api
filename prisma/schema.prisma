@@ -231,7 +231,7 @@ model utils_status {
   id Int @id @default(autoincrement())
   status String
 
- service_utility_status_relation utils_config[]
+  service_utility_status_relation utils_config[]
   created_on DateTime @default(now())
   updated_on DateTime
 }
