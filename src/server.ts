@@ -19,8 +19,6 @@ app.use(`/${version}/owner`, ownerRouter )
 app.use(`/${version}/test`, testRouter )
 app.use(`/${version}/admin`, adminRouter )
 
-
-
 app.listen(port , ()=>{
     console.log(`server started at ${port} `)
 })

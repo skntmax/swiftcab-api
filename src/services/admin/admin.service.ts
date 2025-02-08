@@ -25,8 +25,26 @@ const  adminService = {
       
     } , 
 
-    
-     
+
+
+    serviceList : async function() {
+
+      try {
+
+        let  sellService =await prismaClient.vhicle_services.findMany({
+            select:{
+                id:true , service_name:true
+            }
+        })
+         
+          return successReturn(sellService)  
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } , 
+
   }
 
 
