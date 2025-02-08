@@ -32,7 +32,11 @@ export const userRoles = {
 
 
 export const REDIS_KEYS  = {
-    USER_ROLE:"USER_ROLE"
+    USER_ROLE:"USER_ROLE",
+    GET_COUNTRIES:"GET_COUNTRIES",
+    GET_STATES:"GET_STATES",
+    GET_CITY:"GET_CITY",
+    GET_LOCALITY:"GET_LOCALITY",
 }
 
 export default Object.freeze(constants)  

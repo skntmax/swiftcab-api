@@ -288,6 +288,7 @@ model users_have_rides {
   drop_time  DateTime
   distance String
   
+  
   user_id Int   // customer user id 
   user_has_rides users @relation(fields: [user_id] , references: [id] )
 

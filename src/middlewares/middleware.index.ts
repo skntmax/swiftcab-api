@@ -160,12 +160,17 @@ export const middlewares = {
     
           try{
               
-             let data = await redisClient1.get(key)
+            if(req.params || req.query) {
+              req.cacheKey = `${key}:${Object.values(req.params || req.query ).join(':')}` 
+            }else{
+              req.cacheKey = key
+            }
+
+             let data = await redisClient1.get(req.cacheKey)
               
              if(data)
                  return failureResponse( {data: JSON.parse(data) } , res  ); 
 
-              req.cacheKey= key
              next()
               }catch(err){
                 console.log("error message", err);
