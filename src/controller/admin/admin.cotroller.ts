@@ -19,6 +19,21 @@ const adminController  = {
       
        } ,
 
+       serviceList : async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+          let serviceList =await authService.serviceList()
+          if(!serviceList.status)
+             return succesResponse({data:serviceList.data, message:"some error caused" } , res )  
+        
+          return succesResponse({data:serviceList.data, message:"all vhicle list" } , res )  
+           
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
 
 
     

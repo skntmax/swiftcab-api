@@ -9,6 +9,13 @@ adminRouter.get('/get-all-vhicles',
      // middlewares.checkUserRoles(userRoles.owner),
      adminController.getAllVhicles )
 
+
+     
+adminRouter.get('/service-list', 
+     adminController.getAllVhicles )
+
+
+     
 export default adminRouter 
 
 
