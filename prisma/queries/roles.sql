@@ -20,4 +20,5 @@ INSERT INTO public.roles (id, "name", created_on, updated_on) VALUES
 (18, 'Partner Manager', NOW(), NOW()),
 (19, 'Vendor Coordinator', NOW(), NOW()),
 (20, 'Customer', NOW(), NOW()),
-(21, 'Owner', NOW(), NOW()) ; 
+(21, 'Owner', NOW(), NOW()),
+(22, 'Other', NOW(), NOW()) ; 
