@@ -36,7 +36,7 @@ import { redisClient1 } from "../redis/redis.index"
           try {
              
              let ownerOwnsVhicles  =  await primsaClient.$queryRawUnsafe(`
-                select u.id,  u.username ,tov.vhicle_type as vhicle , tov.disc  from users u 
+                select vh.id as vhicle_id  ,  vh.username as vhicle_username ,tov.vhicle_type as vhicle , tov.disc  from users u 
                 inner join user_has_roles uhr on uhr.user_id = u.id 
                 inner join vhicle vh on vh.vhicle_owner_id   = u.id 
                 inner join type_of_vhicle tov ON tov.id = vh.vhicle_type_id 
@@ -86,7 +86,6 @@ import { redisClient1 } from "../redis/redis.index"
       try {
 
          let addVhServices =await  prismaClient.vhicle_provides_services.create({
-              
               data:{
                 vhicle_id:payload.vhicleId,
                 service_id:payload.serviceId,

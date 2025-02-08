@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "vhicle" ALTER COLUMN "model" DROP NOT NULL,
+ALTER COLUMN "transmission" DROP NOT NULL,
+ALTER COLUMN "year" DROP NOT NULL;

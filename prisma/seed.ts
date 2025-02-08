@@ -70,7 +70,7 @@ async function main() {
   // Truncate tables (with CASCADE to remove dependencies) ,  makw sure to mentiona all the table before 
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE   cities  , countries ,permissions , roles ,states ,
-    type_of_user ,type_of_vhicle, vhicle_services , cities ,localities ,
+    type_of_user , type_of_vhicle , vhicle_services , cities ,localities ,
     utils_status_names , utils_status , utils_config 
     RESTART IDENTITY CASCADE;
   `);

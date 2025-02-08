@@ -19,8 +19,8 @@ const adminController  = {
       
        } ,
 
+       
        serviceList : async function (req:Request, res:Response):Promise<any> {
-            
         try {
           let serviceList =await authService.serviceList()
           if(!serviceList.status)
@@ -34,9 +34,24 @@ const adminController  = {
       
        } ,
 
+           
+       approveKyc : async function (req:Request, res:Response):Promise<any> {
+        try {
+
+          const {userId , username} = req.userObj
+          let approvedKycResult =await authService.approveKyc({...req.body , userId: userId , })
+          if(!approvedKycResult.status)
+             return succesResponse({data:approvedKycResult.data, message:"some error caused" } , res )  
+        
+          return succesResponse({data:approvedKycResult.data, message:"kyc completed" } , res )  
+           
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
 
 
-    
 }
 
 

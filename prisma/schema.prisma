@@ -13,6 +13,20 @@ model vhicle {
   name     String
   rc       String
 
+  is_kyc Boolean @default(false)
+  vin String?   // -- Vehicle Identification Number
+  license_plate String?
+  manufacturer String?
+  model String?
+  year DateTime?
+  color String?
+  engine_number String? 
+  chassis_number String?
+  fuel_type String?
+  transmission String? // -- Manual, Automatic
+
+  is_active Boolean @default(true)
+   
   vhicle_type_id  Int 
   vhicle_owner_id  Int 
 
@@ -144,6 +158,7 @@ model states {
   states cities[] @relation("states_have_many_cities")
 
   state_cty_mapper states_have_cities[]
+  // source_state users_have_rides[]
 
   created_on DateTime @default(now())
   updated_on DateTime
@@ -249,6 +264,10 @@ model utils_config {
    service_utility_status_relation utils_status @relation(fields: [us_id]  , references: [id])
 
 
+  have_guid  users_have_rides? @relation("is_user_have_guid")
+  have_food users_have_rides? @relation("is_user_have_food")
+  have_water users_have_rides? @relation("is_user_have_water")
+  
   created_on DateTime @default(now())
   updated_on DateTime
    
@@ -269,15 +288,28 @@ model users_have_rides {
   drop_time  DateTime
   distance String
   
-  user_id Int
-  user_has_rides users @relation(fields: [user_id] , references: [id])
+  user_id Int   // customer user id 
+  user_has_rides users @relation(fields: [user_id] , references: [id] )
 
+
+  // state_id Int
+  // source_state states @relation(fields: [state_id], references: [id])
+  
 
   source Int 
   source_location shc_have_localities @relation(fields: [source] , references: [id] ,name: "source_address") 
 
   destination  Int
   destination_location shc_have_localities @relation(fields: [destination] , references: [id], name: "destination_address")
+  
+  is_guide Int @unique
+  have_guid utils_config @relation(fields: [is_guide] , references: [id] ,name: "is_user_have_guid")
+
+  is_food Int @unique
+  have_food utils_config @relation(fields: [is_food] , references: [id],name: "is_user_have_food")
+
+  is_water Int @unique
+  have_water utils_config @relation(fields: [is_water] , references: [id],name: "is_user_have_water")
 
   is_active Boolean @default(true)
 
