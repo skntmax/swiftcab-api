@@ -77,7 +77,7 @@ async function main() {
   DELETE FROM type_of_user;
   DELETE FROM type_of_vhicle;
   DELETE FROM vhicle_services;
-  DELETE FROM localities;
+  DELETE FROM localities; 
 
 
 
