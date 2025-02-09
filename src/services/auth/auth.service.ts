@@ -40,7 +40,7 @@ const  authService = {
             SELECT u.id ,  u.username username, 
         u.email email,
         uhr.role_id AS role_id,
-          COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password password 
+          COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password user_password 
             FROM users u
             INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
             WHERE (u.email = $1  OR u.username = $1 )
