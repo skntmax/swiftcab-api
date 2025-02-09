@@ -1,9 +1,9 @@
 import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
-import primsaClient, { executeStoredProcedure } from "../../db"
+// import primsaClient, { executeStoredProcedure } from "../../db"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import prismaClient from "../../db"
+import prismaClient from "./../../db/index"
   
 type UserRole = {
   username: string;
@@ -81,7 +81,7 @@ const  authService = {
          try {
 
           const {  email , password, userType , username} = userPayload 
-          let userExist  =await  primsaClient.users.findFirst({ 
+          let userExist  =await  prismaClient.users.findFirst({ 
             where:{ 
              OR:[
                  {
@@ -97,7 +97,7 @@ const  authService = {
             return failureReturn('user already exist') 
 
           let hashPass  =  await bcrypt.hash(password ,  10 )
-          let newUser = await primsaClient.users.create({
+          let newUser = await prismaClient.users.create({
                   data:{
                       username:username , 
                       password:hashPass ,
@@ -108,7 +108,7 @@ const  authService = {
                   }
               })  
             
-           let userRoles =await primsaClient.user_has_roles.create({
+           let userRoles =await prismaClient.user_has_roles.create({
             data:{
               user_id:newUser.id,
               role_id:userType,
@@ -135,7 +135,7 @@ const  authService = {
      checkValidUser:async function(payload:checkValidUser ) {
        try{
 
-        let userExistOrNot =await primsaClient.users.findFirst({ where:{ username:payload.username }})
+        let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username }})
          if(!userExistOrNot)
           return failureReturn(false)
         
@@ -152,7 +152,7 @@ const  authService = {
     
       try {
 
-        let roles  =await primsaClient.roles.findMany({
+        let roles  =await prismaClient.roles.findMany({
           select:{id:true , name:true}
         })                
           return successReturn(roles)
@@ -165,7 +165,7 @@ const  authService = {
     
         try {
   
-          let userrHasrole  =await primsaClient.$queryRawUnsafe(` 
+          let userrHasrole  =await prismaClient.$queryRawUnsafe(` 
                   select uhr.role_id ,r."name" from users u 
                   inner join user_has_roles uhr on uhr.user_id = u.id 
                   inner join roles r on r.id = uhr.role_id 
