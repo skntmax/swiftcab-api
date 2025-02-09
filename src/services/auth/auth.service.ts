@@ -20,17 +20,16 @@ const  authService = {
         
         let newUser =await executeStoredProcedure('get_user_roles', [emailOrUsername, emailOrUsername, userType as number])
         newUser= newUser[0]
-
-            
+  
         if(!newUser)
            return  failureReturn('Please register first ')
           
         let isPass = await bcrypt.compare(password ,newUser?.password)
           
-        if(!isPass)
+        if(!isPass  )
           return  failureReturn('Invalid credential')
       
-        console.log("newUser",newUser)
+    
           let payload = {id:newUser.id , username: newUser.username  }
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
   

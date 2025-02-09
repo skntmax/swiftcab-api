@@ -61,8 +61,8 @@ async function main() {
   // Truncate tables (with CASCADE to remove dependencies) ,  makw sure to mentiona all the table before 
 
 
-   let dltBeforeQueries = `
-   
+  let oldQuery = ` 
+  
     SET session_replication_role = 'replica';
 
   -- Step 1: DELETE all data from each table one by one
@@ -97,6 +97,15 @@ async function main() {
   
   -- Re-enable foreign key constraints
   SET session_replication_role = 'origin';
+  `
+
+   let dltBeforeQueries = `
+
+
+    TRUNCATE TABLE   cities  , countries ,permissions , roles ,states ,
+    type_of_user , type_of_vhicle , vhicle_services , cities ,localities ,
+    utils_status_names , utils_status , utils_config 
+    RESTART IDENTITY CASCADE;
 
     `
 
