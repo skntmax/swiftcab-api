@@ -43,9 +43,10 @@ const  authService = {
           COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password password 
             FROM users u
             INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
-            WHERE (u.email = '${emailOrUsername}' OR u.username = '${emailOrUsername}' )
+            WHERE (u.email = $1  OR u.username = $1 )
           ) x
-          WHERE x.role_id = ${userType};`) 
+          WHERE x.role_id = $2 ` ,   emailOrUsername , userType
+          ) 
       
       
         console.log(newUserArray,"newUserArray")
