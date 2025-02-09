@@ -48,9 +48,13 @@ const  authService = {
           WHERE x.role_id = ${userType};`) 
       
       
+        console.log(newUserArray,"newUserArray")
+
+
           // Fix: Assign the first object to a new variable
         let newUser: UserResult | undefined = newUserArray.length > 0 ? newUserArray[0] : undefined;
 
+        console.log(newUser,"newUser")
 
         if(!newUser)
            return  failureReturn('Please register first ')
