@@ -19,7 +19,7 @@ type UserResult = {
   role_id: number;
   first_name: string;
   last_name: string;
-  password: string;
+  user_password: string;
 };
 
 
@@ -60,7 +60,7 @@ const  authService = {
         if(!newUser)
            return  failureReturn('Please register first ')
           
-        let isPass = await bcrypt.compare(password ,newUser?.password)
+        let isPass = await bcrypt.compare(password ,newUser?.user_password)
           
         if(!isPass  )
           return  failureReturn('Invalid credential')
