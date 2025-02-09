@@ -264,9 +264,9 @@ model utils_config {
    service_utility_status_relation utils_status @relation(fields: [us_id]  , references: [id])
 
 
-  have_guid  users_have_rides? @relation("is_user_have_guid")
-  have_food users_have_rides? @relation("is_user_have_food")
-  have_water users_have_rides? @relation("is_user_have_water")
+  have_guid  users_have_rides[] @relation("is_user_have_guid")
+  have_food users_have_rides[] @relation("is_user_have_food")
+  have_water users_have_rides[] @relation("is_user_have_water")
   
   created_on DateTime @default(now())
   updated_on DateTime
@@ -303,13 +303,13 @@ model users_have_rides {
   destination  Int
   destination_location shc_have_localities @relation(fields: [destination] , references: [id], name: "destination_address")
   
-  is_guide Int @unique
+  is_guide Int 
   have_guid utils_config @relation(fields: [is_guide] , references: [id] ,name: "is_user_have_guid")
 
-  is_food Int @unique
+  is_food Int 
   have_food utils_config @relation(fields: [is_food] , references: [id],name: "is_user_have_food")
 
-  is_water Int @unique
+  is_water Int 
   have_water utils_config @relation(fields: [is_water] , references: [id],name: "is_user_have_water")
 
   is_active Boolean @default(true)
