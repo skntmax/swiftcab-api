@@ -128,7 +128,7 @@ async function main() {
   console.log("🎉 Database seeding complete.");
 
     // procs 
-    await seedingProcedured()
+    // await seedingProcedured()
 }
 
 main()
