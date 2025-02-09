@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "cross-env NODE_ENV=DEV nodemon ./src/server.ts",
 
-    "prisma:migrate:status:dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development  -- npx prisma migrate status",
-    "prisma:migrate:status:prod": "cross-env NODE_ENV=PROD  dotenv -e .env.production  -- npx prisma migrate status",
+    "prisma:status:dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development  -- npx prisma migrate status",
+    "prisma:status:prod": "cross-env NODE_ENV=PROD  dotenv -e .env.production  -- npx prisma migrate status",
 
     "prisma:migrate:dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development  -- npx prisma migrate dev",
     "prisma:migrate:prod": "cross-env NODE_ENV=PROD  dotenv -e .env.production  -- npx prisma migrate dev",

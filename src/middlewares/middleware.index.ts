@@ -135,8 +135,9 @@ export const middlewares = {
     
             let { id:userId ,username} = decoded 
           
+            console.log(userId ,username)
             
-            if(!userId || !username) return failureResponse( {data:`Token expired`} , res  );   
+            if(!userId || !username) return failureResponse( {data:`Token expired or user not found`} , res  );   
             
              let doesRoleExist = await authService.userHasRolesOrNot({roleName:roleName ,userId:userId})
             

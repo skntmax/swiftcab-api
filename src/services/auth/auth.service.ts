@@ -3,12 +3,25 @@ import { failureReturn, succesResponse, successReturn } from "../../config/utils
 import primsaClient, { executeStoredProcedure } from "../../db"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
+import prismaClient from "../../db"
   
 type UserRole = {
   username: string;
   email: string;
   role_id: number;
 };
+
+
+type UserResult = {
+  id? :number
+  username: string;
+  email: string;
+  role_id: number;
+  first_name: string;
+  last_name: string;
+  password: string;
+};
+
 
 const  authService = {
     
@@ -18,9 +31,27 @@ const  authService = {
 
         const {  emailOrUsername, password, userType } = userPayload  // default as client or customer , 1- customer , 2- owner 
         
-        let newUser =await executeStoredProcedure('get_user_roles', [emailOrUsername, emailOrUsername, userType as number])
-        newUser= newUser[0]
-  
+        // let newUser =await executeStoredProcedure('get_user_roles', [emailOrUsername, emailOrUsername, userType as number])
+        // newUser= newUser[0]
+
+        let newUserArray :UserResult[] = await prismaClient.$queryRawUnsafe<UserResult[]>(` 
+                 SELECT x.*
+          FROM (
+            SELECT u.id ,  u.username username, 
+        u.email email,
+        uhr.role_id AS role_id,
+          COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password password 
+            FROM users u
+            INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
+            WHERE (u.email = '${emailOrUsername}' OR u.username = '${emailOrUsername}' )
+          ) x
+          WHERE x.role_id = ${userType};`) 
+      
+      
+          // Fix: Assign the first object to a new variable
+        let newUser: UserResult | undefined = newUserArray.length > 0 ? newUserArray[0] : undefined;
+
+
         if(!newUser)
            return  failureReturn('Please register first ')
           
