@@ -10,7 +10,6 @@
 
 */
 -- AlterTable
-ALTER TABLE "users_have_rides" ADD COLUMN     "is_food" INTEGER NOT NULL,
 ADD COLUMN     "is_guide" INTEGER NOT NULL,
 ADD COLUMN     "is_water" INTEGER NOT NULL;
 
