@@ -61,7 +61,7 @@ async function main() {
   // Truncate tables (with CASCADE to remove dependencies) ,  makw sure to mentiona all the table before 
 
 
-  let oldQuery = ` 
+  let oldQuery2 = ` 
   
     SET session_replication_role = 'replica';
 
@@ -99,9 +99,7 @@ async function main() {
   SET session_replication_role = 'origin';
   `
 
-   let dltBeforeQueries = `
-
-
+   let dltBeforeQueries1 = `
     TRUNCATE TABLE   cities  , countries ,permissions , roles ,states ,
     type_of_user , type_of_vhicle , vhicle_services , cities ,localities ,
     utils_status_names , utils_status , utils_config 
@@ -111,7 +109,7 @@ async function main() {
 
 
 
-  const statements = dltBeforeQueries.split(/;\s*$/gm).filter(statement => statement.trim() !== '');
+  const statements = oldQuery2.split(/;\s*$/gm).filter(statement => statement.trim() !== '');
         for (const statement of statements) {
         //  console.log("statments",statement )
           await prisma.$executeRawUnsafe(statement);

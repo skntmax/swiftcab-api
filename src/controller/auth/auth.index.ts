@@ -3,7 +3,6 @@ import primsaClient from "../../db"
 import authService from "../../services/auth/auth.service"
 import { failureResponse, succesResponse } from "../../config/utils"
 const authController  = {
-    
       signin : async function (req:Request, res:Response):Promise<any> {
             
         try {
