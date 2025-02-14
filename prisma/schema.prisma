@@ -12,7 +12,7 @@ model vhicle {
   username String
   name     String
   rc       String
-
+ 
   is_kyc Boolean @default(false)
   vin String?   // -- Vehicle Identification Number
   license_plate String?
@@ -322,8 +322,8 @@ model users_have_rides {
 
 
 model roles {
-  id Int @id @default(autoincrement())
-  name String 
+   id Int @id @default(autoincrement())
+   name String 
   
    created_on DateTime @default(now())
    updated_on DateTime

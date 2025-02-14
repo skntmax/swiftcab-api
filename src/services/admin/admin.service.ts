@@ -49,6 +49,17 @@ const  adminService = {
     approveKyc : async function(payload:kyc_varify_details) {
       try { 
 
+        let ownerVhicle  = await ownerService.ownerVhicles({ownerId:Number(payload?.userId)})
+        if(!ownerVhicle.status)  
+           return failureReturn("you don't own any vhicle")  
+
+        if(ownerVhicle.data){
+           let  doesOwnerOwnVhicle =ownerVhicle.data?.some((ele:any)=> ele.vhicle_id==payload.id) 
+           if(!doesOwnerOwnVhicle)
+            return failureReturn("you don't own this vhicle")  
+        }
+    
+
         let  approvedKyc =await prismaClient.vhicle.update({
           data:{
              vin:payload.vin,
@@ -70,7 +81,7 @@ const  adminService = {
               vhicle_owner_id:payload.userId
              }
           })
-         
+            
           return successReturn(approvedKyc)  
       }catch(err) {
           console.log(err)
