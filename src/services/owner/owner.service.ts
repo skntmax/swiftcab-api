@@ -7,17 +7,29 @@ import { owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
+import { v4 as uuidv4 } from "uuid";
   
   const  ownerService = {
     
+    genUsername:()=>{
+      return `SWC-${uuidv4()}`
+    },
+  
+    genRc:(number:number)=>{
+      return `SWC-RC-${uuidv4()}${number}`
+    },
+
+    genNickname:()=>{
+      return `SWC-NCN-${uuidv4()}`
+    },
 
     createOwnerHasVhicles : async function(ownerPayload:owner_vhicles_payload) {
             try {
               let vhicleTypeInsert =await primsaClient.vhicle.create({
                 data:{
-                    username:"random"+ Math.ceil(Math.random()*100) ,
-                    name:"vh"+Math.ceil(Math.random()*100),
-                    rc:"rc"+Math.ceil(Math.random()*100),
+                    username: this.genUsername() ,
+                    name: this.genNickname(),
+                    rc:this.genRc(Math.random()*1000),
                     vhicle_type_id:ownerPayload.vhicleId,
                     vhicle_owner_id:ownerPayload.ownerId,
                     created_on:new Date(),
@@ -36,12 +48,12 @@ import { redisClient1 } from "../redis/redis.index"
           try {
              
              let ownerOwnsVhicles  =  await primsaClient.$queryRawUnsafe(`
-                select vh.id as vhicle_id  ,  vh.username as vhicle_username ,tov.vhicle_type as vhicle , tov.disc  from users u 
+                select vh.id as vhicle_id  , vh.username  ,vh.is_kyc , vh.username as vhicle_username ,tov.vhicle_type as vhicle , tov.disc  from users u 
                 inner join user_has_roles uhr on uhr.user_id = u.id 
                 inner join vhicle vh on vh.vhicle_owner_id   = u.id 
                 inner join type_of_vhicle tov ON tov.id = vh.vhicle_type_id 
                 where uhr.role_id in(select id as owenrId from  roles r where r."name" ='${userRoles.owner}' )
-                and u.id = ${ownerPayload?.ownerId} 
+                and u.id = ${ownerPayload?.ownerId} and vh.is_active = true  
               `)
 
 
@@ -128,9 +140,9 @@ import { redisClient1 } from "../redis/redis.index"
           try {
     
              let ownerVhicleList =await  prismaClient.$queryRawUnsafe(` 
-              select v.id ,   v.username as vhicle_username , tov.vhicle_type as name  from vhicle v 
+              select v.id ,v.is_kyc , v.username as vhicle_username , tov.vhicle_type as name  from vhicle v 
               inner join type_of_vhicle tov ON tov.id = v.vhicle_type_id 
-              where  v.vhicle_owner_id =${payload.ownerId}
+              where  v.vhicle_owner_id =${payload.ownerId} and v.is_active =true 
               `)
                 return successReturn(ownerVhicleList)
               }catch(err) {

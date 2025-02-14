@@ -4,6 +4,7 @@ import { failureReturn, succesResponse, successReturn } from "../../config/utils
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
 import prismaClient from "./../../db/index"
+import { userRoles } from "../../config/constant"
   
 type UserRole = {
   username: string;
@@ -136,8 +137,15 @@ const  authService = {
      checkValidUser:async function(payload:checkValidUser ) {
        try{
 
-        let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username }})
-         if(!userExistOrNot)
+        // let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username  }})
+        let isUserOwnerOrNot =await prismaClient.$queryRawUnsafe(`
+              select u.username ,u.email ,  r."name" as role ,  r.id as  role_id   from users u 
+              inner join user_has_roles uhr ON uhr.user_id = u.id
+              inner join  roles r on r.id =  uhr.role_id 
+              where u.username = '${payload.username}' and  r."name" ='${userRoles.owner}' 
+           `)
+         
+        if( isUserOwnerOrNot && Array.isArray(isUserOwnerOrNot) && isUserOwnerOrNot.length==0)
           return failureReturn(false)
         
          return successReturn(true)
