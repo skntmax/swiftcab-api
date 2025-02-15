@@ -26,13 +26,22 @@ import { kyc_varify_details } from "../../types/admin.types"
 
     createOwnerHasVhicles : async function(ownerPayload:owner_vhicles_payload) {
             try {
-              let vhicleTypeInsert =await primsaClient.vhicle.create({
+              // let vhicleTypeInsert =await primsaClient.vhicle.create({
+              //   data:{
+              //       username: this.genUsername() ,
+              //       name: this.genNickname(),
+              //       rc:this.genRc(Math.random()*1000),
+              //       vhicle_type_id:ownerPayload.vhicleId,
+              //       vhicle_owner_id:ownerPayload.ownerId,
+              //       created_on:new Date(),
+              //       updated_on:new Date() ,
+              //   }
+              // })
+
+              let vhicleTypeInsert =await primsaClient.owner_has_vhicles.create({
                 data:{
-                    username: this.genUsername() ,
-                    name: this.genNickname(),
-                    rc:this.genRc(Math.random()*1000),
-                    vhicle_type_id:ownerPayload.vhicleId,
-                    vhicle_owner_id:ownerPayload.ownerId,
+                    owner: ownerPayload.ownerId , 
+                    v_type: ownerPayload.vhicleId,
                     created_on:new Date(),
                     updated_on:new Date() ,
                 }

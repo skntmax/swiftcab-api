@@ -11,6 +11,7 @@ enum KycStatus {
   INITIATED
   PENDING
   VERIFIED
+  COMPLETED
 }
 
 model vhicle {
@@ -39,13 +40,14 @@ model vhicle {
   vhicle_owner_id  Int 
 
   // relations 
-  v_type  type_of_vhicle @relation(fields: [vhicle_type_id] , references: [id ])
+  v_type  vhicle_provides_services @relation(fields: [vhicle_type_id] , references: [id] , name: "vhicle_provde_services_user_wise" )
   vh_owner  users @relation(fields: [vhicle_owner_id] , references: [id]) 
    
   created_on DateTime @default(now())
   updated_on DateTime
 
   services vhicle_provides_services[]
+  @@unique([vhicle_type_id])
 }
 
 
@@ -54,8 +56,7 @@ model type_of_vhicle {
     
   vhicle_type String
   disc String
-  
-  v_type vhicle[]   // 1-1 relation 
+ 
   // vhicle_type_relation  owner_has_vhicles[]
   created_on DateTime @default(now())
   updated_on DateTime
@@ -101,6 +102,7 @@ model vhicle_provides_services {
   vhicle         vhicle          @relation(fields: [vhicle_id], references: [id])
   vhicle_service vhicle_services @relation(fields: [service_id], references: [id])
  
+   v_type vhicle? @relation("vhicle_provde_services_user_wise")
    vh_service  users_have_rides?
   @@unique([vhicle_id, service_id]) // Ensures unique combinations of vhicle and service
 }
