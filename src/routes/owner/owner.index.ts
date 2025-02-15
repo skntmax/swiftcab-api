@@ -34,6 +34,11 @@ ownerRouter.get('/get-roles',
     ownerController.getUserTypes )
 
 
+    
+ownerRouter.post('/kyc-request',
+    middlewares.checkUserRoles(userRoles.owner) ,
+    ownerController.kycRequest )
+
 
 export default ownerRouter 
 

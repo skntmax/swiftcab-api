@@ -10,7 +10,49 @@ import { failureResponse, succesResponse } from "../config/utils";
 import { JwtPayload } from 'jsonwebtoken';
 import authService from "../services/auth/auth.service";
 import { redisClient1 } from "../services/redis/redis.index";
+import multer from 'multer'
+import path from 'path'
 
+// Define allowed file types
+const allowedFileTypes = /jpeg|jpg|png|gif/;
+
+
+const storage = multer.diskStorage({
+
+  destination: function (req, file, cb) {
+     
+    const uploadPath = path.join(__dirname, '../assets/uploads');
+    console.log("uploadPath>>",uploadPath)
+    cb(null, uploadPath )
+  },
+  
+  filename: function (req, file, cb) {
+    let ext =  file.originalname.split('.')[1] 
+    const uniqueSuffix = `${Date.now() + '-' + Math.round(Math.random() * 1E9)}.${ext}` 
+    cb(null, file.fieldname + '-' + uniqueSuffix)
+  },
+
+})
+
+
+
+// File Type Validation
+const fileFilter = (req:Request, file:any, cb:any) => {
+  const extname = allowedFileTypes.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = allowedFileTypes.test(file.mimetype);
+
+  if (extname && mimetype) {
+    return cb(null, true); // Accept the file
+  } else {
+    return cb(new Error('Invalid file type! Only images are allowed.'), false); // Reject the file
+  }
+};
+
+
+export const upload = multer({ 
+  storage: storage ,
+  fileFilter: fileFilter
+})
 
 
 
@@ -178,7 +220,25 @@ export const middlewares = {
                failureResponse( {data:"un autherised user "} , res  );
               }
         } 
-      } 
+      }  ,
+
+      uploadFile: function(fileKey:string  ) {
+        
+        return async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+    
+          try{
+              upload.single(fileKey)
+             next()
+              }catch(err){
+                console.log("error message", err);
+               failureResponse( {data:"un autherised user "} , res  );
+              }
+        } 
+      } ,
+
+
+
+
     
     
    

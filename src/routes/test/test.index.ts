@@ -1,6 +1,6 @@
 import { Router } from "express";
 import testController from "../../controller/test/testController.index";
-import middlewares from "../../middlewares/middleware.index";
+import middlewares, { upload } from "../../middlewares/middleware.index";
 let testRouter  =   Router()
 
 testRouter.get('/status',
@@ -16,6 +16,7 @@ testRouter.get('/insert-vhicle-types', testController.insertVhicleTypes )
 testRouter.get('/type-of-user', testController.insertTypeOfUser )
 testRouter.get('/insert-roles', testController.insertRoles )
 testRouter.get('/insert-perm', testController.insertPermissions )
+testRouter.get('/insertFile',  upload.single('test') ,  testController.inserFile )
 
 export default testRouter 
 

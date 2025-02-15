@@ -7,6 +7,12 @@ datasource db {
   url      = env("DATABASE_URL")
 } 
 
+enum KycStatus {
+  INITIATED
+  PENDING
+  VERIFIED
+}
+
 model vhicle {
   id       Int    @id @default(autoincrement())
   username String
@@ -24,6 +30,8 @@ model vhicle {
   chassis_number String?
   fuel_type String?
   transmission String? // -- Manual, Automatic
+
+  kyc_varification KycStatus @default(PENDING) // Default value set to INITIATED
 
   is_active Boolean @default(true)
    
@@ -82,9 +90,12 @@ model vhicle_provides_services {
 
   vhicle_id  Int
   service_id Int
+ 
+
 
   created_on DateTime @default(now())
   updated_on DateTime
+
 
   // Relations
   vhicle         vhicle          @relation(fields: [vhicle_id], references: [id])
