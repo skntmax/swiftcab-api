@@ -55,6 +55,20 @@ const ownerController  = {
        },
 
 
+          
+       kycRequest : async  function (req:Request, res:Response):Promise<any> {
+
+        try {
+          const {userId , username} = req.userObj
+          let kycRequest =await ownerService.kycRequest({ userId:Number(userId) , ...req.body}) 
+          return succesResponse({data:kycRequest.data, message:"user roles" } , res )  
+        
+        }catch(err) {
+          console.log(err)
+          return  failureResponse({data:err}, res )
+        }
+     },
+
        vhicleProvidesServices : async  function (req:Request, res:Response):Promise<any> {
 
          try {

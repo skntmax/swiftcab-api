@@ -15,6 +15,15 @@ export interface owner_vhicles  {
 
 
 
+export interface kyc_request  {
+   ownerId :number,
+   vhicle_id:number
+}   
+
+
+
+
+
 export interface vhicle_provides_services  {
    vhicleId:number,
    serviceId:number

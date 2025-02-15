@@ -3,11 +3,12 @@ import { failureReturn, succesResponse, successReturn } from "../../config/utils
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
+import { kyc_request, owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
 import { v4 as uuidv4 } from "uuid";
+import { kyc_varify_details } from "../../types/admin.types"
   
   const  ownerService = {
     
@@ -151,6 +152,51 @@ import { v4 as uuidv4 } from "uuid";
               }
           } , 
   
+
+          kycRequest : async function(payload:kyc_varify_details ,  ) {
+
+            try {
+      
+              let ownerVhicle  = await ownerService.ownerVhicles({ownerId:Number(payload?.userId)})
+              if(!ownerVhicle.status)  
+                 return failureReturn("you don't own any vhicle")  
+      
+              if(ownerVhicle.data){
+                 let  doesOwnerOwnVhicle =ownerVhicle.data?.some((ele:any)=> ele.vhicle_id==payload.id) 
+                 if(!doesOwnerOwnVhicle)
+                  return failureReturn("you don't own this vhicle")  
+              }
+          
+      
+              let  fileForKyc =await prismaClient.vhicle.update({
+                data:{
+                   vin:payload.vin,
+                   license_plate: payload.license_plate ,
+                   manufacturer: payload.manufacturer ,
+                   model: payload.model ,
+                   year: payload.year , // DateTime in TypeScript
+                   color: payload.color ,
+                   engine_number: payload.engine_number ,
+                   chassis_number: payload.chassis_number ,
+                   fuel_type: payload.fuel_type ,
+                   transmission: payload.transmission,  // Restrict to known values
+                   is_active:true , 
+                   is_kyc:false,
+                   kyc_varification :"INITIATED"
+                  },
+                   where:{
+                    id:payload.id  ,
+                    vhicle_owner_id:payload.userId
+                   }
+                })
+            
+
+                  return successReturn(fileForKyc)
+                }catch(err) {
+                  console.log("err>>",err)
+                    return failureReturn(err)
+                }
+            } , 
 
 
   }

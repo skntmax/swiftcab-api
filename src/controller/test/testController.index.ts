@@ -231,9 +231,14 @@ insertPermissions : async function (req:Request, res:Response){
         })
     
     }
-    
      res.send({message:`permissions inserted  `}) 
-}  ,
+        }  ,
+
+
+        inserFile : async function (req:Request, res:Response) {
+            console.log(req.file)
+            res.send({message:`file uploaded  `})            
+        }
 
 
      
