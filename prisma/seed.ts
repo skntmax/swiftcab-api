@@ -78,6 +78,9 @@ async function main() {
   DELETE FROM type_of_vhicle;
   DELETE FROM vhicle_services;
   DELETE FROM localities; 
+  DELETE FROM nav_items; 
+  DELETE FROM sub_nav_items; 
+  
 
 
 
@@ -94,7 +97,9 @@ async function main() {
   ALTER SEQUENCE vhicle_services_id_seq RESTART WITH 1;
   ALTER SEQUENCE roles_id_seq RESTART WITH 1;
   ALTER SEQUENCE localities_id_seq RESTART WITH 1;
-  
+  ALTER SEQUENCE nav_items_id_seq RESTART WITH 1;
+  ALTER SEQUENCE sub_nav_items_id_seq RESTART WITH 1;
+
   -- Re-enable foreign key constraints
   SET session_replication_role = 'origin';
   `

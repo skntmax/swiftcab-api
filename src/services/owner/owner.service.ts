@@ -26,27 +26,18 @@ import { kyc_varify_details } from "../../types/admin.types"
 
     createOwnerHasVhicles : async function(ownerPayload:owner_vhicles_payload) {
             try {
-              // let vhicleTypeInsert =await primsaClient.vhicle.create({
-              //   data:{
-              //       username: this.genUsername() ,
-              //       name: this.genNickname(),
-              //       rc:this.genRc(Math.random()*1000),
-              //       vhicle_type_id:ownerPayload.vhicleId,
-              //       vhicle_owner_id:ownerPayload.ownerId,
-              //       created_on:new Date(),
-              //       updated_on:new Date() ,
-              //   }
-              // })
-
-              let vhicleTypeInsert =await primsaClient.owner_has_vhicles.create({
+              let vhicleTypeInsert =await primsaClient.vhicle.create({
                 data:{
-                    owner: ownerPayload.ownerId , 
-                    v_type: ownerPayload.vhicleId,
+                    username: this.genUsername() ,
+                    name: this.genNickname(),
+                    rc:this.genRc(Math.random()*1000),
+                    vhicle_type_id:ownerPayload.vhicleId,
+                    vhicle_owner_id:ownerPayload.ownerId,
                     created_on:new Date(),
                     updated_on:new Date() ,
                 }
               })
-                             
+                  
                 return successReturn(vhicleTypeInsert)
                 }catch(err) {   
                      console.log(err) 
@@ -58,7 +49,7 @@ import { kyc_varify_details } from "../../types/admin.types"
           try {
              
              let ownerOwnsVhicles  =  await primsaClient.$queryRawUnsafe(`
-                select vh.id as vhicle_id  , vh.username  ,vh.is_kyc , vh.username as vhicle_username ,tov.vhicle_type as vhicle , tov.disc  from users u 
+                select vh.id as vhicle_id  , vh.username  , vh.is_kyc , vh.username as vhicle_username , vh.kyc_varification ,  tov.vhicle_type as vhicle , tov.disc  from users u 
                 inner join user_has_roles uhr on uhr.user_id = u.id 
                 inner join vhicle vh on vh.vhicle_owner_id   = u.id 
                 inner join type_of_vhicle tov ON tov.id = vh.vhicle_type_id 

@@ -40,14 +40,13 @@ model vhicle {
   vhicle_owner_id  Int 
 
   // relations 
-  v_type  vhicle_provides_services @relation(fields: [vhicle_type_id] , references: [id] , name: "vhicle_provde_services_user_wise" )
+  v_type  type_of_vhicle @relation(fields: [vhicle_type_id] , references: [id ])
   vh_owner  users @relation(fields: [vhicle_owner_id] , references: [id]) 
    
   created_on DateTime @default(now())
   updated_on DateTime
 
   services vhicle_provides_services[]
-  @@unique([vhicle_type_id])
 }
 
 
@@ -56,7 +55,8 @@ model type_of_vhicle {
     
   vhicle_type String
   disc String
- 
+  
+  v_type vhicle[]   // 1-1 relation 
   // vhicle_type_relation  owner_has_vhicles[]
   created_on DateTime @default(now())
   updated_on DateTime
@@ -102,7 +102,6 @@ model vhicle_provides_services {
   vhicle         vhicle          @relation(fields: [vhicle_id], references: [id])
   vhicle_service vhicle_services @relation(fields: [service_id], references: [id])
  
-   v_type vhicle? @relation("vhicle_provde_services_user_wise")
    vh_service  users_have_rides?
   @@unique([vhicle_id, service_id]) // Ensures unique combinations of vhicle and service
 }
@@ -343,6 +342,8 @@ model roles {
    
    user_role user_has_roles[] @relation("user_has_roles")
    role_perm role_has_permissions[] @relation("role_perm")
+
+   role_nav_perm  nav_has_permission_by_role[] @relation("nav_perm_by_roles")
 }
 
 model permissions {
@@ -386,3 +387,48 @@ model role_has_permissions {
   active_role_perm  permissions @relation(fields: [perm_id], references: [id] , name:"active_role_perm")    
 
 }
+
+
+model nav_items {
+  id Int @id @default(autoincrement())
+
+  nav_item String?
+  sub_menu Boolean @default(false)
+  href String?
+  icon String?
+  created_on DateTime @default(now())
+  updated_on DateTime   
+
+  sub_nav_belogs_to sub_nav_items[]
+  nav_item_perm_by_role  nav_has_permission_by_role[] @relation("nav_item_perm_by_role")
+
+}
+
+model sub_nav_items  {
+
+  id Int @id @default(autoincrement())
+
+  sub_nav_item String?
+  sub_menu Boolean @default(false)
+  href String?
+  icon String?
+  nav_item_id Int
+  sub_nav_belogs_to  nav_items @relation(fields: [nav_item_id] , references: [id])
+  created_on DateTime @default(now())
+  updated_on DateTime   
+}
+
+
+model nav_has_permission_by_role {
+  id Int @id @default(autoincrement())
+
+
+   role_id Int
+   nav_item_id Int
+
+   role_nav_perm  roles[] @relation("nav_perm_by_roles") 
+   nav_item_perm_by_role nav_items[] @relation("nav_item_perm_by_role") 
+
+  created_on DateTime @default(now())
+  updated_on DateTime   
+} 
