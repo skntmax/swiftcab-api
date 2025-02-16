@@ -14,6 +14,7 @@ const adminController  = {
           return succesResponse({data:allVh.data, message:"all vhicle list" } , res )  
            
          }catch(err) {
+          console.log("err",err)
           return  failureResponse({data:err}, res )
          }
       
@@ -29,6 +30,7 @@ const adminController  = {
           return succesResponse({data:serviceList.data, message:"all vhicle list" } , res )  
            
          }catch(err) {
+          console.log("err",err)
           return  failureResponse({data:err}, res )
          }
       
@@ -46,6 +48,27 @@ const adminController  = {
           return succesResponse({data:approvedKycResult.data, message:"kyc completed" } , res )  
            
          }catch(err) {
+          console.log("err",err)
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+       addMenu : async function (req:Request, res:Response):Promise<any> {
+        try {
+
+          // const {userId , username} = req.userObj
+          const {roles ,  nav_menu_id  } = req.body 
+
+          console.log("user_has_roles",roles)
+          let menuAdded =await authService.addMenu({roles:roles   ,  nav_menu_id:nav_menu_id })
+          if(!menuAdded.status)
+             return succesResponse({data:menuAdded.data, message:"some error caused" } , res )  
+        
+          return succesResponse({data:menuAdded.data, message:"added menu " } , res )  
+           
+         }catch(err) {
+          console.log("err",err)
           return  failureResponse({data:err}, res )
          }
       
