@@ -418,7 +418,7 @@ model sub_nav_items  {
   updated_on DateTime   
 }
 
-
+ 
 model nav_has_permission_by_role {
   id Int @id @default(autoincrement())
 
