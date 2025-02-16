@@ -36,8 +36,13 @@ ownerRouter.get('/get-roles',
 
     
 ownerRouter.post('/kyc-request',
-    middlewares.checkUserRoles(userRoles.owner) ,
+    // middlewares.checkUserRoles(userRoles.owner) ,
     ownerController.kycRequest )
+
+        
+// ownerRouter.post('/add-role-wise-menu',
+//     // middlewares.checkUserRoles(userRoles.owner) ,
+//     ownerController.getVhicleServicesList )
 
 
 export default ownerRouter 

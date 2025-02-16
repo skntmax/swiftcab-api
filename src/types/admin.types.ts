@@ -19,4 +19,25 @@ export interface kyc_varify_details  {
  
  
  
+
+
+ export interface nav_menu_item  {
+  roles:number | number[],
+   nav_menu_id:number,
+   
+}   
+
+export interface nav_has_permission_by_role_schema  {
+  role_id:number , 
+  nav_item_id:number,
+  created_on:  Date ,
+  updated_on: Date 
+   
+}   
+ 
+ 
+ 
+ 
+ 
+ 
  

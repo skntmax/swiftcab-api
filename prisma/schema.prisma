@@ -422,13 +422,14 @@ model sub_nav_items  {
 model nav_has_permission_by_role {
   id Int @id @default(autoincrement())
 
-
    role_id Int
    nav_item_id Int
 
-   role_nav_perm  roles[] @relation("nav_perm_by_roles") 
-   nav_item_perm_by_role nav_items[] @relation("nav_item_perm_by_role") 
+   role_nav_perm  roles @relation( fields: [role_id],  references: [id] ,  name :"nav_perm_by_roles") 
+   nav_item_perm_by_role nav_items @relation( fields: [nav_item_id],  references: [id] , name: "nav_item_perm_by_role") 
 
   created_on DateTime @default(now())
   updated_on DateTime   
+
+  @@unique([role_id ,nav_item_id])
 } 
