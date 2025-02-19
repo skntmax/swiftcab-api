@@ -8,7 +8,7 @@ declare module 'express-serve-static-core' {
       userId:number | string, 
       username:string
     },
-
+    userType:number,
     cacheKey:string
   }
 }

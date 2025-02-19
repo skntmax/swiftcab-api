@@ -29,3 +29,9 @@ export interface vhicle_provides_services  {
    serviceId:number
 }   
 
+
+
+export interface navigation_bar  {
+   ownerId :number,
+   role:number
+}   

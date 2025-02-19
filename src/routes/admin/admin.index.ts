@@ -2,6 +2,7 @@ import { Router } from "express";
 import adminController from "../../controller/admin/admin.cotroller";
 import middlewares from "../../middlewares/middleware.index";
 import { userRoles } from "../../config/constant";
+import ownerController from "../../controller/owner/owner.controller";
 let adminRouter  =   Router()
 
 
@@ -28,6 +29,15 @@ adminRouter.post('/add-menu',
      // middlewares.validateUser,
      // middlewares.checkUserRoles(userRoles.admin),
      adminController.addMenu )
+
+          
+adminRouter.get('/get-nav',
+     middlewares.checkUserRoles(userRoles.admin),
+     ownerController.getNavbar )
+ 
+    
+     
+     
 
 export default adminRouter 
 

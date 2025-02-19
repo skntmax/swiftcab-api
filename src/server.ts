@@ -15,11 +15,13 @@ let version:String =  process.env.VERSION || "v1"
 
 middlewares.globalMiddlewares(app)  
 
+
 app.use(`/${version}/auth`, authRouter )
 app.use(`/${version}/owner`, ownerRouter )
 app.use(`/${version}/test`, testRouter )
 app.use(`/${version}/admin`, adminRouter )
 app.use(`/${version}/master`, masterRouter )
+
 
 app.listen(port , ()=>{
     console.log(`server started at ${port} `)

@@ -40,10 +40,14 @@ ownerRouter.post('/kyc-request',
     ownerController.kycRequest )
 
         
-// ownerRouter.post('/add-role-wise-menu',
-//     // middlewares.checkUserRoles(userRoles.owner) ,
-//     ownerController.getVhicleServicesList )
+ownerRouter.get('/get-nav',
+    middlewares.checkUserRoles(userRoles.owner),
+    ownerController.getNavbar)
 
+    
+
+
+    
 
 export default ownerRouter 
 
