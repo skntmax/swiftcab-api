@@ -16,4 +16,40 @@ INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, crea
 
 -- Submenus for "Settlements" (nav_item_id = 4)
 ('Active Month', false, '/active-month-settlement', 'IconMoodHappy', 4, NOW(), NOW()),
-('Any Month', false, '/any-month-settlement', 'IconAperture', 4, NOW(), NOW());
+('Any Month', false, '/any-month-settlement', 'IconAperture', 4, NOW(), NOW()),
+
+
+
+-- Submenus for admin section  "Customers" (nav_item_id = 5)
+('Active customers', false, '/active-customers', 'IconUser', 5, NOW(), NOW()),
+('Customer management', false, '/customer-management', 'IconUsers', 5, NOW(), NOW()),
+
+
+
+
+
+-- Submenus for admin section  "owner" (nav_item_id = 6)
+('Active Owners', false, '/active-owners', 'IconCrown', 6, NOW(), NOW()),
+('Owner management', false, '/owner-management', 'IconSteeringWheel', 6, NOW(), NOW()),
+
+-- Submenus for admin section  "roles" (nav_item_id = 7)
+('Role management', false, '/role-management', 'IconUserCircle', 7, NOW(), NOW()),
+
+
+-- Submenus for admin section  "permissions" (nav_item_id = 8)
+('Permission management', false, '/permission-management', 'IconUserPlus', 8, NOW(), NOW()),
+
+
+-- Submenus for admin section  "KYC request" (nav_item_id = 9)
+('Kyc request approvals', false, '/kyc-request-approval', 'IconUserPlus', 9, NOW(), NOW());
+
+
+
+
+
+
+
+
+
+
+
