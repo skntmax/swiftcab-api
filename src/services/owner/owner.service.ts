@@ -204,15 +204,16 @@ import { kyc_varify_details } from "../../types/admin.types"
             try {
     
              let navbarByRole:NavItem[] =await  prismaClient.$queryRawUnsafe(` 
-              select ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , sni.icon  as sub_icon    from nav_items ni 
+              select r."name" as role , ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , sni.icon  as sub_icon    from nav_items ni 
               inner join nav_has_permission_by_role nhpbr ON nhpbr.nav_item_id = ni.id 
               inner join roles r ON r.id = nhpbr.role_id 
               inner join  sub_nav_items sni on  ni.id  = sni.nav_item_id
               where nhpbr.role_id = ${payload.role}
               `)
 
-              let nav = transformNavItems(navbarByRole , 'skntmax','owner')
-              return successReturn(nav)
+              let nav = transformNavItems(navbarByRole , payload.username, navbarByRole[0].role?.toLocaleLowerCase())
+             
+              return successReturn(nav.length>0?nav:[])
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)

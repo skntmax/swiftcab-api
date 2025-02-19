@@ -256,7 +256,7 @@ export const middlewares = {
 
             
             if(!userId || !username) return failureResponse( {data:`Token expired or user not found`} , res  );   
-            
+
               let role =await PrismaClient.roles.findFirst({
                 where:{
                   name:userType
@@ -264,7 +264,7 @@ export const middlewares = {
                 select:{
                   id:true
                 }
-              })  
+              })              
 
               console.log("role>>>",role ,userType)
 
