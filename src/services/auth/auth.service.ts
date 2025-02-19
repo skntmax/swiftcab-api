@@ -7,8 +7,7 @@ import prismaClient from "./../../db/index"
 import { userRoles } from "../../config/constant"
   
 type UserRole = {
-  username: string;
-  email: string;
+  name: string;
   role_id: number;
 };
 
@@ -174,7 +173,7 @@ const  authService = {
     
         try {
   
-          let userrHasrole  =await prismaClient.$queryRawUnsafe(` 
+          let userrHasrole: UserRole[] =await prismaClient.$queryRawUnsafe(` 
                   select uhr.role_id ,r."name" from users u 
                   inner join user_has_roles uhr on uhr.user_id = u.id 
                   inner join roles r on r.id = uhr.role_id 
@@ -183,11 +182,13 @@ const  authService = {
 
   
           if(userrHasrole && Array.isArray(userrHasrole) && userrHasrole.length==0)
-              return  false
+              return failureReturn( {role_id:null}) 
             
-          return true 
-            }catch(err) {
-                  return failureReturn(err)
+           return successReturn({role_id:userrHasrole[0].role_id})  
+            
+          }catch(err) {
+                  
+            return failureReturn(err)
             }
          },
 

@@ -1,9 +1,9 @@
 import dotenv from "../../config/dotenv"
-import { failureReturn, succesResponse, successReturn } from "../../config/utils"
+import { failureReturn, NavItem, succesResponse, successReturn, transformNavItems } from "../../config/utils"
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { kyc_request, owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
+import { kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
@@ -197,6 +197,27 @@ import { kyc_varify_details } from "../../types/admin.types"
                     return failureReturn(err)
                 }
             } , 
+
+
+            getNavbar : async function(payload:navigation_bar) {
+
+            try {
+    
+             let navbarByRole:NavItem[] =await  prismaClient.$queryRawUnsafe(` 
+              select ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , sni.icon  as sub_icon    from nav_items ni 
+              inner join nav_has_permission_by_role nhpbr ON nhpbr.nav_item_id = ni.id 
+              inner join roles r ON r.id = nhpbr.role_id 
+              inner join  sub_nav_items sni on  ni.id  = sni.nav_item_id
+              where nhpbr.role_id = ${payload.role}
+              `)
+
+              let nav = transformNavItems(navbarByRole , 'skntmax','owner')
+              return successReturn(nav)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }
+          } , 
 
 
   }

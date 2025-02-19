@@ -183,12 +183,16 @@ export const middlewares = {
             
              let doesRoleExist = await authService.userHasRolesOrNot({roleName:roleName ,userId:userId})
             
-            console.log("isRoleExist",doesRoleExist)
-            if(!doesRoleExist) return failureResponse( {data:`you don't have accessed role : ${roleName} `} , res  );
+            console.log("doesRoleExist",doesRoleExist)
+            if(!doesRoleExist?.status) return failureResponse( {data:`you don't have accessed role : ${roleName} `} , res  );
     
 
             req.userObj.userId = decoded.id 
-            req.userObj.username = decoded.username             
+            req.userObj.username = decoded.username
+
+            req.user_has_roles = doesRoleExist.data.role_id
+        
+                         
              next()
               }catch(err){
                 console.log("error message", err);
@@ -236,8 +240,52 @@ export const middlewares = {
         } 
       } ,
 
+      getLoggedinuserRoleId: function(  ) {
+        
+        return async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+          try{
+            
+            let {userType} = req.params 
+            req.userObj={userId:"" , username:""}       
+            const token = req.headers['authorization']
+            if(!token) return   failureResponse( {data:"un autherised user "} , res  );
+            const bearer_token = token.split(' ')[1]  
+            let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
+    
+            let { id:userId ,username} = decoded 
+
+            
+            if(!userId || !username) return failureResponse( {data:`Token expired or user not found`} , res  );   
+            
+              let role =await PrismaClient.roles.findFirst({
+                where:{
+                  name:userType
+                } ,
+                select:{
+                  id:true
+                }
+              })  
+
+              console.log("role>>>",role ,userType)
+
+              if(!role?.id) 
+                return failureResponse( {data:`Role does not exist`} , res  );   
 
 
+              if(role?.id) {
+                req.user_has_roles =  role?.id
+               }
+
+               req.userObj.userId = decoded.id 
+               req.userObj.username = decoded.username
+
+               next()
+              }catch(err){
+                console.log("error message", err);
+               failureResponse( {data:"un autherised user "} , res  );
+              }
+        } 
+      } ,
 
     
     
