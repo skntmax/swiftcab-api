@@ -33,5 +33,6 @@ export interface vhicle_provides_services  {
 
 export interface navigation_bar  {
    ownerId :number,
-   role:number
+   role:number,
+   username:string
 }   

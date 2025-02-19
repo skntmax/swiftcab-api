@@ -126,7 +126,7 @@ const ownerController  = {
          const {userId , username} = req.userObj
          const { user_has_roles } = req
          
-          let vhProvidesServices =await ownerService.getNavbar({ ownerId: Number(userId) ,role:user_has_roles } ) 
+          let vhProvidesServices =await ownerService.getNavbar({ ownerId: Number(userId) ,role:user_has_roles , username:username } ) 
 
           if(!vhProvidesServices.status)  return succesResponse({data: "null" ,  message:vhProvidesServices?.data } , res )
 

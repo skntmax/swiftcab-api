@@ -35,6 +35,7 @@ export  const  failureResponse =  (args:commonResponse , res: Response)=>{
 }
 
 export interface NavItem  {
+    role:string;
     nav_item: string;
     sub_menu: boolean;
     href: string | null;
