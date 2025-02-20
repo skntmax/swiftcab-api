@@ -1,9 +1,9 @@
 import dotenv from "../../config/dotenv"
-import { failureReturn, NavItem, succesResponse, successReturn, transformNavItems } from "../../config/utils"
+import { failureReturn, NavItem, succesResponse, successReturn, totalCount, transformNavItems, userTypes } from "../../config/utils"
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
+import { activeUserType, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
@@ -221,8 +221,41 @@ import { kyc_varify_details } from "../../types/admin.types"
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)
+              }``
+          } ,
+          
+          getActiveUsers : async function(payload:activeUserType) {
+            try {
+             
+              const {limit , page }  = payload
+              let skip =  (page-1)*limit 
+
+              let query = ` select  u.id ,  u.username , u.email,  uhr.role_id ,  r."name" as role  from  users u
+              inner join user_has_roles uhr on uhr.user_id = u.id 
+              inner join  roles r on r.id  = uhr.role_id `
+
+            
+              
+              if (Array.isArray(payload.role)  && payload.role.length>0) {
+                     query   = query+`where r.id in(${payload.role.join(',')})` 
+                }
+                  let totalQuery =  `
+               select count(dt.id) as total from (${query}) as dt `
+
+
+                query=  query+` offset  ${skip} limit ${limit} ` 
+                  
+                let users:userTypes[] =await  prismaClient.$queryRawUnsafe(query)
+                let totalUsers:totalCount[] =await  prismaClient.$queryRawUnsafe(totalQuery)
+              
+                return successReturn({users , metadata:{page,limit , total: Number(totalUsers[0].total) } })
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
               }
           } , 
+
+
 
 
   }

@@ -88,8 +88,6 @@ export const middlewares = {
     validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
       try{
-
-        console.log("headers" , req.headers)
         req.userObj={userId:"" , username:""}       
         const token = req.headers['authorization']        
         if(!token) return  failureResponse( {data:"un autherised user "} , res  );
