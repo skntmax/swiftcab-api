@@ -126,11 +126,11 @@ const ownerController  = {
          const {userId , username} = req.userObj
          const { user_has_roles } = req
          
-          let vhProvidesServices =await ownerService.getNavbar({ ownerId: Number(userId) ,role:user_has_roles , username:username } ) 
+          let navbar =await ownerService.getNavbar({ ownerId: Number(userId) ,role:user_has_roles , username:username } ) 
 
-          if(!vhProvidesServices.status)  return succesResponse({data: "null" ,  message:vhProvidesServices?.data } , res )
+          if(!navbar.status)  return succesResponse({data: "null" ,  message:navbar?.data } , res )
 
-          return succesResponse({data:vhProvidesServices.data, message:"nav bar " } , res )  
+          return succesResponse({data:navbar.data, message:"nav bar " } , res )  
 
         
         }catch(err) {
@@ -138,6 +138,26 @@ const ownerController  = {
           return  failureResponse({data:err}, res )
         }
      },
+
+     getActiveUsers  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+       const {userId , username} = req.userObj
+       const { user_has_roles } = req
+       const { roles , page=1 , limit=20  } = req.body
+       
+        let activeUsers =await ownerService.getActiveUsers({ ownerId: Number(userId) ,role:roles  , page , limit  } ) 
+
+        if(!activeUsers.status)  return succesResponse({data: "null" ,  message:activeUsers?.data } , res )
+
+        return succesResponse({data:activeUsers.data, message:"nav bar " } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+      }
+   },
    
     
 }

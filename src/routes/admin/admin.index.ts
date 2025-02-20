@@ -22,9 +22,7 @@ adminRouter.post('/approve-kyc',
      adminController.approveKyc )
 
 
-     
 
-     
 adminRouter.post('/add-menu', 
      // middlewares.validateUser,
      // middlewares.checkUserRoles(userRoles.admin),
@@ -36,6 +34,12 @@ adminRouter.get('/get-nav',
      ownerController.getNavbar )
  
     
+
+     
+adminRouter.post('/get-active-users',
+     middlewares.checkUserRoles(userRoles.admin),
+     ownerController.getActiveUsers )
+ 
      
      
 

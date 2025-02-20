@@ -43,6 +43,16 @@ export interface NavItem  {
     sub_href: string;
     sub_icon: string;
   };
+
+  
+export interface userTypes  {
+  id : number; 
+  username:string;
+  email : string;
+  role_id:number;
+  role: string  
+};
+
   
   export interface TransformedItem  {
     navlabel?: boolean;
@@ -54,6 +64,11 @@ export interface NavItem  {
   };
   
 
+
+  export interface totalCount  {
+    total:BigInt
+  };
+  
 
 
 export function transformNavItems(navItems: NavItem[] , username: string, roleType: string ): TransformedItem[]{

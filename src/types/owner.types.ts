@@ -36,3 +36,12 @@ export interface navigation_bar  {
    role:number,
    username:string
 }   
+
+
+
+export interface activeUserType  {
+   ownerId :number,
+   role:number | number[],
+   page:number,
+   limit:number
+}   

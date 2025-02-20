@@ -29,8 +29,9 @@ INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, crea
 
 
 -- Submenus for admin section  "owner" (nav_item_id = 6)
-('Active Owners', false, '/active-owners', 'IconCrown', 6, NOW(), NOW()),
-('Owner management', false, '/owner-management', 'IconSteeringWheel', 6, NOW(), NOW()),
+('User Management', false, '/user-management', 'IconCrown', 6, NOW(), NOW()),
+
+
 
 -- Submenus for admin section  "roles" (nav_item_id = 7)
 ('Role management', false, '/role-management', 'IconUserCircle', 7, NOW(), NOW()),

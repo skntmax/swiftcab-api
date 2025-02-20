@@ -6,7 +6,7 @@ INSERT INTO nav_items (nav_item, sub_menu, href, icon, created_on, updated_on) V
 
 -- for admin 
 ('Customers', true, NULL, NULL, NOW(), NOW()),
-('Owners', true, NULL, NULL, NOW(), NOW()),
+('Users', true, NULL, NULL, NOW(), NOW()),
 ('Roles', true, NULL, NULL, NOW(), NOW()),
 ('Permissions', true, NULL, NULL, NOW(), NOW()),
 ('Requests', true, NULL, NULL, NOW(), NOW()) ;
