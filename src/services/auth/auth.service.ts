@@ -138,18 +138,16 @@ const  authService = {
 
         // let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username  }})
         let isUserOwnerOrNot =await prismaClient.$queryRawUnsafe(`
-              select u.username ,u.email ,  r."name" as role ,  r.id as  role_id   from users u 
+              select u.id ,u.email ,  r."name" as role ,  r.id as  role_id   from users u 
               inner join user_has_roles uhr ON uhr.user_id = u.id
               inner join  roles r on r.id =  uhr.role_id 
-              where u.username = '${payload.username}' and  r."name" ='${userRoles.owner}' 
+              where u.id = '${payload.id}' and  r."name" ='${payload.userType}' 
            `)
-         
+
         if( isUserOwnerOrNot && Array.isArray(isUserOwnerOrNot) && isUserOwnerOrNot.length==0)
           return failureReturn(false)
         
          return successReturn(true)
-
-           
        }catch(err) {
         console.log(err)
         return failureReturn(err)

@@ -8,7 +8,9 @@ let authRouter  =   Router()
 authRouter.post('/login',authCelebrate.login,  authController.signin )
 authRouter.post('/signup', authCelebrate.signup, authController.signUp )
 authRouter.get('/send-otp',middlewares.checkUserRoles('Customer') , authController.sendOtp )
-authRouter.post('/is-owner', authController.checkValidUser )
+authRouter.post('/is-valid-user-with-role', 
+    middlewares.validateUser,
+      authController.checkValidUser )
 authRouter.get('/get-all-roles', authController.getAllRoles )
 
 

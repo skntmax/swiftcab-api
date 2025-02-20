@@ -88,8 +88,10 @@ export const middlewares = {
     validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
       try{
+
+        console.log("headers" , req.headers)
         req.userObj={userId:"" , username:""}       
-        const token = req.headers['authorization']
+        const token = req.headers['authorization']        
         if(!token) return  failureResponse( {data:"un autherised user "} , res  );
         const bearer_token = token.split(' ')[1]  
         let decoded =  jwt.verify(bearer_token, dotenv.SECRET_KEY )  as JwtPayload 
@@ -256,13 +258,13 @@ export const middlewares = {
 
 
           // is token valid or not 
-          if(!userId || !username) return failureResponse( {data: `Token expired or user not found` } , res  );   
+          if(!userId || !username) return failureResponse( {data:[] , message: `Token expired or user not found` } , res  );   
 
           
             //  does this user has this role or userType or not ?
             let doesRoleExist = await authService.userHasRolesOrNot({roleName:userType ,userId:userId})
                       
-            if(!doesRoleExist?.status) return failureResponse( {data:`you don't have accessed role : ${userType} `} , res  );
+            if(!doesRoleExist?.status) return failureResponse( {data:[] ,  message:`you don't have accessed role : ${userType} `} , res  );
     
        
               let role =await PrismaClient.roles.findFirst({

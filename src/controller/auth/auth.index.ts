@@ -40,7 +40,8 @@ const authController  = {
 
     checkValidUser : async function (req:Request, res:Response):Promise<any>{
       try {
-        let validUser =await authService.checkValidUser({username:req.body.username })
+         const {userId , username} = req.userObj
+        let validUser =await authService.checkValidUser({id:Number(userId)  , userType : req.body.userType })
         if(!validUser.status)
            return succesResponse({data:validUser.data, message:"Not a valid user " } , res )  
       
