@@ -17,17 +17,14 @@ masterRouter.get('/get-states/:country_id',
     masterController.getStates )
 
 
-
 masterRouter.get('/get-city/:state_id',
     middlewares.inCache(REDIS_KEYS.GET_CITY),
     masterController.getCity )
-
     
             
 masterRouter.get('/get-city-locality/:city_id',
     middlewares.inCache(REDIS_KEYS.GET_LOCALITY),
     masterController.getLocality )
-
 
              
 masterRouter.get('/get-navbar/:userType',

@@ -20,7 +20,8 @@ export interface loginPayload  {
 
 
 export interface checkValidUser  {
-    username : string , 
+    id :  number , 
+    userType:string
 }
 
 
