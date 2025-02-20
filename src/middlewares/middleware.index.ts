@@ -181,7 +181,7 @@ export const middlewares = {
             
             if(!userId || !username) return failureResponse( {data:`Token expired or user not found`} , res  );   
             
-             let doesRoleExist = await authService.userHasRolesOrNot({roleName:roleName ,userId:userId})
+            let doesRoleExist = await authService.userHasRolesOrNot({roleName:roleName ,userId:userId})
             
             console.log("doesRoleExist",doesRoleExist)
             if(!doesRoleExist?.status) return failureResponse( {data:`you don't have accessed role : ${roleName} `} , res  );
@@ -254,24 +254,30 @@ export const middlewares = {
     
             let { id:userId ,username} = decoded 
 
-            
-            console.log("usertype",userType)
-            if(!userId || !username) return failureResponse( {data:`Token expired or user not found`} , res  );   
 
+          // is token valid or not 
+          if(!userId || !username) return failureResponse( {data: `Token expired or user not found` } , res  );   
+
+          
+            //  does this user has this role or userType or not ?
+            let doesRoleExist = await authService.userHasRolesOrNot({roleName:userType ,userId:userId})
+                      
+            if(!doesRoleExist?.status) return failureResponse( {data:`you don't have accessed role : ${userType} `} , res  );
+    
+       
               let role =await PrismaClient.roles.findFirst({
                 where:{
                   name:userType
-                } ,
+                },
                 select:{
-                  id:true
+                  id:true , name:true
                 }
               })              
 
-           
-
+              
+              // does this role exist in master record or not ?
               if(!role?.id) 
                 return failureResponse( {data:`Role does not exist`} , res  );   
-
 
               if(role?.id) {
                 req.user_has_roles =  role?.id
