@@ -211,9 +211,13 @@ import { kyc_varify_details } from "../../types/admin.types"
               where nhpbr.role_id = ${payload.role}
               `)
 
+            
+            if(navbarByRole?.length==0)
+              return successReturn(navbarByRole)
+              
               let nav = transformNavItems(navbarByRole , payload.username, navbarByRole[0].role?.toLocaleLowerCase())
              
-              return successReturn(nav.length>0?nav:[])
+              return successReturn(nav)
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)
