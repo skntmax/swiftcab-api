@@ -11,6 +11,7 @@ authRouter.get('/send-otp',middlewares.checkUserRoles('Customer') , authControll
 authRouter.post('/is-valid-user-with-role', 
     middlewares.validateUser,
       authController.checkValidUser )
+      
 authRouter.get('/get-all-roles', authController.getAllRoles )
 
 

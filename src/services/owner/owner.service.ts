@@ -242,7 +242,6 @@ import { kyc_varify_details } from "../../types/admin.types"
                   let totalQuery =  `
                select count(dt.id) as total from (${query}) as dt `
 
-
                 query=  query+` offset  ${skip} limit ${limit} ` 
                   
                 let users:userTypes[] =await  prismaClient.$queryRawUnsafe(query)
