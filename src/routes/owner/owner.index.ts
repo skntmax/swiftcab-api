@@ -36,7 +36,7 @@ ownerRouter.get('/get-roles',
 
     
 ownerRouter.post('/kyc-request',
-    // middlewares.checkUserRoles(userRoles.owner) ,
+    middlewares.checkUserRoles(userRoles.owner) ,
     ownerController.kycRequest )
 
         
