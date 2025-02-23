@@ -144,13 +144,13 @@ const ownerController  = {
       try {
        const {userId , username} = req.userObj
        const { user_has_roles } = req
-       const { roles , page=1 , limit=20  } = req.body
+       const { roles , page=1 , limit=20 , usernameOrEmail=undefined , searchByManual=false  } = req.body
        
-        let activeUsers =await ownerService.getActiveUsers({ ownerId: Number(userId) ,role:roles  , page , limit  } ) 
+        let activeUsers =await ownerService.getActiveUsers({ ownerId: Number(userId) ,role:roles  , page , limit ,usernameOrEmail ,searchByManual   } ) 
 
         if(!activeUsers.status)  return succesResponse({data: "null" ,  message:activeUsers?.data } , res )
 
-        return succesResponse({data:activeUsers.data, message:"nav bar " } , res )  
+        return succesResponse({data:activeUsers.data, message:" Users with roles and vhicles " } , res )  
 
       
       }catch(err) {

@@ -53,6 +53,18 @@ export interface userTypes  {
   role: string  
 };
 
+
+export interface assingedVhiclesToUser  {
+  id : number; 
+  username:string;
+  email : string;
+  role_id:number;
+  role: string;
+  vhicle_id:number;
+  vhicle_username  : string  
+};
+
+
   
   export interface TransformedItem  {
     navlabel?: boolean;
