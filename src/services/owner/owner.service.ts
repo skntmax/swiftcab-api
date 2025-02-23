@@ -1,5 +1,5 @@
 import dotenv from "../../config/dotenv"
-import { failureReturn, NavItem, succesResponse, successReturn, totalCount, transformNavItems, userTypes } from "../../config/utils"
+import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successReturn, totalCount, transformNavItems, userTypes } from "../../config/utils"
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
@@ -226,10 +226,65 @@ import { kyc_varify_details } from "../../types/admin.types"
           
           getActiveUsers : async function(payload:activeUserType) {
             try {
-             
               const {limit , page }  = payload
               let skip =  (page-1)*limit 
 
+
+              // with manual search by usernameOrEmail , with registered vhicles 
+              if(payload.usernameOrEmail || payload.searchByManual) {
+                // if searched by username or email 
+                let where = `WHERE (u.email like '%${payload.usernameOrEmail}%'  OR u.username like '%${payload.usernameOrEmail}%') AND r."name"='${userRoles.owner}'`
+                let query = ` 
+                      SELECT u.id ,  u.username username,  u.email email, uhr.role_id AS role_id  , r."name"  as role ,
+                      v.id as vhicle_id , v.username as vhicle_username
+                      FROM users u
+                    INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
+                    inner join roles r ON r.id  = uhr.role_id 
+                    inner join  vhicle v on v.vhicle_owner_id = u.id   
+                  `
+
+                  if(payload.usernameOrEmail)
+                        query=  query+where
+
+                   let totalQuery =  `
+                  select count(dt.id) as total from (${query}) as dt `
+ 
+                    
+                  query=  query+`offset  ${skip} limit ${limit}`
+
+                  console.log(query)
+                  let totalUsersWithVhicles:totalCount[] =await  prismaClient.$queryRawUnsafe(totalQuery)
+                  let searchByuser:assingedVhiclesToUser[] =await prismaClient.$queryRawUnsafe(query)
+                  
+                  let finalResult =searchByuser.reduce((acc:any , ele:any )=>{
+                  if(acc.filter((_:any)=> _?.id==ele.id).length==0) {
+                       acc.push({
+                          "id": ele.id,
+                         "username": ele.username,
+                         "email": ele.email,
+                         "role_id": ele.role_id,
+                         "role": ele.role,
+                         vhicles:[{vhicle_id:ele.vhicle_id ,vhicle_username: ele.vhicle_username}]
+                       })
+                    }else{
+                     acc.forEach((_:any)=>{
+                        if(_.id==ele.id) {
+                             _.vhicles =  [..._.vhicles ,{vhicle_id:ele.vhicle_id ,vhicle_username: ele.vhicle_username  }]
+                        }
+                     })    
+                    }           
+                    return acc  
+                 } , [])
+
+                return successReturn({users:finalResult , metadata:{page,limit , total: Number(finalResult.length) } })
+               
+              }
+              
+
+
+
+
+              // without any search filter 
               let query = ` select  u.id ,  u.username , u.email,  uhr.role_id ,  r."name" as role  from  users u
               inner join user_has_roles uhr on uhr.user_id = u.id 
               inner join  roles r on r.id  = uhr.role_id `

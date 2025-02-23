@@ -43,5 +43,7 @@ export interface activeUserType  {
    ownerId :number,
    role:number | number[],
    page:number,
-   limit:number
+   limit:number,
+   usernameOrEmail?:string,
+   searchByManual?:boolean
 }   
