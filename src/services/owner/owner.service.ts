@@ -174,7 +174,7 @@ import { kyc_varify_details } from "../../types/admin.types"
                    license_plate: payload.license_plate ,
                    manufacturer: payload.manufacturer ,
                    model: payload.model ,
-                   year: payload.year , // DateTime in TypeScript
+                   year:  payload.year , // DateTime in TypeScript
                    color: payload.color ,
                    engine_number: payload.engine_number ,
                    chassis_number: payload.chassis_number ,
