@@ -5,6 +5,8 @@ import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload 
 import {bcrypt , jwt } from '../../packages/auth.package'
 import prismaClient from "./../../db/index"
 import { userRoles } from "../../config/constant"
+import { redisClient1 } from "../redis/redis.index"
+import config from "../../config/config"
   
 type UserRole = {
   name: string;
@@ -154,13 +156,19 @@ const  authService = {
        }
      },
 
-     getAllRoles :async function() {
+     getAllRoles :async function(cacheKey:string) {
     
       try {
 
-        let roles  =await prismaClient.roles.findMany({
-          select:{id:true , name:true}
-        })                
+          let roles  =await prismaClient.roles.findMany({
+            select:{id:true , name:true}
+          })                
+
+          if(cacheKey &&  roles  ){
+            await redisClient1.set(cacheKey , JSON.stringify(roles), )
+            await redisClient1.expire(cacheKey ,config.cache_time  )
+          }
+
           return successReturn(roles)
           }catch(err) {
                 return failureReturn(err)

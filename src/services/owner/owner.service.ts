@@ -238,22 +238,22 @@ import { kyc_varify_details } from "../../types/admin.types"
                       SELECT u.id ,  u.username username,  u.email email, uhr.role_id AS role_id  , r."name"  as role ,
                       v.id as vhicle_id , v.username as vhicle_username
                       FROM users u
-                    INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
-                    inner join roles r ON r.id  = uhr.role_id 
-                    inner join  vhicle v on v.vhicle_owner_id = u.id   
+                      INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
+                      inner join roles r ON r.id  = uhr.role_id 
+                      inner join  vhicle v on v.vhicle_owner_id = u.id   
                   `
 
                   if(payload.usernameOrEmail)
                         query=  query+where
 
-                   let totalQuery =  `
-                  select count(dt.id) as total from (${query}) as dt `
+                  //  let totalQuery =  `
+                  // select count(dt.id) as total from (${query}) as dt `
  
                     
                   query=  query+`offset  ${skip} limit ${limit}`
 
                   console.log(query)
-                  let totalUsersWithVhicles:totalCount[] =await  prismaClient.$queryRawUnsafe(totalQuery)
+                  // let totalUsersWithVhicles:totalCount[] =await  prismaClient.$queryRawUnsafe(totalQuery)
                   let searchByuser:assingedVhiclesToUser[] =await prismaClient.$queryRawUnsafe(query)
                   
                   let finalResult =searchByuser.reduce((acc:any , ele:any )=>{
@@ -276,7 +276,7 @@ import { kyc_varify_details } from "../../types/admin.types"
                     return acc  
                  } , [])
 
-                return successReturn({users:finalResult , metadata:{page,limit , total: Number(finalResult.length) } })
+                return successReturn({users:finalResult , metadata:{page,limit , total: Number(finalResult.length || 0) } })
                
               }
               

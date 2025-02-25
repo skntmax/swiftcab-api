@@ -1,6 +1,8 @@
 import { Response , Request  } from "express"
 import primsaClient from "../../db"
 import {redisClient1} from "../../services/redis/redis.index"
+import { cld1 } from "../../services/cloudinary"
+import { UploadedFile } from "../../types/file.types"
 // import redisClient from "../../services/redis/redis.index"
 const testController  = {
     
@@ -236,13 +238,43 @@ insertPermissions : async function (req:Request, res:Response){
 
 
         inserFile : async function (req:Request, res:Response) {
-            console.log(req.file)
-            res.send({message:`file uploaded  `})            
+                try{
+
+                console.log(req.file)
+                let f  = req.file as UploadedFile
+                console.log("path>>", f.path)
+                if(f.path){
+                    let uploaded  = await cld1.upload(f.path)
+                    console.log(uploaded)
+                }
+             
+                res.send({message:`file uploaded  `})  
+                    
+                }catch(err) {
+                console.log("err>>",err)
+                }
+                
+
         }
 
 
      
 }
+
+
+
+// obj 
+// {
+//     fieldname: 'test',
+//     originalname: 'Screenshot Capture - 2025-02-23 - 22-49-58.png',
+//     encoding: '7bit',
+//     mimetype: 'image/png',
+//     destination: 'C:\\Users\\skntj\\Desktop\\swiftcab\\src\\assets\\uploads',   
+//     filename: 'test-1740501052695-877653237.png',
+//     path: 'C:\\Users\\skntj\\Desktop\\swiftcab\\src\\assets\\uploads\\test-1740501052695-877653237.png',
+//     size: 439322
+//   }
+
 
 
 export default testController 

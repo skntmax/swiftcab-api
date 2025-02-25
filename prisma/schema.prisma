@@ -43,12 +43,31 @@ model vhicle {
   v_type  type_of_vhicle @relation(fields: [vhicle_type_id] , references: [id ])
   vh_owner  users @relation(fields: [vhicle_owner_id] , references: [id]) 
    
+
+  ss_one String? @default("")
+  ss_two String? @default("")
+  rc_doc String? 
+  other_doc String?
+   
   created_on DateTime @default(now())
   updated_on DateTime
 
   services vhicle_provides_services[]
+  owner_vhicles vhicle_has_other_docs[]
 }
 
+
+model vhicle_has_other_docs {
+   id Int @id @default(autoincrement())
+
+   vhicle_id  Int
+   docs String?
+   
+   owner_vhicles vhicle @relation(fields: [vhicle_id] , references: [id])    
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+} 
 
 model type_of_vhicle {
   id Int @id @default(autoincrement())
