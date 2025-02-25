@@ -2,6 +2,7 @@ import { Router } from "express";
 import authController from "../../controller/auth/auth.index";
 import { authCelebrate } from "../../celebrate/auth.celebrate";
 import middlewares from "../../middlewares/middleware.index";
+import { REDIS_KEYS } from "../../config/constant";
 
 let authRouter  =   Router()
 
@@ -12,7 +13,9 @@ authRouter.post('/is-valid-user-with-role',
     middlewares.validateUser,
       authController.checkValidUser )
       
-authRouter.get('/get-all-roles', authController.getAllRoles )
+authRouter.get('/get-all-roles',
+    middlewares.inCache(REDIS_KEYS.ALL_ROLES),
+  authController.getAllRoles )
 
 
 export default authRouter 

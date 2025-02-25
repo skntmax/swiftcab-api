@@ -37,6 +37,7 @@ export const REDIS_KEYS  = {
     GET_STATES:"GET_STATES",
     GET_CITY:"GET_CITY",
     GET_LOCALITY:"GET_LOCALITY",
+    ALL_ROLES:"ALL_ROLES"
 }
 
 export default Object.freeze(constants)  
