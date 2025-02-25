@@ -38,6 +38,11 @@ export interface navigation_bar  {
 }   
 
 
+export interface vhicleDetail  {
+   vhicleId:number , 
+   ownerId :number
+}   
+
 
 export interface activeUserType  {
    ownerId :number,

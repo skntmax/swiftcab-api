@@ -3,12 +3,14 @@ import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successR
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { activeUserType, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services } from "../../types/owner.types"
+import { activeUserType, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
 import { v4 as uuidv4 } from "uuid";
 import { kyc_varify_details } from "../../types/admin.types"
+import { cld1 } from "../cloudinary"
+import { deleteFiles } from "../../middlewares/middleware.index"
   
   const  ownerService = {
     
@@ -153,7 +155,7 @@ import { kyc_varify_details } from "../../types/admin.types"
           } , 
   
 
-          kycRequest : async function(payload:kyc_varify_details ,  ) {
+          kycRequest : async function(payload:kyc_varify_details , docs:any  ) {
 
             try {
       
@@ -167,8 +169,29 @@ import { kyc_varify_details } from "../../types/admin.types"
                   return failureReturn("you don't own this vhicle")  
               }
           
-      
-              let  fileForKyc =await prismaClient.vhicle.update({
+
+             const {ss_one , ss_two , rc_doc}  = docs
+            
+             if(ss_one.lenth==0 || ss_two.length==0 ||rc_doc.length==0 )
+                return failureReturn(" Documents if mendatory")  
+               
+             
+             let ssOnePath =await cld1.upload(ss_one[0].path ,`${payload.userId}-${uuidv4()}` )
+             let ssTwoPath = await cld1.upload(ss_two[0].path ,`${payload.userId}-${uuidv4()}`)
+             let rcDocPath = await cld1.upload(rc_doc[0].path ,`${payload.userId}-${uuidv4()}` )
+           
+            if(!ssOnePath || !ssTwoPath ||  !rcDocPath)  {
+              await deleteFiles([ss_one[0], ss_two[0], rc_doc[0]]);
+              return failureReturn({ erroMessage:"Not uploaded on cloudinary " , error:{ssOnePath ,ssTwoPath ,rcDocPath }  } ) 
+            }
+            
+
+              let {url:ss_one_url}  = ssOnePath 
+              let {url:ss_two_url}  = ssTwoPath 
+              let {url:rc_doc_url}  = rcDocPath 
+
+
+             let  fileForKyc =await prismaClient.vhicle.update({
                 data:{
                    vin:payload.vin,
                    license_plate: payload.license_plate ,
@@ -180,20 +203,26 @@ import { kyc_varify_details } from "../../types/admin.types"
                    chassis_number: payload.chassis_number ,
                    fuel_type: payload.fuel_type ,
                    transmission: payload.transmission,  // Restrict to known values
+                   ss_one:ss_one_url ,
+                   ss_two:ss_two_url,
+                   rc_doc:rc_doc_url,
                    is_active:true , 
                    is_kyc:false,
                    kyc_varification :"INITIATED"
                   },
                    where:{
-                    id:payload.id  ,
+                    id:Number(payload.id)   ,
                     vhicle_owner_id:payload.userId
                    }
                 })
             
 
+                  // deleting files
+                  await deleteFiles([ss_one[0], ss_two[0], rc_doc[0]]);
                   return successReturn(fileForKyc)
                 }catch(err) {
                   console.log("err>>",err)
+                  deleteFiles(docs)
                     return failureReturn(err)
                 }
             } , 
@@ -308,6 +337,27 @@ import { kyc_varify_details } from "../../types/admin.types"
                   return failureReturn(err)
               }
           } , 
+
+
+          getVhicleDetailsById : async function(payload:vhicleDetail) {
+
+            try {
+
+             let vhicleDetail =await  prismaClient.vhicle.findFirst({
+              where:{
+                id:payload.vhicleId,
+                vhicle_owner_id:payload.ownerId
+              },
+              
+             })
+
+              return successReturn(vhicleDetail)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+          
 
 
 
