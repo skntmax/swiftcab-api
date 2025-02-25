@@ -12,9 +12,9 @@ import authService from "../services/auth/auth.service";
 import { redisClient1 } from "../services/redis/redis.index";
 import multer from 'multer'
 import path from 'path'
-
+import fs from 'fs'
 // Define allowed file types
-const allowedFileTypes = /jpeg|jpg|png|gif/;
+const allowedFileTypes = /jpeg|jpg|png|gif|pdf/;
 
 
 const storage = multer.diskStorage({
@@ -51,8 +51,28 @@ const fileFilter = (req:Request, file:any, cb:any) => {
 
 export const upload = multer({ 
   storage: storage ,
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: fileFilter
 })
+
+export const vhicleDocUpload = upload.fields([{ name: 'ss_one', maxCount: 1 }, { name: 'ss_two', maxCount: 1  } ,{ name: 'rc_doc', maxCount: 1 } ])
+
+
+
+
+export async function deleteFiles(files: any): Promise<void> {
+  try {
+    for (const file of files) {
+      if (file?.path) {
+        await fs.unlink(file.path, ((file:any)=>{
+           console.log(file , "deleted")
+        })); // Delete file from local storage
+      }
+    }
+  } catch (error) {
+    console.error("Error deleting files:", error);
+  }
+}
 
 
 

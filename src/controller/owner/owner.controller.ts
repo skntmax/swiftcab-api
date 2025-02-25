@@ -59,8 +59,10 @@ const ownerController  = {
        kycRequest : async  function (req:Request, res:Response):Promise<any> {
 
         try {
+
+          let docs =  req.files 
           const {userId , username} = req.userObj
-          let kycRequest =await ownerService.kycRequest({ userId:Number(userId) , ...req.body}) 
+          let kycRequest =await ownerService.kycRequest({ userId:Number(userId) , ...req.body} , docs) 
           return succesResponse({data:kycRequest.data, message:"user roles" } , res )  
         
         }catch(err) {
@@ -156,9 +158,28 @@ const ownerController  = {
       }catch(err) {
         console.log(err)
         return  failureResponse({data:err}, res )
-      }
-   },
+        }
+    },
    
+    getVhicleDetailsById  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+       const {vhicleId , ownerId} = req.query
+       const { user_has_roles } = req
+    
+        let vhicleDetail =await ownerService.getVhicleDetailsById({ vhicleId:Number(vhicleId) , ownerId:Number(ownerId) } ) 
+
+        if(!vhicleDetail.status)  return succesResponse({data: "null" ,  message:vhicleDetail?.data } , res )
+
+        return succesResponse({data:vhicleDetail.data, message:" Users with roles and vhicles " } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+
     
 }
 

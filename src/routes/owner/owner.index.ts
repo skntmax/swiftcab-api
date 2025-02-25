@@ -1,6 +1,6 @@
 import { Router } from "express";
 import ownerController from "../../controller/owner/owner.controller";
-import middlewares from "../../middlewares/middleware.index";
+import middlewares, { upload, vhicleDocUpload } from "../../middlewares/middleware.index";
 import { REDIS_KEYS, userRoles } from "../../config/constant";
 
 let ownerRouter   =   Router()
@@ -37,6 +37,7 @@ ownerRouter.get('/get-roles',
     
 ownerRouter.post('/kyc-request',
     middlewares.checkUserRoles(userRoles.owner) ,
+    vhicleDocUpload , 
     ownerController.kycRequest )
 
         

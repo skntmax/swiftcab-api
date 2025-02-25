@@ -29,11 +29,11 @@ class Cloudinary {
 
     }
 
-     upload(filepath:string , options:any= {}) {        
+     upload(filepath:string ,public_id:string ,  options:any= {}) {        
         try {
        return  this.state.uploader.upload(
             filepath , {
-               public_id:'temp3' ,
+               public_id ,
            }
        ).then((res:any)=>{
         return  res 

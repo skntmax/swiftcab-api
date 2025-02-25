@@ -244,7 +244,7 @@ insertPermissions : async function (req:Request, res:Response){
                 let f  = req.file as UploadedFile
                 console.log("path>>", f.path)
                 if(f.path){
-                    let uploaded  = await cld1.upload(f.path)
+                    let uploaded  = await cld1.upload(f.path , ""+Math.random()*100)
                     console.log(uploaded)
                 }
              
