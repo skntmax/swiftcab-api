@@ -47,23 +47,26 @@ model vhicle {
   ss_one String? @default("")
   ss_two String? @default("")
   rc_doc String? 
-  other_doc String?
    
   created_on DateTime @default(now())
   updated_on DateTime
 
+  
+  vhicles vhicle_has_other_docs[] @relation("multiple_users_can_have_multiple_doc_of_vhicle")
+
   services vhicle_provides_services[]
-  owner_vhicles vhicle_has_other_docs[]
+  
 }
 
 
 model vhicle_has_other_docs {
    id Int @id @default(autoincrement())
 
-   vhicle_id  Int
-   docs String?
+   vhicle_id Int
+   vhicles vhicle @relation(fields: [vhicle_id] , references: [id] , name: "multiple_users_can_have_multiple_doc_of_vhicle" )
    
-   owner_vhicles vhicle @relation(fields: [vhicle_id] , references: [id])    
+   doc_id String?
+   basePath String? 
 
   created_on DateTime @default(now())
   updated_on DateTime
