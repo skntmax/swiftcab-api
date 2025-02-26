@@ -42,7 +42,7 @@ adminRouter.post('/get-active-users',
 
      
      
-adminRouter.get('/get-vhicle-details',
+adminRouter.post('/get-vhicle-details',
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.getVhicleDetailsById )
  

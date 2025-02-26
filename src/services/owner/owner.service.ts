@@ -343,9 +343,11 @@ import { deleteFiles } from "../../middlewares/middleware.index"
 
             try {
 
-             let vhicleDetail =await  prismaClient.vhicle.findFirst({
+             let vhicleDetail =await  prismaClient.vhicle.findMany({
               where:{
-                id:payload.vhicleId,
+                id:{
+                   in:payload.vhicleIds 
+                } ,
                 vhicle_owner_id:payload.ownerId
               },
               
