@@ -275,14 +275,14 @@ import { deleteFiles } from "../../middlewares/middleware.index"
                   if(payload.usernameOrEmail)
                         query=  query+where
 
-                  //  let totalQuery =  `
-                  // select count(dt.id) as total from (${query}) as dt `
+                   let totalQuery =  `
+                  select count(dt.id) as total from (${query}) as dt `
  
                     
                   query=  query+`offset  ${skip} limit ${limit}`
 
                   console.log(query)
-                  // let totalUsersWithVhicles:totalCount[] =await  prismaClient.$queryRawUnsafe(totalQuery)
+                  let totalUsersWithVhicles:totalCount[] =await  prismaClient.$queryRawUnsafe(totalQuery)
                   let searchByuser:assingedVhiclesToUser[] =await prismaClient.$queryRawUnsafe(query)
                   
                   let finalResult =searchByuser.reduce((acc:any , ele:any )=>{
@@ -305,7 +305,7 @@ import { deleteFiles } from "../../middlewares/middleware.index"
                     return acc  
                  } , [])
 
-                return successReturn({users:finalResult , metadata:{page,limit , total: Number(finalResult.length || 0) } })
+                return successReturn({users:finalResult , metadata:{page,limit , total: Number(totalUsersWithVhicles[0].total || 0) } })
                
               }
               
