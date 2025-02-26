@@ -39,7 +39,7 @@ export interface navigation_bar  {
 
 
 export interface vhicleDetail  {
-   vhicleId:number , 
+   vhicleIds:number[] , 
    ownerId :number
 }   
 

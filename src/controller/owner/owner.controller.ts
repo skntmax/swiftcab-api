@@ -164,10 +164,10 @@ const ownerController  = {
     getVhicleDetailsById  : async  function (req:Request, res:Response):Promise<any> {
 
       try {
-       const {vhicleId , ownerId} = req.query
+       const {vhicleIds , ownerId} = req.body
        const { user_has_roles } = req
     
-        let vhicleDetail =await ownerService.getVhicleDetailsById({ vhicleId:Number(vhicleId) , ownerId:Number(ownerId) } ) 
+        let vhicleDetail =await ownerService.getVhicleDetailsById({ vhicleIds:vhicleIds , ownerId:Number(ownerId) } ) 
 
         if(!vhicleDetail.status)  return succesResponse({data: "null" ,  message:vhicleDetail?.data } , res )
 
