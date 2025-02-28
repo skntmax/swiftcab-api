@@ -48,6 +48,12 @@ adminRouter.post('/get-vhicle-details',
  
      
 
+          
+adminRouter.post('/approve-kyc-request',
+     middlewares.checkUserRoles(userRoles.admin),
+     ownerController.approveKycRequest )
+ 
+     
  
      
      

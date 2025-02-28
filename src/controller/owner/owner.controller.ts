@@ -3,6 +3,7 @@ import primsaClient from "../../db"
 import authService from "../../services/auth/auth.service"
 import { failureResponse, succesResponse } from "../../config/utils"
 import ownerService from "../../services/owner/owner.service"
+import { KycStatus } from "@prisma/client"
 
 const ownerController  = {
     
@@ -170,6 +171,26 @@ const ownerController  = {
         if(!vhicleDetail.status)  return succesResponse({data: "null" ,  message:vhicleDetail?.data } , res )
 
         return succesResponse({data:vhicleDetail.data, message:" Users with roles and vhicles " } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+
+
+    approveKycRequest  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+       const {vhicleId , ownerId ,  kycStatus=KycStatus.INITIATED} = req.body
+       const { user_has_roles } = req
+    
+        let kycApprovedOrRejected =await ownerService.approveVhicleKyc({ vhicleId , ownerId:Number(ownerId) , kycStatus } ) 
+
+        if(!kycApprovedOrRejected.status)  return succesResponse({data: "null" ,  message:kycApprovedOrRejected?.data } , res )
+
+        return succesResponse({data:kycApprovedOrRejected.data, message:" Kyc approve or rejected status " } , res )  
 
       
       }catch(err) {
