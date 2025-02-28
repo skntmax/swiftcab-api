@@ -53,8 +53,6 @@ const ownerController  = {
             return  failureResponse({data:err}, res )
           }
        },
-
-
           
        kycRequest : async  function (req:Request, res:Response):Promise<any> {
 

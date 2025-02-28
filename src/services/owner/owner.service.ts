@@ -51,7 +51,10 @@ import { deleteFiles } from "../../middlewares/middleware.index"
           try {
              
              let ownerOwnsVhicles  =  await primsaClient.$queryRawUnsafe(`
-                select vh.id as vhicle_id  , vh.username  , vh.is_kyc , vh.username as vhicle_username , vh.kyc_varification ,  tov.vhicle_type as vhicle , tov.disc  from users u 
+                select vh.id as vhicle_id  , vh.username  , vh.is_kyc , vh.username as vhicle_username , vh.kyc_varification ,
+               vh.name , vh.rc, vh.is_kyc, vh.vin , vh.license_plate , vh.manufacturer , vh.model , vh.year , vh.color , vh.engine_number , vh.chassis_number,
+               vh.fuel_type , vh.ss_one , vh.ss_two , vh.rc_doc ,
+                  tov.vhicle_type as vhicle , tov.disc  from users u 
                 inner join user_has_roles uhr on uhr.user_id = u.id 
                 inner join vhicle vh on vh.vhicle_owner_id   = u.id 
                 inner join type_of_vhicle tov ON tov.id = vh.vhicle_type_id 
@@ -218,7 +221,8 @@ import { deleteFiles } from "../../middlewares/middleware.index"
             
 
                   // deleting files
-                  await deleteFiles([ss_one[0], ss_two[0], rc_doc[0]]);
+                  setTimeout(async ()=>  await deleteFiles([ss_one[0], ss_two[0], rc_doc[0]]) , 4000 ) // files getting deleted after 4000 ms 
+                   
                   return successReturn(fileForKyc)
                 }catch(err) {
                   console.log("err>>",err)
