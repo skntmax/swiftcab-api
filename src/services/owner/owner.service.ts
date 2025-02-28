@@ -3,7 +3,7 @@ import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successR
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { activeUserType, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
+import { activeUserType, approveKycStatus, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
@@ -11,6 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { kyc_varify_details } from "../../types/admin.types"
 import { cld1 } from "../cloudinary"
 import { deleteFiles } from "../../middlewares/middleware.index"
+import { KycStatus } from "@prisma/client"
   
   const  ownerService = {
     
@@ -350,14 +351,38 @@ import { deleteFiles } from "../../middlewares/middleware.index"
              let vhicleDetail =await  prismaClient.vhicle.findMany({
               where:{
                 id:{
-                   in:payload.vhicleIds 
+                   in:payload.vhicleIds, 
                 } ,
+                // kyc_varification:"INITIATED",
                 vhicle_owner_id:payload.ownerId
               },
               
              })
 
               return successReturn(vhicleDetail)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+
+
+          approveVhicleKyc : async function(payload:approveKycStatus) {
+
+            try {
+
+             let updatedVhicleKycStatus =await  prismaClient.vhicle.update({
+              where:{
+                id:payload.vhicleId ,
+                vhicle_owner_id:payload.ownerId
+              } ,
+              data:{
+                 kyc_varification:payload.kycStatus,
+                 is_kyc:(payload.kycStatus==KycStatus.COMPLETED || payload.kycStatus==KycStatus.VERIFIED)?true:false 
+              }
+             })
+             
+              return successReturn(updatedVhicleKycStatus)
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)

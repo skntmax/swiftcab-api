@@ -1,3 +1,4 @@
+import { KycStatus } from "@prisma/client"
 
 
 export interface owner_vhicles_payload  {
@@ -43,6 +44,12 @@ export interface vhicleDetail  {
    ownerId :number
 }   
 
+
+export interface approveKycStatus  {
+   vhicleId:number , 
+   ownerId :number,
+   kycStatus:KycStatus
+}   
 
 export interface activeUserType  {
    ownerId :number,

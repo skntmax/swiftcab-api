@@ -25,8 +25,6 @@ app.use(`/${version}/admin`, adminRouter )
 app.use(`/${version}/master`, masterRouter )
 
 
-
-
 // intialise uploads  folder 
 let uploadDir =  path.join(__dirname , './assets/uploads')
 if (!fs.existsSync(uploadDir)) {
@@ -34,7 +32,6 @@ if (!fs.existsSync(uploadDir)) {
       recursive:true
     });
   }
-
 
 app.listen(port , ()=>{
     console.log(`server started at ${port} `)
