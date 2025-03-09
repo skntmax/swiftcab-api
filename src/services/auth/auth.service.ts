@@ -1,12 +1,14 @@
 import dotenv from "../../config/dotenv"
-import { failureReturn, succesResponse, successReturn } from "../../config/utils"
+import { failureReturn, generateUsername, succesResponse, successReturn } from "../../config/utils"
 // import primsaClient, { executeStoredProcedure } from "../../db"
-import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
-import {bcrypt , jwt } from '../../packages/auth.package'
+import { checkValidUser, doesUserHaveRoleOrNot, loginByOAuthPayload, loginPayload, userCreatePayload } from "../../types/users.types"
+import {bcrypt } from '../../packages/auth.package'
 import prismaClient from "./../../db/index"
 import { userRoles } from "../../config/constant"
 import { redisClient1 } from "../redis/redis.index"
 import config from "../../config/config"
+import { LoginBy } from "@prisma/client"
+import jwt from 'jsonwebtoken'
   
 type UserRole = {
   name: string;
@@ -24,6 +26,34 @@ type UserResult = {
   user_password: string;
 };
 
+
+
+type oAuthUser = {
+    username?: string;
+    email?: string;
+    trafficBy?: string;
+    profile_pic?: string;
+
+}
+
+
+
+interface GoogleTokenPayload {
+  iss: string;
+  azp: string;
+  aud: string;
+  sub: string;
+  email: string;
+  email_verified: boolean;
+  nbf: number;
+  name: string;
+  picture: string;
+  given_name: string;
+  family_name: string;
+  iat: number;
+  exp: number;
+  jti: string;
+}
 
 const  authService = {
     
@@ -79,10 +109,72 @@ const  authService = {
       }
       
     } , 
+     
+
+    loginByAuth : async function(userPayload:loginByOAuthPayload) {
+
+      try {
+
+        const {  token ,trafficBy ,userType } = userPayload  // default as client or customer , 1- customer , 2- owner 
+        let  newUser
+        
+        if(userPayload.trafficBy==LoginBy.GOOGLE){  
+            newUser  =  jwt.decode( token) as GoogleTokenPayload   
+          
+            if(!newUser)
+             failureReturn({data:"user not found or invalid token "})
+         
+          let objPrototype:oAuthUser  = {
+            username: newUser?.name,
+            email: newUser?.email,
+            trafficBy: trafficBy,
+            profile_pic: newUser?.picture,
+          };
+ 
+          let userExist = await prismaClient.users.findFirst({ 
+           where: {
+               OR: [
+                   { username: objPrototype?.username }, 
+                   { email: objPrototype?.email }
+               ]
+           }
+         });
+            
+          if (!userExist) {
+            console.log("new user")
+            // user does not  exist , then create a new record
+            let newUserObj = { email:newUser.email , password:config.defaultPass , username: generateUsername(newUser.name) , userType:userPayload.userType , trafficBy:userPayload.trafficBy}
+            
+            let userCreated = await this.createUser(newUserObj) 
+            if(!userCreated.status)
+              return failureReturn({data:userCreated.data, message:"User already exist" } )  
+            
+            return successReturn(userCreated?.data)  
+          }else{
+             // if user already exist 
+          console.log("user already exist")
+          let payload = {id:userExist.id , username: userExist.username  }
+          let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
+           // Fix: Assign the first object to a new variable
+
+            return successReturn({token ,  usersObj :{  username: userExist.username , firstName :userExist.first_name , lastName : userExist.last_name}}  )  
+          }
+         }
+       
+          // return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name}}  )  
+          return successReturn({token , newUser} )  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } 
+    , 
     createUser  : async function (userPayload: userCreatePayload) {
         
          try {
-
+       
           const {  email , password, userType , username} = userPayload 
           let userExist  =await  prismaClient.users.findFirst({ 
             where:{ 
@@ -100,17 +192,22 @@ const  authService = {
             return failureReturn('user already exist') 
 
           let hashPass  =  await bcrypt.hash(password ,  10 )
+          // generating user in user table 
           let newUser = await prismaClient.users.create({
                   data:{
                       username:username , 
                       password:hashPass ,
                       email:email,
                       is_active:true,
+                      traffic_from:userPayload.trafficBy,
                       created_on:new Date(),
                       updated_on:new Date() ,
+
                   }
               })  
             
+
+          // then after to role table 
            let userRoles =await prismaClient.user_has_roles.create({
             data:{
               user_id:newUser.id,

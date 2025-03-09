@@ -9,7 +9,8 @@ export const authCelebrate = {
               email: Joi.string().required(),
               password: Joi.string().required(),
               username: Joi.string().required(),
-              userType: Joi.number().required()
+              userType: Joi.number().required(),
+              trafficBy:Joi.string().optional()
             }),
           }),
 

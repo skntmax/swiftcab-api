@@ -1,9 +1,11 @@
+import { LoginBy } from "@prisma/client"
+
 export interface userCreatePayload  {
     email : string 
     password :  string , 
     username : string , 
-    userType: number    
-
+    userType: number ,
+    trafficBy:LoginBy    
 }
 
 
@@ -11,10 +13,17 @@ export interface userCreatePayload  {
 
 export interface loginPayload  {
         emailOrUsername : string 
-        password :  string , 
-    
+        password :  string ,    
         userType?: number    
 
+}
+
+
+
+export interface loginByOAuthPayload  {
+     token:string
+     trafficBy:LoginBy,
+     userType:number
 }
 
 

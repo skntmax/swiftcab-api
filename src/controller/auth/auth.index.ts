@@ -2,6 +2,8 @@ import { Response , Request  } from "express"
 import primsaClient from "../../db"
 import authService from "../../services/auth/auth.service"
 import { failureResponse, succesResponse } from "../../config/utils"
+import { LoginBy } from "@prisma/client"
+
 const authController  = {
       signin : async function (req:Request, res:Response):Promise<any> {
             
@@ -18,16 +20,35 @@ const authController  = {
       
        } ,
 
+
+       loginByAuth : async function (req:Request, res:Response):Promise<any> {
+            
+         try {
+             const { trafficBy = LoginBy.SWIFTCAB  , userType , token  }  = req.body //  default swiftcab  
+           let user =await authService.loginByAuth({token  , trafficBy  , userType })
+           if(!user.status)
+              return succesResponse({data:user.data, message:"" } , res )  
+         
+           return succesResponse({data:user.data, message:"logged in " } , res )  
+            
+          }catch(err) {
+           return  failureResponse({data:err}, res )
+          }
+       
+        } ,
+
+        
     signUp : async  function (req:Request, res:Response):Promise<any> {
 
          try {
-          let user =await authService.createUser({email:req.body.email ,  password:req.body.password , username:req.body.username , userType:req.body.userType})
+
+         const { trafficBy = LoginBy.SWIFTCAB } = req.body; // Default value applied here
+          let user =await authService.createUser({email:req.body.email ,  password:req.body.password , username:req.body.username , userType:req.body.userType , trafficBy })
           if(!user.status)
              return succesResponse({data:user.data, message:"User already exist" } , res )  
         
           return succesResponse({data:user.data, message:"User created" } , res )  
            
-
          }catch(err) {
           return  failureResponse({data:err}, res )
          }
