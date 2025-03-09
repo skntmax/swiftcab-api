@@ -109,3 +109,21 @@ export function transformNavItems(navItems: NavItem[] , username: string, roleTy
 
   return transformedArray;
 }
+
+
+export function generateUsername(name: string): string {
+  let lowercaseName: string = name.toLowerCase().replace(/\s/g, '');
+  let randomNumber: number = Math.floor(Math.random() * 9000) + 1000;
+  let randomAlphabets: string = '';
+
+  for (let j = 0; j < 5; j++) {
+      randomAlphabets += String.fromCharCode(97 + Math.floor(Math.random() * 26)); // Random lowercase alphabet
+  }
+
+  return lowercaseName + randomNumber + randomAlphabets;
+}
+
+// Helper function (Ensure it's properly defined)
+function getRandomNumberInRange(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}

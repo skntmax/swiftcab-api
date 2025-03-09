@@ -14,6 +14,15 @@ enum KycStatus {
   COMPLETED
 }
 
+
+enum LoginBy {
+  SWIFTCAB
+  GOOGLE
+  FACEBOOK
+  MICROSOFT 
+  OTHER
+}
+
 model vhicle {
   id       Int    @id @default(autoincrement())
   username String
@@ -154,6 +163,7 @@ model users {
   password String
   opt String? 
   isLoggedIn Boolean?
+  traffic_from  LoginBy  @default(SWIFTCAB)  
 
   users_city cities? @relation(fields: [city_id] , references: [id])
   users_locality localities? @relation(fields: [locality_id] , references: [id])

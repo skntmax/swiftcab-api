@@ -54,9 +54,7 @@ adminRouter.post('/approve-kyc-request',
      ownerController.approveKycRequest )
  
      
- 
-     
-     
+
 
 export default adminRouter 
 
