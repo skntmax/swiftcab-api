@@ -13,6 +13,7 @@ import { redisClient1 } from "../services/redis/redis.index";
 import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
+import { initSignupmailWorker } from "../services/queues/user_signup_worker";
 // Define allowed file types
 const allowedFileTypes = /jpeg|jpg|png|gif|pdf/;
 
@@ -85,7 +86,6 @@ export const middlewares = {
   ,   
     globalMiddlewares: function (app:Express){
 
-
         app.use(cors(this.corsOptions))
         app.use(bodyParser.urlencoded({ extended: false }))
         app.use(express.json()) 
@@ -103,6 +103,7 @@ export const middlewares = {
             next(err);
           });
 
+        initSignupmailWorker()
     } , 
 
     validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
@@ -125,7 +126,32 @@ export const middlewares = {
             console.log("error message", err);
            failureResponse( {data:"un autherised user "} , res  );
           }
-    } ,
+       } ,
+
+       validateValidAccount : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
+    
+        try{
+          req.userObj={userId:"" , username:""}       
+          const {token:bearer_token , role } = req.query        
+          if(!bearer_token) return  failureResponse( {data:"un autherised user "} , res  );
+          let decoded =  jwt.verify(bearer_token as string, dotenv.SECRET_KEY )  as JwtPayload 
+  
+          const { id:userId ,username} = decoded 
+  
+          if(!userId || !username) return failureResponse( {data:` expired token or not a valid user `} , res  );
+  
+           req.userObj.userId = userId 
+           req.userObj.username = username
+           next()
+            }catch(err){
+              console.log("error message", err);
+             failureResponse( {data:"un autherised user "} , res  );
+            }
+      } ,
+  
+    
+      
+
 
 
 

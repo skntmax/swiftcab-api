@@ -5,7 +5,8 @@ export interface userCreatePayload  {
     password :  string , 
     username : string , 
     userType: number ,
-    trafficBy:LoginBy    
+    trafficBy:LoginBy ,
+    accountStatus?:boolean     
 }
 
 
@@ -41,3 +42,20 @@ export interface doesUserHaveRoleOrNot  {
 
 }
 
+
+
+
+export interface verifyMailLinkpayload  { 
+    role: number  
+    userId:number , 
+    username:string
+
+}
+
+
+
+export interface sendSignupMail  {
+    authenticateUri:string ,
+    userId:number,
+    email:string
+}

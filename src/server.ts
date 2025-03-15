@@ -13,7 +13,7 @@ import path from "path";
 let app = Express()
 
 let port =  process.env.PORT  || 4000  
-let version:String =  process.env.VERSION || "v1" 
+export let version:String =  process.env.VERSION || "v1" 
 
 middlewares.globalMiddlewares(app)  
 

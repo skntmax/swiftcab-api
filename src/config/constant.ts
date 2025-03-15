@@ -40,4 +40,9 @@ export const REDIS_KEYS  = {
     ALL_ROLES:"ALL_ROLES"
 }
 
+
+export const REDIS_QUEUES  = {
+    USER_SIGNUP:"USER_SIGNUP",
+}
+
 export default Object.freeze(constants)  

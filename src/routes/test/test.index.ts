@@ -16,7 +16,9 @@ testRouter.get('/insert-vhicle-types', testController.insertVhicleTypes )
 testRouter.get('/type-of-user', testController.insertTypeOfUser )
 testRouter.get('/insert-roles', testController.insertRoles )
 testRouter.get('/insert-perm', testController.insertPermissions )
+
 testRouter.get('/insertFile',  upload.single('test') ,  testController.inserFile )
+testRouter.get('/test-mail', testController.testMail )
 
 export default testRouter 
 
