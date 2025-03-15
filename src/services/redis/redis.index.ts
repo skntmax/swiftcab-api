@@ -12,7 +12,7 @@ type redisConnType = {
 class RedisConn {
     
     redisClient
-    constructor(configuration:redisConnType=config.redisConn.redisConnection) { 
+    constructor(configuration:redisConnType=config.redisConn.redisConnection1) { 
         this.redisClient = new Redis(configuration);
         console.log('redis connected at ',configuration.port , "database:",configuration.db  )
      }
@@ -40,4 +40,7 @@ class RedisConn {
 
  const redisClient1 = (new  RedisConn()).redisClient // for common use with databse 0 
  
- export  {redisClient1}
+ const redisClient2 = (new  RedisConn(config.redisConn.redisConnection2)).redisClient // for common use with databse 0 
+ 
+
+ export  {redisClient1 , redisClient2}

@@ -14,11 +14,11 @@ export const authCelebrate = {
             }),
           }),
 
-          login :  celebrate({
-            [Segments.BODY]: Joi.object().keys({
-              emailOrUsername: Joi.string().required(),
-              password: Joi.string().required(),
-              userType:Joi.number().required()
-            }),
-          })    
+      login :  celebrate({
+        [Segments.BODY]: Joi.object().keys({
+          emailOrUsername: Joi.string().required(),
+          password: Joi.string().required(),
+          userType:Joi.number().required()
+        }),
+      })    
 }

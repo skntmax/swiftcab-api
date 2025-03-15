@@ -8,6 +8,9 @@ let authRouter  =   Router()
 
 authRouter.post('/login',authCelebrate.login,  authController.signin )
 authRouter.post('/signup', authCelebrate.signup, authController.signUp )
+
+authRouter.get('/verify-mail-link', middlewares.validateValidAccount  ,  authController.verifyMailLink )
+
 authRouter.post('/login-by-oauth',  authController.loginByAuth )
 
 authRouter.get('/send-otp',middlewares.checkUserRoles('Customer') , authController.sendOtp )

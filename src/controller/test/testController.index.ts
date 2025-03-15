@@ -3,6 +3,7 @@ import primsaClient from "../../db"
 import {redisClient1} from "../../services/redis/redis.index"
 import { cld1 } from "../../services/cloudinary"
 import { UploadedFile } from "../../types/file.types"
+import { sendMail, transporter } from "../../config/mailConfig"
 // import redisClient from "../../services/redis/redis.index"
 const testController  = {
     
@@ -255,7 +256,27 @@ insertPermissions : async function (req:Request, res:Response){
                 }
                 
 
-        }
+        } ,
+
+        testMail : async function (req:Request, res:Response) {
+            try{
+
+                let result = await sendMail({
+                    from: "support@swiftcab.in", // sender address
+                    to: "skntmax@gmail.com", // list of receivers
+                    subject: "Hello ✔", // Subject line
+                    text: "Hello world?", // plain text body
+                    html: "<b>Hello world?</b>", // html body
+                }) 
+
+            res.send({message:result})  
+                
+            }catch(err) {
+            console.log("err>>",err)
+            }
+            
+
+    }
 
 
      
