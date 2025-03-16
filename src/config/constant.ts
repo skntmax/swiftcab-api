@@ -43,6 +43,7 @@ export const REDIS_KEYS  = {
 
 export const REDIS_QUEUES  = {
     USER_SIGNUP:"USER_SIGNUP",
+    USERS_OTP:"USERS_OTP",
 }
 
 export default Object.freeze(constants)  

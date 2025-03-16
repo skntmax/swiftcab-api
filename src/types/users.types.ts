@@ -15,7 +15,8 @@ export interface userCreatePayload  {
 export interface loginPayload  {
         emailOrUsername : string 
         password :  string ,    
-        userType?: number    
+        userType?: number,
+        phone?:number    
 
 }
 

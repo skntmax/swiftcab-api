@@ -3,12 +3,19 @@ import primsaClient from "../../db"
 import authService from "../../services/auth/auth.service"
 import { failureResponse, succesResponse } from "../../config/utils"
 import { LoginBy } from "@prisma/client"
+import config from "../../config/config"
 
 const authController  = {
       signin : async function (req:Request, res:Response):Promise<any> {
             
         try {
-          let user =await authService.loginUser({emailOrUsername:req.body.emailOrUsername, password:req.body.password , userType:req.body.userType })
+          let user =await authService.loginUser({
+             emailOrUsername:req.body.emailOrUsername??"",
+             password:req.body.password??config.defaultPass , 
+             userType:req.body.userType??null,
+             phone:req.body.phone?? null  
+            })
+
           if(!user.status)
              return succesResponse({data:user.data, message:"" } , res )  
         

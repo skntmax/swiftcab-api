@@ -14,6 +14,7 @@ import multer from 'multer'
 import path from 'path'
 import fs from 'fs'
 import { initSignupmailWorker } from "../services/queues/user_signup_worker";
+import { initOtpGenerationWorker } from "../services/queues/user_otp_worker";
 // Define allowed file types
 const allowedFileTypes = /jpeg|jpg|png|gif|pdf/;
 
@@ -104,7 +105,9 @@ export const middlewares = {
           });
 
         initSignupmailWorker()
-    } , 
+        initOtpGenerationWorker()
+   
+      } , 
 
     validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
