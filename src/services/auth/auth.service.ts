@@ -9,7 +9,7 @@ import { redisClient1 } from "../redis/redis.index"
 import config from "../../config/config"
 import { LoginBy } from "@prisma/client"
 import jwt from 'jsonwebtoken'
-import { signup_user_queue } from "../queues"
+import { login_user_otp, signup_user_queue } from "../queues"
 import { version } from "../../server"
 import { sendMail } from "../../config/mailConfig"
 import { createMailOptions, IMailOptions } from "../../types/mailer"
@@ -29,7 +29,8 @@ type UserResult = {
   first_name: string;
   last_name: string;
   user_password: string;
-  is_active?:boolean 
+  is_active?:boolean ,
+  phone_no?:string
 };
 
 
@@ -67,29 +68,26 @@ const  authService = {
 
       try {
 
-        const {  emailOrUsername, password, userType } = userPayload  // default as client or customer , 1- customer , 2- owner 
+        const {  emailOrUsername, password, userType ,phone } = userPayload  // default as client or customer , 1- customer , 2- owner 
         
         // let newUser =await executeStoredProcedure('get_user_roles', [emailOrUsername, emailOrUsername, userType as number])
         // newUser= newUser[0]
 
         let newUserArray :UserResult[] = await prismaClient.$queryRawUnsafe<UserResult[]>(` 
                  SELECT x.*
-          FROM (
-            SELECT u.id ,  u.username username, 
-        u.email email,
-        uhr.role_id AS role_id, u.is_active  ,
-          COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password user_password 
-            FROM users u
-            INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
-            WHERE (u.email = $1  OR u.username = $1 )
-          ) x
-          WHERE x.role_id = $2 AND x.is_active = true  ` ,   emailOrUsername , userType
+                FROM (
+                  SELECT u.id ,  u.username username, 
+              u.email email,
+              uhr.role_id AS role_id, u.is_active , u.phone_no,
+                COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password user_password 
+                  FROM users u
+                  INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
+                  WHERE (u.email = $1  OR u.username = $1 OR  u.phone_no=$3  )
+                ) x
+                WHERE x.role_id = $2 AND x.is_active = true  ` ,   emailOrUsername , userType , phone
           ) 
       
       
-        console.log(newUserArray,"newUserArray")
-
-
           // Fix: Assign the first object to a new variable
         let newUser: UserResult | undefined = newUserArray.length > 0 ? newUserArray[0] : undefined;
 
@@ -97,16 +95,26 @@ const  authService = {
 
         if(!newUser)
            return  failureReturn('Please register first')
+
+
+        
+          // if logged in by phone m then added   in the queue 
+          if(phone)  {
+            login_user_otp.enqueue('user_otp' ,{phone , id:newUser.id , username: newUser.username })
+          return successReturn("added in the queue")   
+          }
+
+
           
         let isPass = await bcrypt.compare(password ,newUser?.user_password)
           
-        if(!isPass  )
+        if(!isPass)
           return  failureReturn('Invalid credential')
-      
-    
-          let payload = {id:newUser.id , username: newUser.username  }
+
+        
+        
+          let payload = {id:newUser.id , username: newUser.username  } 
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
-  
           return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name}}  )  
 
       }catch(err) {
@@ -334,6 +342,21 @@ const  authService = {
         return failureReturn(err)
        }
      },
+
+     generateAndSendOtpForLogin:async function(payload:any ) {
+      try{
+
+        console.log(payload)
+        return successReturn(true)
+
+        return successReturn(false)
+      }catch(err) {
+       console.log(err)
+       return failureReturn(err)
+      }
+    },
+
+
 
      getAllRoles :async function(cacheKey:string) {
     

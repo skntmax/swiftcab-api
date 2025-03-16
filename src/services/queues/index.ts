@@ -26,6 +26,7 @@ class queue  {
 
 
 export const signup_user_queue  = new queue( { queue_name:REDIS_QUEUES.USER_SIGNUP  }  ) // be default 0th database is selected 
+export const login_user_otp = new queue( { queue_name:REDIS_QUEUES.USERS_OTP , redisConfig:config.redisConn.redisConnection2  }  ) // be default 0th database is selected 
 
 // export const content_queue  = new queue(queue_keys.CONTENT_PUSH , config.redisConnection.connection3  )
 // export const content_queue_failure  = new queue(queue_keys.CONTENT_PUSH_FAILURE ,config.redisConnection.connection3  )

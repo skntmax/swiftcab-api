@@ -162,7 +162,8 @@ model users {
   city_id  Int? @unique
   locality_id Int? @unique 
   password String
-  opt String? 
+  otp String?
+  expiresIn DateTime? 
   isLoggedIn Boolean?
   traffic_from  LoginBy  @default(SWIFTCAB)  
 

@@ -16,9 +16,10 @@ export const authCelebrate = {
 
       login :  celebrate({
         [Segments.BODY]: Joi.object().keys({
-          emailOrUsername: Joi.string().required(),
-          password: Joi.string().required(),
-          userType:Joi.number().required()
+          emailOrUsername: Joi.string().optional(),
+          password: Joi.string().optional(),
+          userType:Joi.number().required(),
+          phone:Joi.string().optional()
         }),
       })    
 }
