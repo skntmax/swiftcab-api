@@ -1,7 +1,7 @@
 import dotenv from "../../config/dotenv"
-import { failureReturn, generateUsername, succesResponse, successReturn } from "../../config/utils"
+import { failureReturn, generateEmail, generateUsername, succesResponse, successReturn } from "../../config/utils"
 // import primsaClient, { executeStoredProcedure } from "../../db"
-import { checkValidUser, doesUserHaveRoleOrNot, loginByOAuthPayload, loginPayload, sendSignupMail, userCreatePayload, verifyMailLinkpayload } from "../../types/users.types"
+import { checkValidUser, doesUserHaveRoleOrNot, loginByOAuthPayload, loginPayload, sendSignupMail, userCreatePayload, verifyMailLinkpayload, verifyOtp } from "../../types/users.types"
 import {bcrypt } from '../../packages/auth.package'
 import prismaClient from "./../../db/index"
 import { userRoles } from "../../config/constant"
@@ -14,6 +14,7 @@ import { version } from "../../server"
 import { sendMail } from "../../config/mailConfig"
 import { createMailOptions, IMailOptions } from "../../types/mailer"
 import { mailerTemplate } from "../../config/MailerTemplates/VerifyUser"
+import moment from "moment"
   
 type UserRole = {
   name: string;
@@ -93,25 +94,44 @@ const  authService = {
 
         console.log(newUser,"newUser")
 
-        if(!newUser)
-           return  failureReturn('Please register first')
 
-
-        
-          // if logged in by phone m then added   in the queue 
+          
+          // if logged in by phone m then added in the queue 
           if(phone)  {
-            login_user_otp.enqueue('user_otp' ,{phone , id:newUser.id , username: newUser.username })
-          return successReturn("added in the queue")   
+
+             if(!newUser) { // if phone exist and  newuser does not . then create a new user and send otp on the number   
+              let userByPhone = await  prismaClient.users.findFirst({
+                where:{
+                  phone_no:phone.toString() 
+                }
+               })
+   
+              //  accountStatus:false  -- used for mail  varification 
+             if(!userByPhone) {  // user does not exist , then register first and then send otp 
+               let newUserObj = { email:""  , password:config.defaultPass , phone :phone.toString() ,  username: generateUsername('') , userType: Number(userType) , trafficBy:LoginBy.SWIFTCAB , accountStatus:false}
+               let userCreated:any = await this.createNewPhoneUser(newUserObj) 
+               if(!userCreated.status)
+                  return failureReturn({data:userCreated.data, message:"User already exist" } )  
+   
+                login_user_otp.enqueue('user_otp' ,{phone , id:userCreated?.data?.id , username: userCreated?.data?.username })
+               }
+             }else{ // if phone payload exist and  user also  exist relaetd to  this  phone , then simply  send login otp    
+              login_user_otp.enqueue('user_otp' ,{phone , id:newUser.id , username: newUser.username })
+             }
+            
+          
+           return successReturn("OTP has been sent on your Mobile"+ phone)   
+        
           }
 
 
-          
+        if(!newUser)
+           return  failureReturn('Please register first')
+
         let isPass = await bcrypt.compare(password ,newUser?.user_password)
           
         if(!isPass)
           return  failureReturn('Invalid credential')
-
-        
         
           let payload = {id:newUser.id , username: newUser.username  } 
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
@@ -184,14 +204,81 @@ const  authService = {
       
     } 
     , 
-    createUser  : async function (userPayload: userCreatePayload) {
-        
-         try {
 
+    createNewPhoneUser :async function (userPayload: userCreatePayload)  {
+
+      try {
+          
+        if(!userPayload.accountStatus) {
+          userPayload.accountStatus = false // by default 
+        }
+
+        const {  email , password, userType , username , phone} = userPayload 
+        let userExist  =await  prismaClient.users.findFirst({ 
+          where:{ 
+           phone_no:phone?.toString() 
+           }})
+
+           
+           if (userExist) {
+            if (userExist.is_active) {
+              return failureReturn("User already exists");
+            } else if(!userExist.is_active) {
+              return failureReturn(`Please verify your account by clicking on the link sent on mail: ${email}`);
+            }
+          }
+
+
+        let hashPass  =  await bcrypt.hash(password ?? config.defaultPass ,  10 )
+        // generating user in user table 
+        let newUser = await prismaClient.users.create({
+                data:{
+                    username:username?? generateUsername('SWC'+Math.random()*100) , 
+                    password:hashPass ,
+                    email:email?email:generateEmail(""),
+                    phone_no: userPayload.phone??null,
+                    is_active:userPayload.accountStatus,
+                    traffic_from:userPayload.trafficBy??LoginBy.SWIFTCAB ,
+                    created_on:new Date(),
+                    updated_on:new Date() ,
+                }
+            })  
+          
+
+        // then after to role table 
+         let userRoles =await prismaClient.user_has_roles.create({
+          data:{
+            user_id:newUser.id,
+            role_id:userType,
+            created_on:new Date(),
+            updated_on:new Date() ,
+          }
+         })
+
+      let payload = {id:newUser.id , username: newUser.username  }
+      let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
+          expiresIn: "2h",
+      })
+
+      return successReturn(payload)
+      return successReturn({token , is_active:newUser?.is_active,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :    newUser.last_name }}  )
+       
+    }catch(err) {
+              console.log(err)
+             return failureReturn(err)
+       }
+
+
+    } 
+      , 
+
+    createUser  : async function (userPayload: userCreatePayload) {
+         try {
+          
           if(!userPayload.accountStatus) {
             userPayload.accountStatus = false // by default 
           }
-          
+
           const {  email , password, userType , username} = userPayload 
           let userExist  =await  prismaClient.users.findFirst({ 
             where:{ 
@@ -218,11 +305,12 @@ const  authService = {
           // generating user in user table 
           let newUser = await prismaClient.users.create({
                   data:{
-                      username:username , 
+                      username:username?? generateUsername('SWC'+Math.random()*100) , 
                       password:hashPass ,
-                      email:email,
+                      email:email??"",
+                      phone_no: userPayload.phone??null,
                       is_active:userPayload.accountStatus,
-                      traffic_from:userPayload.trafficBy,
+                      traffic_from:userPayload.trafficBy??LoginBy.SWIFTCAB ,
                       created_on:new Date(),
                       updated_on:new Date() ,
                   }
@@ -246,6 +334,7 @@ const  authService = {
         })
 
 
+        
         // queuing part 
         const authToken = jwt.sign(payload, process.env.SECRET_KEY as string, {
           expiresIn: "5m", // Correct format
@@ -320,6 +409,48 @@ const  authService = {
       }
     },
 
+
+      
+    verifyOtp:async function(payload:verifyOtp ) {
+      try{
+
+        const  { otp ,phone}  = payload
+       // let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username  }})
+       let user = await prismaClient.users.findFirst({
+        where: {
+          phone_no: payload.phone,
+          otp: payload.otp,
+          expiresIn: {
+            gte: new Date(), // Check if expiresIn is greater than or equal to the current time
+          },
+        },
+      });
+  
+
+     
+      if (!user) {
+        return failureReturn("Invalid or expired OTP");
+      }
+  
+      // OTP is valid, now reset it
+      await prismaClient.users.update({
+        where: { id: user.id },
+        data: { otp: null, expiresIn: null },
+      });
+
+
+      let userPayload = {id:user.id , username: user.username  } 
+      let  token =  jwt.sign(userPayload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
+      return successReturn({token ,  usersObj :{  username: user.username , firstName :user.first_name , lastName : user.last_name}}  )  
+     
+      }catch(err) {
+       console.log(err)
+       return failureReturn(err)
+      }
+    },
+
+
+
      sendAuthMail:async function(payload:sendSignupMail ) {
        try{
         const { authenticateUri ,email:to , userId} = payload
@@ -345,9 +476,19 @@ const  authService = {
 
      generateAndSendOtpForLogin:async function(payload:any ) {
       try{
-
-        console.log(payload)
-        return successReturn(true)
+        const { phone, id, username}  =  payload
+        let updates = await prismaClient.users.update({
+           where:{
+             id
+           },
+           data:{
+             is_active:true,
+            otp:'1111',
+            expiresIn: moment().add(2, "minutes").toDate() //  valid for  2 minuted from current 
+           }
+        })
+        
+        return successReturn(updates)
 
         return successReturn(false)
       }catch(err) {

@@ -21,5 +21,18 @@ export const authCelebrate = {
           userType:Joi.number().required(),
           phone:Joi.string().optional()
         }),
-      })    
-}
+      }) ,
+      
+      otpVerify :  celebrate({
+        [Segments.BODY]: Joi.object().keys({
+          otp: Joi.string().required(),
+          phone:Joi.string().required()
+        }),
+      })   ,
+
+     
+
+
+
+
+    }
