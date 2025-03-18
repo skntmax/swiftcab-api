@@ -1,11 +1,12 @@
 import { LoginBy } from "@prisma/client"
 
 export interface userCreatePayload  {
-    email : string 
+    email? : string 
     password :  string , 
-    username : string , 
+    username? : string , 
     userType: number ,
     trafficBy:LoginBy ,
+    phone? : string
     accountStatus?:boolean     
 }
 
@@ -35,6 +36,11 @@ export interface checkValidUser  {
     userType:string
 }
 
+
+export interface verifyOtp  {
+    otp:string,
+    phone:string
+}
 
 
 export interface doesUserHaveRoleOrNot  {

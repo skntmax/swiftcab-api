@@ -67,6 +67,23 @@ const authController  = {
          }
       
       },
+
+      verifyOtp : async  function (req:Request, res:Response):Promise<any> {
+
+         try {
+            
+          let otpVerify =await authService.verifyOtp({otp: req.body.otp , phone: req.body.phone})
+          
+          if(!otpVerify.status)
+          return failureResponse({data:otpVerify.data, message:"Otp not verified" } , res )  
+        
+          return succesResponse({data:otpVerify.data, message:"Otp varified" } , res )  
+
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+      } , 
         
     signUp : async  function (req:Request, res:Response):Promise<any> {
 

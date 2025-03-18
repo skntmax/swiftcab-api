@@ -10,6 +10,7 @@ authRouter.post('/login',authCelebrate.login,  authController.signin )
 authRouter.post('/signup', authCelebrate.signup, authController.signUp )
 
 authRouter.get('/verify-mail-link', middlewares.validateValidAccount  ,  authController.verifyMailLink )
+authRouter.post('/verify-otp', authCelebrate.otpVerify ,   authController.verifyOtp )
 
 authRouter.post('/login-by-oauth',  authController.loginByAuth )
 
