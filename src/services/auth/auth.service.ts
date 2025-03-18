@@ -482,7 +482,7 @@ const  authService = {
              id
            },
            data:{
-             is_active:true,
+            is_active:true,
             otp:'1111',
             expiresIn: moment().add(2, "minutes").toDate() //  valid for  2 minuted from current 
            }
