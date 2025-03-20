@@ -1,0 +1,12 @@
+{
+    "apps": [
+      {
+        "name": "swiftcab-prod-api",
+        "script": "./dist/server.js",
+        "exec_mode": "fork",
+        "watch": false,
+        "instances": "max",
+        "env_file": ".env.production"
+      }
+    ]
+  }
