@@ -1,0 +1,14 @@
+{
+  "apps": [
+    {
+      "name": "swiftcab-dev-api-6001",
+      "script": "node",
+      "args": "./dist/src/server.ts",
+      "interpreter": "cmd",
+      "env": {
+        "PORT": "6001",
+        "NODE_ENV": "DEV"
+      }
+    }
+  ]
+}
