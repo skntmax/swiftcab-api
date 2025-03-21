@@ -4,18 +4,18 @@ const path = require("path");
 const os = require("os");
 
 // Load environment variables from .env.development
-dotenv.config({ path: path.resolve(__dirname, "./../.env.development") });
+dotenv.config({ path: path.resolve(__dirname, "./../.env.production") });
 
 
 // Detect OS type
 const isWindows = os.platform() === "win32";
 
-const ports = [7001 , 7002, 7003 , 7004 , 7005 ];
+const ports = [ 7001 , 7002, 7003 , 7004 , 7005 ];
 
 ports.forEach((port) => {
   const command = isWindows
     ? `set PORT=${port} && cross-env NODE_ENV=PROD nodemon ./src/server.ts  `
-    : `PORT=${port} pm2 start 'npm run prod' --name "swiftcab-dev-api-${port}" --watch`;
+    : `PORT=${port} pm2 start 'npm run prod' --name "swiftcab-prod-api-${port}" --watch`;
 
 
     console.log("command>>>" ,command)
