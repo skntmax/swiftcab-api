@@ -15,7 +15,7 @@ const ports = [6001, 6002, 6003 , 6004 , 6005 ];
 ports.forEach((port) => {
   const command = isWindows
     ? `set PORT=${port} && cross-env NODE_ENV=DEV nodemon ./src/server.ts  `
-    : `PORT=${port} pm2 start 'npm run dev' --name "swiftcab-dev-api-${port}" --watch`;
+    : `PORT=${port} pm2 start 'npm run dev' --name "swiftcab-dev-api-${port}" `;
 
 
     console.log("command>>>" ,command)
