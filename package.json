@@ -17,7 +17,8 @@
     "prisma:reset:dev": "dotenv -e .env.development  -- npx prisma  migrate reset ",
     "prisma:reset:prod": "dotenv -e .env.production  -- npx prisma  migrate reset ",
     "prod": "npx tsc  && cross-env NODE_ENV=PROD node ./dist/server.js",
-    "dev_instance":"node ./load_balancer/dev_multi_instance.js "
+    "dev_multi_instance":"node ./load_balancer/dev_multi_instance.js",
+    "prod_multi_instance":"node ./load_balancer/prod_multi_instance.js"
   },
   "author": "",
   "license": "ISC",

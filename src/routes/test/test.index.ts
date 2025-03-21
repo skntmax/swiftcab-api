@@ -4,8 +4,8 @@ import middlewares, { upload } from "../../middlewares/middleware.index";
 let testRouter  =   Router()
 
 testRouter.get('/status',
-      middlewares.checkRoles,
-      middlewares.roleWisePermission,
+      // middlewares.checkRoles,
+      // middlewares.roleWisePermission,
        testController.checkStatus )
 
 testRouter.get('/insert-vhicle', testController.insertVhicle )
