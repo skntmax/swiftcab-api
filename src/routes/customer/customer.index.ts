@@ -5,10 +5,17 @@ import customerController from "../../controller/customer/customer.controller";
 
 let customerRouter   =   Router()
 
-customerRouter.get('/get-user-details',
+customerRouter.get('/get-customer-details',
     middlewares.checkUserRoles(userRoles.customer) ,
     customerController.getCustomerDetails )
 
+
+    
+customerRouter.post('/update-customer-details',
+    middlewares.checkUserRoles(userRoles.customer) ,
+    customerController.updateCustomerDetails )
+
+    
     
 
 export default customerRouter 

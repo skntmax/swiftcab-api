@@ -12,7 +12,7 @@ import { kyc_varify_details } from "../../types/admin.types"
 import { cld1 } from "../cloudinary"
 import { deleteFiles } from "../../middlewares/middleware.index"
 import { KycStatus } from "@prisma/client"
-import { customerDetails } from "../../types/customer"
+import { customerDetails, updateCustomerDetails } from "../../types/customer"
   
   const  customerService = {
     
@@ -44,7 +44,7 @@ import { customerDetails } from "../../types/customer"
                  }
                ],
                },
-               select:{first_name:true , last_name:true , phone_no:true, email:true, }
+               select:{first_name:true , last_name:true , phone_no:true, email:true, avatar:true }
                 })
 
               return successReturn(customer)
@@ -54,28 +54,41 @@ import { customerDetails } from "../../types/customer"
               }``
           } ,
 
-
-          approveVhicleKyc : async function(payload:approveKycStatus) {
+          updateCustomerDetails : async function(payload:updateCustomerDetails) {
 
             try {
 
-             let updatedVhicleKycStatus =await  prismaClient.vhicle.update({
+             let customerUpdated = await  prismaClient.users.update({
               where:{
-                id:payload.vhicleId ,
-                vhicle_owner_id:payload.ownerId
-              } ,
+                id: payload.userId
+              },
               data:{
-                 kyc_varification:payload.kycStatus,
-                 is_kyc:(payload.kycStatus==KycStatus.COMPLETED || payload.kycStatus==KycStatus.VERIFIED)?true:false 
+                first_name: payload.params.first_name,
+                last_name:payload.params.last_name,
+                avatar:  payload.params.avatar
               }
              })
-             
-              return successReturn(updatedVhicleKycStatus)
-              }catch(err) {
+
+
+             if(!customerUpdated)
+              return failureReturn("profile not updated")
+
+
+             if(customerUpdated)
+              return successReturn("profile updated")
+
+
+          return failureReturn("profile not updated")
+              
+            }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)
               }``
           } ,
+
+
+         
+         
           
 
 
