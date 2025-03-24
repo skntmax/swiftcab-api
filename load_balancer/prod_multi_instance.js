@@ -9,9 +9,11 @@ dotenv.config({ path: path.resolve(__dirname, "./../.env.production") });
 
 // Detect OS type
 const isWindows = os.platform() === "win32";
+let ports =  process.env.PORT.split(',')
+//  ports = [ 7001 , 7002, 7003 , 7004 , 7005 ];
 
-const ports = [ 7001 , 7002, 7003 , 7004 , 7005 ];
 
+console.log("server>>" , ports )
 exec('npx tsc', (error, stdout, stderr) => {
   if (error) {
     console.error(`❌ Error generating production build`, error.message);

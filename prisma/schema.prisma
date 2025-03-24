@@ -166,7 +166,8 @@ model users {
   expiresIn DateTime? 
   isLoggedIn Boolean?
   traffic_from  LoginBy  @default(SWIFTCAB)  
-
+  avatar String? 
+ 
   users_city cities? @relation(fields: [city_id] , references: [id])
   users_locality localities? @relation(fields: [locality_id] , references: [id])
   vh_owner vhicle[]
