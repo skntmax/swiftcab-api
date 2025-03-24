@@ -1,6 +1,7 @@
 import dotenv from "./dotenv"
 const config =  {
-
+      
+      defaulProfileUrl:"https://api.dicebear.com/9.x/avataaars/svg?seed=Christopher",
       cache_time: 7200, // 2 hrs in secods
       quizCacheTime:36000, 
       notification_cache_clear:60, 

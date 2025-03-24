@@ -31,7 +31,8 @@ type UserResult = {
   last_name: string;
   user_password: string;
   is_active?:boolean ,
-  phone_no?:string
+  phone_no?:string,
+  avatar?:string
 };
 
 
@@ -77,7 +78,7 @@ const  authService = {
         let newUserArray :UserResult[] = await prismaClient.$queryRawUnsafe<UserResult[]>(` 
                  SELECT x.*
                 FROM (
-                  SELECT u.id ,  u.username username, 
+                  SELECT u.id ,  u.username username , u.avatar ,   
               u.email email,
               uhr.role_id AS role_id, u.is_active , u.phone_no,
                 COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password user_password 
@@ -135,7 +136,7 @@ const  authService = {
         
           let payload = {id:newUser.id , username: newUser.username  } 
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
-          return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name}}  )  
+          return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name , avatar:newUser.avatar }}  )  
 
       }catch(err) {
           console.log(err)
@@ -190,7 +191,7 @@ const  authService = {
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
            // Fix: Assign the first object to a new variable
 
-            return successReturn({token ,  usersObj :{  username: userExist.username , firstName :userExist.first_name , lastName : userExist.last_name}}  )  
+            return successReturn({token ,  usersObj :{  username: userExist.username , firstName :userExist.first_name , lastName : userExist.last_name , avatar:userExist.avatar   }}  )  
           }
          }
        
