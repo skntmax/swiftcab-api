@@ -5,9 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const testController_index_1 = __importDefault(require("../../controller/test/testController.index"));
-const middleware_index_1 = __importDefault(require("../../middlewares/middleware.index"));
+const middleware_index_1 = require("../../middlewares/middleware.index");
 let testRouter = (0, express_1.Router)();
-testRouter.get('/status', middleware_index_1.default.checkRoles, middleware_index_1.default.roleWisePermission, testController_index_1.default.checkStatus);
+testRouter.get('/status', 
+// middlewares.checkRoles,
+// middlewares.roleWisePermission,
+testController_index_1.default.checkStatus);
 testRouter.get('/insert-vhicle', testController_index_1.default.insertVhicle);
 testRouter.get('/add-services', testController_index_1.default.addVhicleServices);
 testRouter.get('/add-servies-utils', testController_index_1.default.addServicesUtils);
@@ -16,4 +19,6 @@ testRouter.get('/insert-vhicle-types', testController_index_1.default.insertVhic
 testRouter.get('/type-of-user', testController_index_1.default.insertTypeOfUser);
 testRouter.get('/insert-roles', testController_index_1.default.insertRoles);
 testRouter.get('/insert-perm', testController_index_1.default.insertPermissions);
+testRouter.get('/insertFile', middleware_index_1.upload.single('test'), testController_index_1.default.inserFile);
+testRouter.get('/test-mail', testController_index_1.default.testMail);
 exports.default = testRouter;

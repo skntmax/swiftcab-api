@@ -13,12 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = __importDefault(require("../../db"));
+const cloudinary_1 = require("../../services/cloudinary");
+const mailConfig_1 = require("../../config/mailConfig");
+const dotenv_1 = __importDefault(require("../../config/dotenv"));
 // import redisClient from "../../services/redis/redis.index"
 const testController = {
     checkStatus: function (req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             // console.log(vh)
-            res.send({ message: "ok", roles: req.user_has_roles || [], perm: req.role_has_permissions || [] });
+            res.send({ message: "ok", roles: req.user_has_roles || [], perm: req.role_has_permissions || [], PORT: dotenv_1.default.PORT });
         });
     },
     insertVhicle: function (req, res) {
@@ -214,5 +217,50 @@ const testController = {
             res.send({ message: `permissions inserted  ` });
         });
     },
+    inserFile: function (req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                console.log(req.file);
+                let f = req.file;
+                console.log("path>>", f.path);
+                if (f.path) {
+                    let uploaded = yield cloudinary_1.cld1.upload(f.path, "" + Math.random() * 100);
+                    console.log(uploaded);
+                }
+                res.send({ message: `file uploaded  ` });
+            }
+            catch (err) {
+                console.log("err>>", err);
+            }
+        });
+    },
+    testMail: function (req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let result = yield (0, mailConfig_1.sendMail)({
+                    from: "support@swiftcab.in", // sender address
+                    to: "skntmax@gmail.com", // list of receivers
+                    subject: "Hello ✔", // Subject line
+                    text: "Hello world?", // plain text body
+                    html: "<b>Hello world?</b>", // html body
+                });
+                res.send({ message: result });
+            }
+            catch (err) {
+                console.log("err>>", err);
+            }
+        });
+    }
 };
+// obj 
+// {
+//     fieldname: 'test',
+//     originalname: 'Screenshot Capture - 2025-02-23 - 22-49-58.png',
+//     encoding: '7bit',
+//     mimetype: 'image/png',
+//     destination: 'C:\\Users\\skntj\\Desktop\\swiftcab\\src\\assets\\uploads',   
+//     filename: 'test-1740501052695-877653237.png',
+//     path: 'C:\\Users\\skntj\\Desktop\\swiftcab\\src\\assets\\uploads\\test-1740501052695-877653237.png',
+//     size: 439322
+//   }
 exports.default = testController;
