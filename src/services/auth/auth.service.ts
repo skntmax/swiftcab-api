@@ -177,7 +177,7 @@ const  authService = {
             
           if (!userExist) {
             // user does not  exist , then create a new record
-            let newUserObj = { email:newUser.email , password:config.defaultPass , username: generateUsername(newUser.name) , userType:userPayload.userType , trafficBy:userPayload.trafficBy , accountStatus:true}
+            let newUserObj = { email:newUser.email , password:config.defaultPass , username: generateUsername(newUser.name) , userType:userPayload.userType , trafficBy:userPayload.trafficBy , avatar:objPrototype.profile_pic,  accountStatus:true}
             
             let userCreated = await this.createUser(newUserObj) 
             if(!userCreated.status)
@@ -312,6 +312,7 @@ const  authService = {
                       phone_no: userPayload.phone??null,
                       is_active:userPayload.accountStatus,
                       traffic_from:userPayload.trafficBy??LoginBy.SWIFTCAB ,
+                      avatar : userPayload.avatar ?? null  , 
                       created_on:new Date(),
                       updated_on:new Date() ,
                   }
@@ -344,7 +345,7 @@ const  authService = {
         let  authUrl  = `${process.env.NEXT_PUBLIC_API_URL}/${version}/auth/verify-mail-link?token=${authToken}&role=${userType}`
         signup_user_queue.enqueue('user',{authenticateUri:authUrl ,  userId:payload?.id ,email})
 
-        return successReturn({token , is_active:newUser?.is_active,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :    newUser.last_name }}  )
+        return successReturn({token , is_active:newUser?.is_active,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :newUser.last_name  , avatar:newUser.avatar?? null }}  )
          
       }catch(err) {
                 console.log(err)

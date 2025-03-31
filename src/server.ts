@@ -38,3 +38,6 @@ if (!fs.existsSync(uploadDir)) {
 app.listen(port , ()=>{
     console.log(`server started at ${port} `)
 })
+
+
+// health check : https://swiftcab-api.365itsolution.com/v1/test/status
