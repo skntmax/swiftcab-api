@@ -6,7 +6,8 @@ export interface userCreatePayload  {
     username? : string , 
     userType: number ,
     trafficBy:LoginBy ,
-    phone? : string
+    phone? : string,
+    avatar?:string,
     accountStatus?:boolean     
 }
 
