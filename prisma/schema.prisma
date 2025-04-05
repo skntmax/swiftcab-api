@@ -123,8 +123,7 @@ model vhicle_provides_services {
 
   vhicle_id  Int
   service_id Int
- 
-
+  engaged Boolean @default(false)
 
   created_on DateTime @default(now())
   updated_on DateTime
@@ -331,26 +330,47 @@ model users_have_rides {
   vh_service_id Int @unique  
   vh_service vhicle_provides_services @relation(fields: [vh_service_id] , references: [id])
   
-  pickup_time DateTime
-  drop_time  DateTime
-  distance String
+  
+  pickup_date DateTime? 
+  pickup_time DateTime?
+  drop_time  DateTime?
+  return_date  DateTime?
+  distance String?
   
   
   user_id Int   // customer user id 
   user_has_rides users @relation(fields: [user_id] , references: [id] )
 
 
+  
   // state_id Int
   // source_state states @relation(fields: [state_id], references: [id])
-  
 
+
+
+  //  source  location  , lat  , lng   
+  // for future booking ,
   source Int 
   source_location shc_have_localities @relation(fields: [source] , references: [id] ,name: "source_address") 
+  
+  
+ // for  quick booking 
+  source_name String?
+  source_lat  Float? 
+  source_lng  Float? 
 
+
+ // for future booking ,
   destination  Int
   destination_location shc_have_localities @relation(fields: [destination] , references: [id], name: "destination_address")
-  
-  is_guide Int   
+
+ // for  quick booking  ,   
+  destination_name String?
+  destination_lat  Float? 
+  destination_lng  Float? 
+
+
+  is_guide Int    
   have_guid utils_config @relation(fields: [is_guide] , references: [id] ,name: "is_user_have_guid")
 
   is_food   Int  
@@ -359,7 +379,10 @@ model users_have_rides {
   is_water Int 
   have_water utils_config @relation(fields: [is_water] , references: [id],name: "is_user_have_water")
 
-  is_active Boolean @default(true)
+  travel_way       Int
+  ride_travel_way  travel_ways @relation(fields: [travel_way], references: [id])
+
+  is_active Boolean @default(false)
 
   total_price Int
   created_on DateTime @default(now())
@@ -467,4 +490,16 @@ model nav_has_permission_by_role {
   updated_on DateTime   
 
   @@unique([role_id ,nav_item_id])
-} 
+}
+
+
+
+model travel_ways {
+  id Int @id @default(autoincrement())
+
+  travel_way String?
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  ride_travel_way users_have_rides []     
+}
