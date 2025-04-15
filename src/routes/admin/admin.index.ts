@@ -33,7 +33,6 @@ adminRouter.get('/get-nav',
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.getNavbar )
  
-    
 
      
 adminRouter.post('/get-active-users',
@@ -46,14 +45,26 @@ adminRouter.post('/get-vhicle-details',
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.getVhicleDetailsById )
  
-     
 
           
 adminRouter.post('/approve-kyc-request',
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.approveKycRequest )
  
+
      
+               
+adminRouter.post('/remove-user-by-username',
+     middlewares.checkUserRoles(userRoles.admin),
+     ownerController.removeUserByUsername )
+
+
+              
+adminRouter.post('/block-unblock-user',
+     middlewares.checkUserRoles(userRoles.admin),
+     ownerController.blockUnblockuser )
+
+
 
 
 export default adminRouter 

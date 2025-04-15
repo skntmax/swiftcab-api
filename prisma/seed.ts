@@ -15,7 +15,7 @@ async function executeSQLFile(filePath: string) {
        const statements = sql.split(/;\s*$/gm).filter(statement => statement.trim() !== '');
 
        for (const statement of statements) {
-        //  console.log("statments",statement )
+          //  console.log("statments",statement )
          await prisma.$executeRawUnsafe(statement);
        }
 

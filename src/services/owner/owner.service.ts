@@ -3,7 +3,7 @@ import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successR
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { activeUserType, approveKycStatus, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
+import { activeUserType, approveKycStatus, blockUnblockPayload, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, removeUserByUsername, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
@@ -269,7 +269,7 @@ import { KycStatus } from "@prisma/client"
                 // if searched by username or email 
                 let where = `WHERE (u.email like '%${payload.usernameOrEmail}%'  OR u.username like '%${payload.usernameOrEmail}%') AND r."name"='${userRoles.owner}'`
                 let query = ` 
-                      SELECT u.id ,  u.username username,  u.email email, uhr.role_id AS role_id  , r."name"  as role ,
+                      SELECT u.id ,  u.username username,  u.email email, u.is_active as email_verification_pending ,  uhr.role_id AS role_id  , r."name"  as role ,
                       v.id as vhicle_id , v.username as vhicle_username
                       FROM users u
                       INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
@@ -319,7 +319,7 @@ import { KycStatus } from "@prisma/client"
 
 
               // without any search filter 
-              let query = ` select  u.id ,  u.username , u.email,  uhr.role_id ,  r."name" as role  from  users u
+              let query = ` select  u.id  , u.username , u.email,  uhr.role_id , u.is_active as email_verification_pending ,  r."name" as role  from  users u
               inner join user_has_roles uhr on uhr.user_id = u.id 
               inner join  roles r on r.id  = uhr.role_id `
 
@@ -388,7 +388,46 @@ import { KycStatus } from "@prisma/client"
                   return failureReturn(err)
               }``
           } ,
+
           
+          removeUserByUsername : async function(payload:removeUserByUsername) {
+            try {
+              let userRemoveQuery = ` 
+                WITH deleted_roles AS (
+                DELETE FROM user_has_roles 
+                  USING users 
+                  WHERE users.id = user_has_roles.user_id 
+                  AND users.username  = '${payload.username}'
+                  RETURNING user_has_roles.user_id
+              )
+              DELETE FROM users 
+              WHERE id IN (SELECT user_id FROM deleted_roles);
+              `
+             let userRemoved = await  prismaClient.$queryRawUnsafe(userRemoveQuery) 
+
+              return successReturn({user:payload.username })
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+
+          
+          blockUnblockuser : async function(payload:blockUnblockPayload) {
+            try {
+              let blockUnblockQuery = ` 
+                update  users u  
+                set is_active= ${payload.isActive} 
+                where u.username ='${payload.username}'
+                `
+              let userRemoved = await  prismaClient.$queryRawUnsafe(blockUnblockQuery) 
+              return successReturn({user:payload.username })
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+
 
 
 

@@ -199,6 +199,45 @@ const ownerController  = {
         }
     },
 
+    removeUserByUsername  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+       const {username} = req.body
+       const { user_has_roles } = req
+    
+        let userRemoved =await ownerService.removeUserByUsername({ username } ) 
+
+        if(!userRemoved.status)  return succesResponse({data: "null" ,  message:userRemoved?.data } , res )
+
+        return succesResponse({data:userRemoved.data, message:" User removed" } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+
+
+    blockUnblockuser  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+       const {username , isActive=false} = req.body
+       const { user_has_roles } = req
+    
+        let userRemoved =await ownerService.blockUnblockuser({ isActive , username } ) 
+
+        if(!userRemoved.status)  return succesResponse({data: "null" ,  message:userRemoved?.data } , res )
+
+        return succesResponse({data:userRemoved.data, message:" User removed" } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+
     
 }
 
