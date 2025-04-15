@@ -49,7 +49,22 @@ export interface approveKycStatus  {
    vhicleId:number , 
    ownerId :number,
    kycStatus:KycStatus
+}
+
+
+export interface removeUserByUsername  {
+    username: string
 }   
+
+
+
+export interface blockUnblockPayload  {
+   isActive: Boolean
+   username: string
+}   
+
+
+
 
 export interface activeUserType  {
    ownerId :number,
