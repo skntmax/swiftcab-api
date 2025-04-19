@@ -322,7 +322,6 @@ export const middlewares = {
                   id:true , name:true
                 }
               })              
-
               
               // does this role exist in master record or not ?
               if(!role?.id) 

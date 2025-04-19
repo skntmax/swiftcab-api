@@ -47,6 +47,49 @@ INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, crea
 
 
 
+-- Submenus for "Dashboard" (nav_item_id = 10)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('View Summary', false, '/driver/dashboard/summary', 'IconDashboard', 10, NOW(), NOW()),
+('Notifications', false, '/driver/dashboard/notifications', 'IconBell', 10, NOW(), NOW());
+
+-- Submenus for "My Rides" (nav_item_id = 11)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('Upcoming Rides', false, '/driver/my-rides/upcoming', 'IconCalendarEvent', 11, NOW(), NOW()),
+('Completed Rides', false, '/driver/my-rides/completed', 'IconCheck', 11, NOW(), NOW()),
+('Cancelled Rides', false, '/driver/my-rides/cancelled', 'IconBan', 11, NOW(), NOW());
+
+-- Submenus for "Earnings" (nav_item_id = 12)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('Daily Earnings', false, '/driver/earnings/daily', 'IconCurrencyDollar', 12, NOW(), NOW()),
+('Monthly Earnings', false, '/driver/earnings/monthly', 'IconCalendarStats', 12, NOW(), NOW()),
+('Payment History', false, '/driver/earnings/history', 'IconHistory', 12, NOW(), NOW());
+
+-- Submenus for "Ride History" (nav_item_id = 13)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('All Rides', false, '/driver/ride-history/all', 'IconList', 13, NOW(), NOW()),
+('Filter by Date', false, '/driver/ride-history/filter', 'IconFilter', 13, NOW(), NOW());
+
+-- Submenus for "Profile" (nav_item_id = 14)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('View Profile', false, '/driver/profile/view', 'IconUser', 14, NOW(), NOW()),
+('Edit Profile', false, '/driver/profile/edit', 'IconEdit', 14, NOW(), NOW()),
+('Change Password', false, '/driver/profile/password', 'IconLock', 14, NOW(), NOW());
+
+-- Submenus for "Documents" (nav_item_id = 15)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('Upload Documents', false, '/driver/documents/upload', 'IconUpload', 15, NOW(), NOW()),
+('View Documents', false, '/driver/documents/view', 'IconFileText', 15, NOW(), NOW()),
+('Document Status', false, '/driver/documents/status', 'IconFileSearch', 15, NOW(), NOW());
+
+-- Submenus for "Support" (nav_item_id = 16)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('Contact Support', false, '/driver/support/contact', 'IconPhoneCall', 16, NOW(), NOW()),
+('FAQs', false, '/driver/support/faqs', 'IconQuestionMark', 16, NOW(), NOW());
+
+-- Submenus for "Logout" (nav_item_id = 17)
+INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
+('Confirm Logout', false, '/logout', 'IconLogout', 17, NOW(), NOW());
+
 
 
 
