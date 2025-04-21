@@ -60,7 +60,7 @@ adminRouter.post('/remove-user-by-username',
 
 
               
-adminRouter.post('/block-unblock-user',
+adminRouter.post('/block-unblock-user', 
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.blockUnblockuser )
 
