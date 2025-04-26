@@ -1,6 +1,6 @@
 import { Router } from "express";
 import adminController from "../../controller/admin/admin.cotroller";
-import middlewares from "../../middlewares/middleware.index";
+import middlewares, { vhicleAvatarUpload } from "../../middlewares/middleware.index";
 import { userRoles } from "../../config/constant";
 import ownerController from "../../controller/owner/owner.controller";
 let adminRouter  =   Router()
@@ -22,11 +22,16 @@ adminRouter.post('/approve-kyc',
      adminController.approveKyc )
 
 
-
 adminRouter.post('/add-menu', 
      // middlewares.validateUser,
      // middlewares.checkUserRoles(userRoles.admin),
      adminController.addMenu )
+     
+
+adminRouter.post('/add-menu-items', 
+     // middlewares.validateUser,
+     // middlewares.checkUserRoles(userRoles.admin),
+     adminController.addMenuItems )
 
           
 adminRouter.get('/get-nav',
@@ -63,6 +68,13 @@ adminRouter.post('/remove-user-by-username',
 adminRouter.post('/block-unblock-user', 
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.blockUnblockuser )
+
+           
+adminRouter.post('/update-vhicle-avatar', 
+     // middlewares.checkUserRoles(userRoles.admin),
+     vhicleAvatarUpload,
+     ownerController.updateVhicleAvatar )
+
 
 
 

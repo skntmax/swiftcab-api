@@ -26,6 +26,13 @@ masterRouter.get('/get-city-locality/:city_id',
     middlewares.inCache(REDIS_KEYS.GET_LOCALITY),
     masterController.getLocality )
 
+
+        
+masterRouter.get('/get-vhicle-type/',
+    middlewares.inCache(REDIS_KEYS.VHICLE_TYPE),
+    masterController.getVhicleType )
+
+
              
 masterRouter.get('/get-navbar/:userType',
     middlewares.getLoggedinuserRoleId(),

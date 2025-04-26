@@ -2,7 +2,7 @@ import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
-import { kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item } from "../../types/admin.types"
+import { addMenuItemsParams, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item } from "../../types/admin.types"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import ownerService from "../owner/owner.service"
 
@@ -113,7 +113,6 @@ const  adminService = {
 
             // if provided single roles
             if(!Array.isArray(payload.roles)  ) {
-           
                 usersMenu  = await prismaClient.nav_has_permission_by_role.create({
                         data:{ 
                           role_id:payload.roles , 
@@ -131,7 +130,34 @@ const  adminService = {
                return failureReturn(err)  
       }
       
+    } ,
+    
+    addingMenuItems : async function(payload:addMenuItemsParams) {
+      try { 
+        const { nav_item,href,icon,sub_menu} = payload
+          
+         let menuAdded = prismaClient.nav_items.create({
+            data:{
+              nav_item:nav_item ,
+              href ,
+              icon ,
+              sub_menu:true,
+              created_on:  new Date() ,
+              updated_on: new Date()
+            }
+          })
+          
+          if(!menuAdded)
+             return failureReturn({menuAdded , message:"error in adding menu items"})
+            
+          return successReturn(menuAdded)  
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
     } , 
+
 
   }
 
