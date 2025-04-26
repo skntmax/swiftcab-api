@@ -42,6 +42,7 @@ export interface NavItem  {
     sub_nav_item: string;
     sub_href: string;
     sub_icon: string;
+    icon?:string
   };
 
   
@@ -89,21 +90,42 @@ export function transformNavItems(navItems: NavItem[] , username: string, roleTy
   let idCounter = 1;
 
   for (const item of navItems) {
+
     if (!seenNavItems.has(item.nav_item)) {
       transformedArray.push({
-        navlabel: true,
+        navlabel: item.sub_menu,
         subheader: item.nav_item,
-        href: `/${roleType}/${username}/?tabs=undefined`
+        href: `/${roleType}/${username}/?tabs=${item?.href}`
       });
       seenNavItems.add(item.nav_item);
     }
 
-    transformedArray.push({
-      id: idCounter.toString(),
-      title: item.sub_nav_item,
-      icon: item.sub_icon,
-      href: `/${roleType}/${username}/?tabs=${item.sub_href.replace("/", "")} `
-    });
+    // having submenu
+    if(item.sub_menu) {
+      transformedArray.push({
+        id: idCounter.toString(),
+        title: item.sub_nav_item,
+        icon: item.sub_icon,
+        href: `/${roleType}/${username}/?tabs=${
+          (item?.sub_href ||  item?.href)?.replace("/", "")?? 
+          ""} `
+      });  
+    }
+
+
+    // single menu 
+    if(!item.sub_menu) {
+      transformedArray.push({
+        id: idCounter.toString(),
+        title: item.nav_item,
+        icon: item.icon,
+        href: `/${roleType}/${username}/?tabs=${
+          (item?.href)?.replace("/", "")?? 
+          ""} `
+      });  
+    }
+
+   
     idCounter++;
   }
 

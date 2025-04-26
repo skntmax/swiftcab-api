@@ -17,9 +17,14 @@ export interface kyc_varify_details  {
   is_kyc?: Boolean
  }   
  
+  
+  export interface addMenuItemsParams  {
+    nav_item? : string,
+    sub_menu? : Boolean,
+    href? :  string,
+    icon? :  string,
+  }   
  
- 
-
 
  export interface nav_menu_item  {
   roles:number | number[],

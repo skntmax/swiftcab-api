@@ -19,7 +19,15 @@ INSERT INTO nav_items (nav_item, sub_menu, href, icon, created_on, updated_on) V
 ('Profile', true, NULL, NULL, NOW(), NOW()),
 ('Documents', true, NULL, NULL, NOW(), NOW()),
 ('Support', true, NULL, NULL, NOW(), NOW()),
-('Logout', true, NULL, NULL, NOW(), NOW());
+('Logout', true, NULL, NULL, NOW(), NOW()),
 
-
-
+--  for admin 
+('Vehicle Management', true, NULL, 'IconCar', NOW(), NOW()),
+('Vehicle Types', false, '/vhicle-types', 'IconCar', NOW(), NOW()),
+('Driver Documents', true, NULL, 'IconFileText', NOW(), NOW()),
+('Service Areas', true, NULL, 'IconMap2', NOW(), NOW()),
+('Cities', true, NULL, 'IconMapPin', NOW(), NOW()),
+('Promo Codes', true, NULL, 'IconDiscount2', NOW(), NOW()),
+('Earnings Settings', true, NULL, 'IconWallet', NOW(), NOW()),
+('Cancellation Reasons', true, NULL, 'IconCircleX', NOW(), NOW()),
+('Support Topics', true, NULL, 'IconHelpCircle', NOW(), NOW());

@@ -238,6 +238,25 @@ const ownerController  = {
         }
     },
 
+    updateVhicleAvatar  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+
+        let docs =  req.files 
+    
+        let updateVhicleAvatar =await ownerService.updateVhicleAvatar({ docs } ) 
+
+        if(!updateVhicleAvatar.status)  return succesResponse({data: updateVhicleAvatar?.data ,  message:updateVhicleAvatar?.data } , res )
+
+        return succesResponse({data:updateVhicleAvatar.data, message:" User removed" } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+
     
 }
 

@@ -238,10 +238,10 @@ import { KycStatus } from "@prisma/client"
             try {
     
              let navbarByRole:NavItem[] =await  prismaClient.$queryRawUnsafe(` 
-              select r."name" as role , ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , sni.icon  as sub_icon    from nav_items ni 
+              select r."name" as role , ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , ni.icon as icon, sni.icon  as sub_icon    from nav_items ni 
               inner join nav_has_permission_by_role nhpbr ON nhpbr.nav_item_id = ni.id 
               inner join roles r ON r.id = nhpbr.role_id 
-              inner join  sub_nav_items sni on  ni.id  = sni.nav_item_id
+              left join  sub_nav_items sni on  ni.id  = sni.nav_item_id
               where nhpbr.role_id = ${payload.role}
               `)
 
@@ -427,7 +427,27 @@ import { KycStatus } from "@prisma/client"
                   return failureReturn(err)
               }``
           } ,
+          updateVhicleAvatar :  async function({docs}:any) {
+            try {
+              
+              const {vh_avatar}  = docs
+              if( vh_avatar && vh_avatar?.length==0 )
+                 return failureReturn(" Documents if mendatory")  
+                
+              let vhicleAvatarPath =await cld1.upload(vh_avatar[0]?.path ,`${new Date()}-${uuidv4()}` )
+              
+              if(!vhicleAvatarPath )  {
+                return failureReturn({ erroMessage:"Not uploaded on cloudinary " , error:{vhicleAvatarPath }  } ) 
+              }
 
+              let {url:avatar_url}  = vhicleAvatarPath 
+              await deleteFiles([vh_avatar[0]]);
+              return successReturn({avatar_url })
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
 
 
 

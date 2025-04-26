@@ -74,6 +74,27 @@ const adminController  = {
       
        } ,
 
+       addMenuItems : async function (req:Request, res:Response):Promise<any> {
+        try {
+
+          // const {userId , username} = req.userObj
+          const { nav_item="" , sub_menu=false , href=null, icon=null,  } = req.body 
+
+          let menuItemAdded =await authService.addingMenuItems({nav_item,href,icon,sub_menu})
+          if(!menuItemAdded.status)
+             return succesResponse({data:menuItemAdded.data, message:"error in adding menu" } , res )  
+        
+          return succesResponse({data:menuItemAdded.data, message:"primary menu added  " } , res )  
+           
+         }catch(err) {
+          console.log("err",err)
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+
+
 
 }
 

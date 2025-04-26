@@ -19,8 +19,6 @@ const  masterService = {
           })
 
          if(cacheKey && countries ){
-          
-        
            await redisClient1.set(cacheKey , JSON.stringify(countries), )
            await redisClient1.expire(cacheKey ,config.cache_time  )
          }
@@ -112,6 +110,31 @@ const  masterService = {
          }
            
         return successReturn(locality)  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } , 
+
+    getVhicleType : async function(cacheKey?:string) {
+
+      try {
+
+          let vhicleType =await prismaClient.type_of_vhicle.findMany({
+             select:{
+               vhicle_type:true,
+               avatar:true
+             }
+          })
+
+         if(cacheKey && vhicleType ){
+           await redisClient1.set(cacheKey , JSON.stringify(vhicleType), )
+           await redisClient1.expire(cacheKey ,config.cache_time  )
+         }
+           
+        return successReturn(vhicleType)  
 
       }catch(err) {
           console.log(err)

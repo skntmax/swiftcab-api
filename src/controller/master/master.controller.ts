@@ -79,6 +79,26 @@ const masterController  = {
          }
       
        } ,
+
+       getVhicleType: async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+ 
+          const { cacheKey }  = req 
+          const {  city_id }  = req.params 
+          let vhicleTypelist =await masterService.getVhicleType(cacheKey)
+          
+          if(!vhicleTypelist.status)
+             return succesResponse({data:vhicleTypelist.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:vhicleTypelist.data, message:" vhicle types" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
     
 
     
