@@ -172,8 +172,17 @@ model users {
   users_locality localities? @relation(fields: [locality_id] , references: [id])
   vh_owner vhicle[]
   user_has_rides users_have_rides[]
+  
   // owner_of_vhicle owner_has_vhicles[] 
   active_role user_has_roles[]
+
+  // driver belings to owners or to an owner   
+  owner_id driver_belongs_to_owner[] @relation("owner_has_drivers") 
+  driver_id driver_belongs_to_owner[] @relation("active_driver")
+   
+  // driver profile 
+  driver_profile_id driver_profile? @relation("driver_profile")
+  
   created_on DateTime @default(now())
   updated_on DateTime
 }
@@ -503,4 +512,36 @@ model travel_ways {
   updated_on DateTime
 
   ride_travel_way users_have_rides []     
+}
+
+
+model  driver_belongs_to_owner  {
+   id Int @id @default(autoincrement())   
+
+   owner  Int   
+   owner_id users @relation(fields: [owner] , references: [id] , name:"owner_has_drivers")
+
+   driver Int
+   driver_id users @relation(fields: [driver] , references: [id], name: "active_driver")    
+  
+  created_on DateTime @default(now())
+  updated_on DateTime
+ 
+}
+
+model  driver_profile  {
+   id Int @id @default(autoincrement())   
+
+   DL  String?
+   RC String?
+   insurance String?
+   pan_card String?
+   adhar_card String?
+
+   driver Int @unique
+   driver_profile_id users @relation(fields: [driver] , references: [id], name: "driver_profile")    
+    
+  created_on DateTime @default(now())
+  updated_on DateTime
+ 
 }

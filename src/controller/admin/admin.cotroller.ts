@@ -93,6 +93,46 @@ const adminController  = {
       
        } ,
 
+       getUsersByRole : async function (req:Request, res:Response):Promise<any> {
+        try {
+
+          const { role_id , limit=10 , pn=1 , pagePerSize=5 } = req.body
+          let menuItemAdded =await authService.getUsersByRole({role_id: role_id , limit, pagePerSize , pn})
+          if(!menuItemAdded.status)
+             return succesResponse({data:menuItemAdded.data, message:"error in getting role based user" } , res )  
+        
+          return succesResponse({data:menuItemAdded.data, message:" role based user fetched succesfully" } , res )  
+           
+         }catch(err) {
+          console.log("err",err)
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+       addRoleToUsers : async function (req:Request, res:Response):Promise<any> {
+        try {
+
+          // const {userId , username} = req.userObj
+          const { role_id ,userId  } : {role_id: number ,  userId: number } = req.body
+          let args = {
+             userId,
+             role_id
+          }
+          let menuItemAdded =await authService.addRolesToUsers(args)
+          if(!menuItemAdded.status)
+             return succesResponse({data:menuItemAdded.data, message:"error in adding roles" } , res )  
+        
+          return succesResponse({data:menuItemAdded.data, message:" role added" } , res )  
+           
+         }catch(err) {
+          console.log("err",err)
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+
 
 
 

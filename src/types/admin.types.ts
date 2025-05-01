@@ -40,9 +40,29 @@ export interface nav_has_permission_by_role_schema  {
    
 }   
  
+
+
+
+export interface get_users_by_role_schema  {
+  role_id:number | number[] ,    
+  limit?: Number,
+  pn? : Number,
+  pagePerSize?: Number
+}   
  
+
+export interface add_roles_to_user  {
+  role_id: number 
+  userId :  number
+}   
  
+
  
- 
+export interface roleTypeUserTypes{
+  id :number
+  username: string;
+  email: string;
+  };
+
  
  
