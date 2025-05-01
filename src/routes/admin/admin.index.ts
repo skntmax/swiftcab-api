@@ -3,6 +3,7 @@ import adminController from "../../controller/admin/admin.cotroller";
 import middlewares, { vhicleAvatarUpload } from "../../middlewares/middleware.index";
 import { userRoles } from "../../config/constant";
 import ownerController from "../../controller/owner/owner.controller";
+import { adminCelebrate } from "../../celebrate/admin.celebrate";
 let adminRouter  =   Router()
 
 
@@ -13,7 +14,7 @@ adminRouter.get('/get-all-vhicles',
 
      
 adminRouter.get('/service-list', 
-     adminController.serviceList )
+adminController.serviceList )
 
 
 adminRouter.post('/approve-kyc', 
@@ -74,6 +75,20 @@ adminRouter.post('/update-vhicle-avatar',
      // middlewares.checkUserRoles(userRoles.admin),
      vhicleAvatarUpload,
      ownerController.updateVhicleAvatar )
+
+adminRouter.post('/get-user-by-role',
+     // adminCelebrate.roleBasedUser, 
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.getUsersByRole )
+
+
+
+adminRouter.post('/add-role-to-users',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.addRoleToUsers )
+
+          
+          
 
 
 

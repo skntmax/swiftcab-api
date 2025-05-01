@@ -34,7 +34,8 @@ INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, crea
 
 
 -- Submenus for admin section  "roles" (nav_item_id = 7)
-('Role management', false, '/role-management', 'IconUserCircle', 7, NOW(), NOW()),
+('Role management', false, '/role-management', 'IconUsersGroup', 7, NOW(), NOW()),
+('Assign roles', false, '/assing-roles', 'IconUserPlus', 7, NOW(), NOW()),
 
 
 -- Submenus for admin section  "permissions" (nav_item_id = 8)

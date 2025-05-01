@@ -124,6 +124,7 @@ const  masterService = {
 
           let vhicleType =await prismaClient.type_of_vhicle.findMany({
              select:{
+                id:true,
                vhicle_type:true,
                avatar:true
              }

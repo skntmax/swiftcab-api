@@ -95,8 +95,6 @@ import { KycStatus } from "@prisma/client"
                   console.log("err>>",err)
                     return failureReturn(err)
               }
-
-
     } , 
 
 
