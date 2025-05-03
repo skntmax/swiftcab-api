@@ -52,16 +52,19 @@ export interface get_users_by_role_schema  {
  
 
 export interface add_roles_to_user  {
-  role_id: number 
+  role_id:  number[]
   userId :  number
 }   
  
 
  
 export interface roleTypeUserTypes{
-  id :number
+  id :number;
+  role_id:  number;
+  role : string;
   username: string;
   email: string;
+  total : number
   };
 
  

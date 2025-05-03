@@ -114,7 +114,7 @@ const adminController  = {
         try {
 
           // const {userId , username} = req.userObj
-          const { role_id ,userId  } : {role_id: number ,  userId: number } = req.body
+          const { role_id ,userId  } : {role_id: number[] ,  userId: number } = req.body
           let args = {
              userId,
              role_id
