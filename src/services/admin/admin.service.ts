@@ -7,6 +7,14 @@ import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload 
 import ownerService from "../owner/owner.service"
 
 
+type GroupedUser = {
+  username: string;
+  id: number;
+  email: string;
+  total: number;
+  roleId: number[];
+  role: string[];
+};
 const  adminService = {
     
     getAllVhicles : async function() {
@@ -167,19 +175,46 @@ const  adminService = {
       let offset = (Number(payload.pn) - 1) * Number(payload.limit);
       
       let userByRole: roleTypeUserTypes[] = await prismaClient.$queryRawUnsafe<roleTypeUserTypes[]>(` 
-        SELECT u.username, u.id, u.email,
+        SELECT u.username, u.id, u.email , r.id as role_id , r.name  as role ,
                CAST(COUNT(*) OVER() AS INTEGER) AS total
-        FROM users u WHERE u.id IN (
+        FROM users u 
+        	INNER JOIN  user_has_roles uhr2 on uhr2.user_id =  u.id
+					inner join roles r ON r.id = uhr2.role_id 
+        WHERE u.id IN (
           SELECT uhr.user_id FROM user_has_roles uhr 
           WHERE uhr.role_id IN (${roleIdString})
         )
         OFFSET $1 LIMIT $2
       `, offset, payload.limit);
 
-          if(!userByRole)
-             return failureReturn({userByRole , message:"error in getting role based user "})
 
-          return successReturn(userByRole)  
+      // grouping by username 
+      const groupedUsers: GroupedUser[] = userByRole.reduce((acc: GroupedUser[], ele) => {
+        const existingUser = acc.find(item => item.username === ele.username);
+        if (existingUser) {
+          // If the user already exists, push new role data
+          existingUser.roleId.push(ele.role_id);
+          existingUser.role.push(ele.role);
+        } else {
+          // Else create a new entry
+          acc.push({
+            username: ele.username,
+            id: ele.id,
+            email: ele.email,
+            total: ele.total,
+            roleId: [ele.role_id],
+            role: [ele.role]
+          });
+        }
+      
+        return acc;
+      }, []);
+
+      
+      if(!groupedUsers)
+             return failureReturn({users:null  , message:"error in getting role based user "})
+
+          return successReturn({users:groupedUsers , metadata:{ page:payload.pn,limit:payload.limit , total: groupedUsers[0]?.total } })  
       }catch(err) {
           console.log(err)
                return failureReturn(err)  
@@ -187,23 +222,68 @@ const  adminService = {
       
     } , 
 
+    removeRolesByUserId : async function (userId:number) {
+  
+      let status = false
+      
+      let deletedRoles =await  primsaClient.$queryRawUnsafe(`
+          DELETE FROM user_has_roles uhr
+          USING users u
+          WHERE u.id = uhr.user_id
+            AND u.id = $1 ;
+        `,userId)
+       
+       if(deletedRoles) 
+           status= true
+
+       console.log(status)
+        return status 
+      } ,
 
     addRolesToUsers : async function(payload:add_roles_to_user) {
       try { 
 
-        let roleAdded = await prismaClient.user_has_roles.create({
-           data:{
-             role_id: payload.role_id,
-             user_id: payload.userId,
-             created_on:  new Date() ,
-             updated_on: new Date()
-           }
-        }) 
-         
-          if(!roleAdded)
-             return failureReturn({roleAdded , message:"error in adding roles "})
+      // delete existing user 
+        let existingRolesDeleted =await this.removeRolesByUserId(payload.userId)
+      if(!existingRolesDeleted)
+        return failureReturn({ message:"unable to delete user , due to existing user conflict"})
 
-          return successReturn(roleAdded)  
+
+      // updategin roles for more than 1 role
+      if(Array.isArray(payload.role_id) && payload.role_id.length>1 ) {
+        for(let i=0; i<payload.role_id.length;i++) {
+          await prismaClient.user_has_roles.create({
+            data:{
+              role_id: payload.role_id[i],
+              user_id: payload.userId,
+              created_on:  new Date() ,
+              updated_on: new Date()
+            }
+         })    
+        }
+        return successReturn("roles updated")  
+       }
+
+      // updategin roles for roles equivalent to 1 
+       if(Array.isArray(payload.role_id) && payload.role_id.length==1 ) {
+        let roleAdded = await prismaClient.user_has_roles.create({
+          data:{
+            role_id: payload.role_id[0],
+            user_id: payload.userId,
+            created_on:  new Date() ,
+            updated_on: new Date()
+          }
+       }) 
+        
+         if(!roleAdded)
+            return failureReturn({roleAdded , message:"error in adding roles "})
+
+         return successReturn(roleAdded)  
+       }
+
+
+       return failureReturn({undefined , message:"error in adding roles "})
+       
       }catch(err) {
           console.log(err)
                return failureReturn(err)  
