@@ -1,3 +1,4 @@
+--  for owners
 INSERT INTO nav_items (nav_item, sub_menu, href, icon, created_on, updated_on) VALUES
 ('Vhicles', true, NULL, NULL, NOW(), NOW()),
 ('Rides', true, NULL, NULL, NOW(), NOW()),
@@ -30,4 +31,9 @@ INSERT INTO nav_items (nav_item, sub_menu, href, icon, created_on, updated_on) V
 ('Promo Codes', true, NULL, 'IconDiscount2', NOW(), NOW()),
 ('Earnings Settings', true, NULL, 'IconWallet', NOW(), NOW()),
 ('Cancellation Reasons', true, NULL, 'IconCircleX', NOW(), NOW()),
-('Support Topics', true, NULL, 'IconHelpCircle', NOW(), NOW());
+('Support Topics', true, NULL, 'IconHelpCircle', NOW(), NOW()),
+
+-- owners 
+('Drivers', true, NULL, NULL, NOW(), NOW()),
+('Manage Navbar', true, NULL, NULL, NOW(), NOW());
+

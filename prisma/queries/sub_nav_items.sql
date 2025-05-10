@@ -5,6 +5,7 @@ INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, crea
 ('Add vhicle services', false, '/add-vhicles-services', 'IconDeviceImacSearch', 1, NOW(), NOW()),
 ('Vhicles occupied services', false, '/vhicles-services', 'IconDevicesHeart', 1, NOW(), NOW()),
 ('KYC update', false, '/kyc-update', 'IconCaravan', 1, NOW(), NOW()),
+('Occupied Drivers', false, '/occupied-drivers', 'IconCaravan', 27, NOW(), NOW()),
 
 -- Submenus for "Rides" (nav_item_id = 2)
 ('Today rides', false, '/today-rides', 'IconRoad', 2, NOW(), NOW()),
