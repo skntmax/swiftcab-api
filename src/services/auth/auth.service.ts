@@ -92,10 +92,6 @@ const  authService = {
       
           // Fix: Assign the first object to a new variable
         let newUser: UserResult | undefined = newUserArray.length > 0 ? newUserArray[0] : undefined;
-
-        console.log(newUser,"newUser")
-
-
           
           // if logged in by phone m then added in the queue 
           if(phone)  {
