@@ -64,7 +64,16 @@ export interface add_navigation  {
   href: string
   icon?: string
 }   
- 
+
+
+export interface add_sub_navigation  {
+  sub_nav_item: string
+  nav_item_id:  number
+  sub_menu:  boolean
+  href: string
+  icon?: string
+}   
+
 
  
 export interface roleTypeUserTypes{

@@ -87,12 +87,23 @@ adminRouter.post('/add-role-to-users',
      middlewares.checkUserRoles(userRoles.admin),
      adminController.addRoleToUsers )
 
+     
+adminRouter.post('/get-navbar-list',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.getNavbarItem )
 
      
 adminRouter.post('/add-navbar',
      middlewares.checkUserRoles(userRoles.admin),
      adminController.addNavbar )
 
+
+adminRouter.post('/add-subnavbar',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.addSubNavbar )
+
+
+          
 
           
           

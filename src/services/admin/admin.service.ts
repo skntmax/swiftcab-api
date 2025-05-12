@@ -2,7 +2,7 @@ import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
-import { add_navigation, add_roles_to_user, addMenuItemsParams, get_users_by_role_schema, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, roleTypeUserTypes } from "../../types/admin.types"
+import { add_navigation, add_roles_to_user, add_sub_navigation, addMenuItemsParams, get_users_by_role_schema, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, roleTypeUserTypes } from "../../types/admin.types"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import ownerService from "../owner/owner.service"
 
@@ -291,8 +291,37 @@ const  adminService = {
       
     } , 
 
+    getNavbarItem : async function () {    
+      let navBarItem = await  primsaClient.nav_items.findMany({
+        select:{
+          id:true,
+          nav_item:true , 
+          href:true ,
+          icon: true 
+        }
+      })    
+  
+       if(!navBarItem)
+         return failureReturn(navBarItem)
+         
+     return  successReturn(navBarItem)   
+    } ,  
+
     addNavbar : async function (params:add_navigation) {
   
+    let exist =await primsaClient.nav_items.findFirst({
+      where:{
+         OR:[
+            {nav_item: params.nav_item},
+            {href:params.href} 
+         ]   
+      }
+    }) 
+    
+    if(exist) {
+    return failureReturn(exist)
+     }
+    
      let addedNavbar = await  primsaClient.nav_items.create({
        data:{
          nav_item:params.nav_item,
@@ -308,11 +337,46 @@ const  adminService = {
      if(!addedNavbar) 
         return failureReturn({data:"some failure occured"})
     
-        return  successReturn(addedNavbar)   
+        return  successReturn({message:"navbar added" , data: { navbar:addedNavbar?.nav_item , href: addedNavbar.href } } )   
       } ,
 
 
+      
+    addSubNavbar : async function (params:add_sub_navigation) {
 
+    // checking existing record 
+   let exist = await prismaClient.sub_nav_items.findFirst({
+      where: {
+        AND: [
+          { href: params.href },
+          { nav_item_id: params.nav_item_id }
+        ]
+      }
+    });
+        
+    if(exist) {
+      return failureReturn(exist)
+     }
+  
+
+     let addedSubNavbar = await  primsaClient.sub_nav_items.create({
+       data:{
+         sub_nav_item:params.sub_nav_item,
+         sub_menu:params.sub_menu,
+         href: params.href,
+         icon:params.icon,
+         nav_item_id:params.nav_item_id,
+         created_on:  new Date() ,
+         updated_on: new Date()
+       }
+     })
+     
+
+     if(!addedSubNavbar) 
+        return failureReturn({data:"some failure occured"})
+    
+        return  successReturn(addedSubNavbar)   
+      } ,
   }
 
 
