@@ -57,6 +57,15 @@ export interface add_roles_to_user  {
 }   
  
 
+
+export interface add_navigation  {
+  nav_item:  string
+  sub_menu:  boolean
+  href: string
+  icon?: string
+}   
+ 
+
  
 export interface roleTypeUserTypes{
   id :number;

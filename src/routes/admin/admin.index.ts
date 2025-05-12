@@ -31,7 +31,7 @@ adminRouter.post('/add-menu',
 
 adminRouter.post('/add-menu-items', 
      // middlewares.validateUser,
-     // middlewares.checkUserRoles(userRoles.admin),
+     middlewares.checkUserRoles(userRoles.admin),
      adminController.addMenuItems )
 
           
@@ -86,6 +86,13 @@ adminRouter.post('/get-user-by-role',
 adminRouter.post('/add-role-to-users',
      middlewares.checkUserRoles(userRoles.admin),
      adminController.addRoleToUsers )
+
+
+     
+adminRouter.post('/add-navbar',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.addNavbar )
+
 
           
           

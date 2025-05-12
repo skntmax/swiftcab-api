@@ -134,6 +134,28 @@ const adminController  = {
 
 
 
+       
+       addNavbar : async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const {  nav_item  , sub_menu  , href  , icon=null  } = req.body
+           let menuItemAdded =await authService.addNavbar({nav_item  , sub_menu  , href  , icon})
+           if(!menuItemAdded.status)
+              return succesResponse({data:menuItemAdded.data, message:"error in adding menu items " } , res )  
+         
+           return succesResponse({data:menuItemAdded.data, message:" menu items added " } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+       
+        } ,
+ 
+
+        
+
 
 
 }
