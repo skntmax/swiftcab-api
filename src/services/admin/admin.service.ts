@@ -2,7 +2,7 @@ import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
-import { add_roles_to_user, addMenuItemsParams, get_users_by_role_schema, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, roleTypeUserTypes } from "../../types/admin.types"
+import { add_navigation, add_roles_to_user, addMenuItemsParams, get_users_by_role_schema, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, roleTypeUserTypes } from "../../types/admin.types"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import ownerService from "../owner/owner.service"
 
@@ -290,6 +290,26 @@ const  adminService = {
       }
       
     } , 
+
+    addNavbar : async function (params:add_navigation) {
+  
+     let addedNavbar = await  primsaClient.nav_items.create({
+       data:{
+         nav_item:params.nav_item,
+         sub_menu:params.sub_menu,
+         href: params.href,
+         icon:params.icon,
+         created_on:  new Date() ,
+         updated_on: new Date()
+       }
+     })
+     
+
+     if(!addedNavbar) 
+        return failureReturn({data:"some failure occured"})
+    
+        return  successReturn(addedNavbar)   
+      } ,
 
 
 

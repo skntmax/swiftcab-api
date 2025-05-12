@@ -27,8 +27,6 @@ INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, crea
 
 
 
-
-
 -- Submenus for admin section  "owner" (nav_item_id = 6)
 ('User Management', false, '/user-management', 'IconCrown', 6, NOW(), NOW()),
 
@@ -90,9 +88,12 @@ INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, crea
 
 -- Submenus for "Logout" (nav_item_id = 17)
 INSERT INTO sub_nav_items (sub_nav_item, sub_menu, href, icon, nav_item_id, created_on, updated_on) VALUES
-('Confirm Logout', false, '/logout', 'IconLogout', 17, NOW(), NOW());
+('Confirm Logout', false, '/logout', 'IconLogout', 17, NOW(), NOW()),
 
-
+-- submenu for  mamaging navbar by admin section
+('Manage Nav Items', false, '/nav-items', 'IconNotes', 28, NOW(), NOW()),
+('Manage SubItem Navigation', false, '/sub-nav-items', 'IconListTree', 28, NOW(), NOW()),
+('Assing Menu to Roles', false, '/menu-assigned-to-roles', 'IconUserCheck', 28, NOW(), NOW());
 
 
 
