@@ -133,6 +133,27 @@ const adminController  = {
        } ,
 
 
+            
+       getNavbarItem : async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+          //  const {  nav_item  , sub_menu  , href  , icon=null  } = req.body
+           let navbarMenuItem =await authService.getNavbarItem()
+           if(!navbarMenuItem.status)
+              return failureResponse({data:navbarMenuItem.data, message:"error in gettnig menu items " } , res )  
+         
+           return succesResponse({data:navbarMenuItem.data, message:" Nabar Items " } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+       
+        } ,
+
+        
+
 
        
        addNavbar : async function (req:Request, res:Response):Promise<any> {
@@ -142,7 +163,7 @@ const adminController  = {
            const {  nav_item  , sub_menu  , href  , icon=null  } = req.body
            let menuItemAdded =await authService.addNavbar({nav_item  , sub_menu  , href  , icon})
            if(!menuItemAdded.status)
-              return succesResponse({data:menuItemAdded.data, message:"error in adding menu items " } , res )  
+              return failureResponse({data:menuItemAdded.data, message:"Navitem or  href already exist" } , res )  
          
            return succesResponse({data:menuItemAdded.data, message:" menu items added " } , res )  
             
@@ -152,6 +173,25 @@ const adminController  = {
           }
        
         } ,
+           
+       addSubNavbar : async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const {  sub_nav_item , sub_menu=true  , href="/"  , icon=null ,nav_item_id  ,  } = req.body
+           let subMenuItemAdded =await authService.addSubNavbar({sub_nav_item ,   sub_menu  , href  , icon ,nav_item_id  ,})
+           if(!subMenuItemAdded.status)
+              return failureResponse({data:subMenuItemAdded.data, message:"Might be href already lies in navitem , please try using other href " } , res )  
+         
+           return succesResponse({data:subMenuItemAdded.data, message:" submenu items added " } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+       
+        } ,
+
  
 
         
