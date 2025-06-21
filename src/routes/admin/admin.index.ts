@@ -25,7 +25,7 @@ adminRouter.post('/approve-kyc',
 
 adminRouter.post('/add-menu', 
      // middlewares.validateUser,
-     // middlewares.checkUserRoles(userRoles.admin),
+     middlewares.checkUserRoles(userRoles.admin),
      adminController.addMenu )
      
 
