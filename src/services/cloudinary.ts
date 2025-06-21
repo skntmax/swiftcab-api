@@ -31,21 +31,27 @@ class Cloudinary {
 
      upload(filepath:string ,public_id:string ,  options:any= {}) {        
         try {
-            console.log("file uploading to cloudinary")
+       console.log("file params " ,{
+         filepath ,
+         public_id,
+         options
+       })
        return  this.state.uploader.upload(
             filepath , {
                public_id ,
            }
        ).then((res:any)=>{
-               console.log("url generated>>" , res?.url )
+       console.log("url generated>>" , res?.url )
         return  res 
        })
        .catch((error:any) => {
-           return error;
+        console.log("err while uploading", error)
+        return error;
        }).finally(()=>{
-        console.log("uploading finished")
+        console.log("uploading cycle finished ")
        })
         }catch(err) {
+            console.log("err>>", err)
             return err 
         }
          

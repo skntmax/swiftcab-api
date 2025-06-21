@@ -447,6 +447,28 @@ import { KycStatus } from "@prisma/client"
               }``
           } ,
 
+          uploadMasterDoc :   async function({docs}:any) {
+            try {
+              
+              const {doc} = docs
+              if( doc && doc?.length==0 )
+                 return failureReturn(" Documents if mendatory")  
+                
+              let docPath =await cld1.upload(doc[0]?.path ,`${new Date()}-${uuidv4()}` )
+              
+              if(!docPath )  {
+                return failureReturn({ erroMessage:"Not uploaded on cloudinary " , error:{docPath }  } ) 
+              }
+
+              let {url:doc_url}  = docPath 
+              await deleteFiles([doc[0]]);
+              return successReturn({doc_url })
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+
 
 
 

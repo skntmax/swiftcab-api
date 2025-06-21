@@ -485,6 +485,7 @@ model sub_nav_items  {
   href String?
   icon String?
   nav_item_id Int
+  is_active Boolean @default(true)
   sub_nav_belogs_to  nav_items @relation(fields: [nav_item_id] , references: [id])
   created_on DateTime @default(now())
   updated_on DateTime   
@@ -505,8 +506,6 @@ model nav_has_permission_by_role {
 
   @@unique([role_id ,nav_item_id])
 }
-
-
 
 model travel_ways {
   id Int @id @default(autoincrement())
@@ -546,7 +545,7 @@ model  driver_profile  {
    driver Int @unique
    driver_profile_id users @relation(fields: [driver] , references: [id], name: "driver_profile")    
     
-  engaged Boolean?
+  engaged Boolean? @default(false)
   
   engaged_with_owner Int? @unique
   engaged_with_which_owner users? @relation(fields: [engaged_with_owner] , references: [id], name: "engaged_with_which_owner")    
@@ -566,6 +565,6 @@ model  driver_profile  {
   is_bank_varified Boolean? @default(false) 
 
   created_on DateTime @default(now())
-  updated_on DateTime
+  updated_on DateTime @default(now())
  
 }

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import masterController from "../../controller/master/master.controller";
 import { authCelebrate } from "../../celebrate/auth.celebrate";
-import middlewares from "../../middlewares/middleware.index";
+import middlewares, { commmonDocUpload } from "../../middlewares/middleware.index";
 import { REDIS_KEYS } from "../../config/constant";
 import ownerController from "../../controller/owner/owner.controller";
 
@@ -39,6 +39,12 @@ masterRouter.get('/get-navbar/:userType',
      ownerController.getNavbar )
 
     
+
+masterRouter.post('/upload/doc',
+    // middlewares.getLoggedinuserRoleId(),
+    commmonDocUpload,
+     ownerController.uploadMasterDoc )
+
 
 export default masterRouter 
 

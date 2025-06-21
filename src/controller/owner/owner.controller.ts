@@ -257,7 +257,26 @@ const ownerController  = {
         }
     },
 
+
+      uploadMasterDoc  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+
+        let docs =  req.files 
     
+        let masterUploadDoc =await ownerService.uploadMasterDoc({ docs } ) 
+
+        if(!masterUploadDoc.status)  return failureResponse({data: masterUploadDoc?.data ,  message:masterUploadDoc?.data } , res )
+        return succesResponse({data:masterUploadDoc.data, message:" Doc Uploaded" } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+
+
 }
 
 

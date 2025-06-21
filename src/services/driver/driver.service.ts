@@ -13,7 +13,7 @@ import { cld1 } from "../cloudinary"
 import { deleteFiles } from "../../middlewares/middleware.index"
 import { KycStatus } from "@prisma/client"
 import { customerDetails, updateCustomerDetails } from "../../types/customer"
-import { driverDetails } from "../../types/driver.types"
+import { driverDetails, getDriverDetails } from "../../types/driver.types"
   
   const  customerService = {
    
@@ -47,7 +47,7 @@ import { driverDetails } from "../../types/driver.types"
             try {
 
               
-             const {dl , rc , adhaar_card , insurance ,  pan_card }  = payload.docs
+             const {dl , rc , adhaar_card , insurance ,  pan_card   }  = payload.docs
             
              if(dl.lenth==0 || rc.length==0 || insurance.length==0 || adhaar_card.length==0 || pan_card.length==0 )
                 return failureReturn(" Documents if mendatory")  
@@ -89,7 +89,23 @@ import { driverDetails } from "../../types/driver.types"
                 console.log("err>>",err)
                   return failureReturn(err)
               }``
-          } 
+          } ,
+
+          getDriverDetails : async function(payload:getDriverDetails) {
+             
+            try {   
+             
+              let partnerDetails = await prismaClient.driver_profile.findFirst({
+                where:{
+                driver: payload.userId  
+                }
+              })
+              return successReturn(partnerDetails)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          }
 
 
   }

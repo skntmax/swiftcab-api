@@ -61,6 +61,7 @@ export const upload = multer({
 // owner section
 export const vhicleDocUpload = upload.fields([{ name: 'ss_one', maxCount: 1 }, { name: 'ss_two', maxCount: 1  } ,{ name: 'rc_doc', maxCount: 1 } ])
 export const vhicleAvatarUpload = upload.fields([{ name: 'vh_avatar', maxCount: 1 } ])
+export const commmonDocUpload = upload.fields([{ name: 'doc', maxCount: 1 } ])
 
 
 //  driver section 

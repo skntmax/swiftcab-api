@@ -26,6 +26,21 @@ const customerController  = {
             return  failureResponse({data:err}, res )
            }
        } ,
+
+        getDriverDetails : async function (req:Request, res:Response):Promise<any> {
+        try {
+             const {userId , username} = req.userObj
+            let driverDetails =await driverService.getDriverDetails({userId:Number(userId) })
+            if(!driverDetails.status)
+               return failureResponse({data:driverDetails.data, message:""} , res )  
+          
+            return succesResponse({data:driverDetails.data, message:"driver details " } , res )  
+           
+           }catch(err) {
+            console.log(err)
+            return  failureResponse({data:err}, res )
+           }
+       } ,
 }
 
 
