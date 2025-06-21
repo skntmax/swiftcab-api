@@ -13,7 +13,18 @@ driverRouter.post('/update-driver-profile',
      driverProfileUpload,
      driverController.updateDriverProfile )
      
-          
+
+driverRouter.get('/get-driver-details', 
+     // middlewares.validateUser,
+     middlewares.checkUserRoles(userRoles.driverPartner),
+     driverController.getDriverDetails )
+
+
+driverRouter.get('/associate-driver-to-owner', 
+     // middlewares.validateUser,
+     middlewares.checkUserRoles(userRoles.driverPartner),
+     driverController.getDriverDetails )
+
 
 export default driverRouter 
 

@@ -11,3 +11,9 @@ export interface driverDetails  {
     },
     docs: any
  }   
+ 
+export interface getDriverDetails  {
+    userId:number , 
+ }   
+
+ 
