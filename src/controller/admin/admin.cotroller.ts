@@ -64,7 +64,7 @@ const adminController  = {
           console.log("user_has_roles",roles)
           let menuAdded =await authService.addMenu({roles:roles   ,  nav_menu_id:nav_menu_id })
           if(!menuAdded.status)
-             return succesResponse({data:menuAdded.data, message:"some error caused" } , res )  
+             return failureResponse({data:menuAdded.data, message:"some error caused" } , res )  
         
           return succesResponse({data:menuAdded.data, message:"added menu " } , res )  
            
