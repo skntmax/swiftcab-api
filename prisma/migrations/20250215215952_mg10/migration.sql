@@ -1,2 +1,2 @@
 -- AlterEnum
-ALTER TYPE "KycStatus" ADD VALUE 'COMPLETED';
+-- ALTER TYPE "KycStatus" ADD VALUE 'COMPLETED';

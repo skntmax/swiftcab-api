@@ -2,6 +2,7 @@ import { Response , Request  } from "express"
 import primsaClient from "../../db"
 import authService from "../../services/admin/admin.service"
 import { failureResponse, succesResponse } from "../../config/utils"
+import adminService from "../../services/admin/admin.service"
 const adminController  = {
     
       getAllVhicles : async function (req:Request, res:Response):Promise<any> {
@@ -191,12 +192,43 @@ const adminController  = {
           }
        
         } ,
+    
+      varifiedUnvarifiedDrivers    : async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const { varified , limit=10 , pn=1 , pagePerSize=5     } = req.body
+           let driverPartners =await adminService.varifiedUnvarifiedDrivers({varified , limit , pn ,pagePerSize   })
+           if(!driverPartners.status)
+              return failureResponse({data:driverPartners.data, message:"failure  in getting driver partner " } , res )  
+         
+           return succesResponse({data:driverPartners.data, message:"success" } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+       
+        } ,
+
+        driverAms    : async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const { driverId , comment="ok", status  } = req.body
+           let driverAmsStatus =await adminService.driverAms({ driverId , comment ,status })
+           if(!driverAmsStatus.status)
+              return failureResponse({data:driverAmsStatus.data, message:"status update failure" } , res )  
+         
+           return succesResponse({data:driverAmsStatus.data, message:"success" } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+         } ,
 
  
-
-        
-
-
 
 }
 

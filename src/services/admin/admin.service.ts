@@ -2,7 +2,7 @@ import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
-import { add_navigation, add_roles_to_user, add_sub_navigation, addMenuItemsParams, get_users_by_role_schema, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, roleTypeUserTypes } from "../../types/admin.types"
+import { add_navigation, add_roles_to_user, add_sub_navigation, addMenuItemsParams, driverAms, get_users_by_role_schema, getDriverPartners, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, roleTypeUserTypes } from "../../types/admin.types"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import ownerService from "../owner/owner.service"
 
@@ -345,19 +345,19 @@ const  adminService = {
     addSubNavbar : async function (params:add_sub_navigation) {
 
     // checking existing record 
-   let exist = await prismaClient.sub_nav_items.findFirst({
-      where: {
-        AND: [
-          { href: params.href },
-          { nav_item_id: params.nav_item_id }
-        ]
+    let exist = await prismaClient.sub_nav_items.findFirst({
+        where: {
+          AND: [
+            { href: params.href },
+            { nav_item_id: params.nav_item_id }
+          ]
+        }
+      });
+          
+      if(exist) {
+        return failureReturn(exist)
       }
-    });
-        
-    if(exist) {
-      return failureReturn(exist)
-     }
-  
+    
 
      let addedSubNavbar = await  primsaClient.sub_nav_items.create({
        data:{
@@ -377,6 +377,45 @@ const  adminService = {
     
         return  successReturn(addedSubNavbar)   
       } ,
+   
+      varifiedUnvarifiedDrivers : async function (payload:getDriverPartners) {    
+
+       let offset = (payload.pn-1)*payload.limit
+       let limit = payload.limit
+        let  total:any =   await primsaClient.$queryRawUnsafe(`
+           select count(u.*) as total  from users u 
+          inner join  driver_profile dp on  dp.driver = u.id 
+          where  dp.is_varified =  ${payload.varified}  
+          `)
+
+        let  partners = await primsaClient.$queryRawUnsafe(`
+          select u.first_name , u.last_name , u.email , u.username , dp.*  from users u 
+          inner join  driver_profile dp on  dp.driver = u.id 
+          where  dp.is_varified =  ${payload.varified}  
+          offset ${offset}
+	        limit ${limit}
+          `)
+     
+         return  successReturn({list: partners , meta:{pn:payload.pn , limit:payload.limit , total:Number(total[0]?.total) }})   
+    } , 
+
+    driverAms : async function (payload:driverAms) {    
+
+        let  updatedAmspartners = await primsaClient.driver_profile.update({
+          data:{
+            is_varified: payload.status,
+            comment:payload.comment,
+            updated_on: new Date()
+          },
+          where:{
+            driver: payload.driverId
+          }
+        })
+     
+         return  successReturn(updatedAmspartners)   
+    } , 
+
+      
   }
 
 

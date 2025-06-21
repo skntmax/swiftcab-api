@@ -84,6 +84,20 @@ export interface roleTypeUserTypes{
   email: string;
   total : number
   };
+export interface getDriverPartners{
+  varified:boolean
+  limit:number
+  pn : number 
+  pagePerSize: number
+  };
 
  
+  export interface driverAms{
+  status: boolean
+  driverId: number
+  comment?:string
+  };
+
+ 
+
  

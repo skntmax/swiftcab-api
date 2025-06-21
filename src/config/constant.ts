@@ -26,7 +26,8 @@ export const userRoles = {
     partnerManager: "partner-manager",
     vendorCoordinator: "vendor-coordinator",
     customer: "customer",
-    owner: "owner"
+    owner: "owner",
+    driverPartner:"driver-partner"
 
 }
 
@@ -44,8 +45,8 @@ export const REDIS_KEYS  = {
 
 
 export const REDIS_QUEUES  = {
-    USER_SIGNUP:"USER_SIGNUP",
-    USERS_OTP:"USERS_OTP",
+    USER_SIGNUP:"USER_SIGNUP", // for user login and singup 
+    USERS_OTP:"USERS_OTP",     //  for  users otp service 
 }
 
 export default Object.freeze(constants)  

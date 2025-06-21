@@ -58,8 +58,21 @@ export const upload = multer({
 })
 
 
+// owner section
 export const vhicleDocUpload = upload.fields([{ name: 'ss_one', maxCount: 1 }, { name: 'ss_two', maxCount: 1  } ,{ name: 'rc_doc', maxCount: 1 } ])
 export const vhicleAvatarUpload = upload.fields([{ name: 'vh_avatar', maxCount: 1 } ])
+
+
+//  driver section 
+export const driverProfileUpload = upload.fields([
+                                                { name: 'dl', maxCount: 1 }, 
+                                                { name: 'rc', maxCount: 1  } , 
+                                                { name: 'insurance', maxCount: 1 } ,
+                                                { name: 'adhaar_card', maxCount: 1 } ,
+                                                { name: 'pan_card', maxCount: 1 }
+                                              ]
+                                              )
+
 
 
 
@@ -86,7 +99,7 @@ export const middlewares = {
      origin: '*',
      optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
       }
-  ,   
+     ,   
     globalMiddlewares: function (app:Express){
 
         app.use(cors(this.corsOptions))
@@ -155,11 +168,6 @@ export const middlewares = {
       } ,
   
     
-      
-
-
-
-
     checkRoles : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
       try{

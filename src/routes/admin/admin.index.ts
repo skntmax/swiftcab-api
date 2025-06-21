@@ -103,8 +103,17 @@ adminRouter.post('/add-subnavbar',
      adminController.addSubNavbar )
 
 
-          
+adminRouter.post('/varunvarified-drivers',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.varifiedUnvarifiedDrivers )
 
+     
+adminRouter.post('/ams-drivers',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.driverAms )
+
+
+          
           
           
 
