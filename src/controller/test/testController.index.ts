@@ -1,6 +1,6 @@
 import { Response , Request  } from "express"
 import primsaClient from "../../db"
-import {redisClient1} from "../../services/redis/redis.index"
+// import {redisClient1} from "../../services/redis/redis.index"
 import { cld1 } from "../../services/cloudinary"
 import { UploadedFile } from "../../types/file.types"
 import { sendMail, transporter } from "../../config/mailConfig"

@@ -1,0 +1,32 @@
+import { Response , Request  } from "express"
+import primsaClient from "../../db"
+import authService from "../../services/auth/auth.service"
+import { failureResponse, succesResponse } from "../../config/utils"
+import ownerService from "../../services/owner/owner.service"
+import { KycStatus } from "@prisma/client"
+import driverService from "../../services/driver/driver.service"
+import config from "../../config/config"
+
+const customerController  = {
+    
+     updateDriverProfile : async function (req:Request, res:Response):Promise<any> {
+        try {
+         
+            let docs =  req.files 
+             const {userId , username} = req.userObj
+
+            let driverDetails =await driverService.updateDriverProfile({userId:Number(userId) , docs })
+            if(!driverDetails.status)
+               return failureResponse({data:driverDetails.data, message:""} , res )  
+          
+            return succesResponse({data:driverDetails.data, message:"updated " } , res )  
+           
+           }catch(err) {
+            console.log(err)
+            return  failureResponse({data:err}, res )
+           }
+       } ,
+}
+
+
+export default customerController 

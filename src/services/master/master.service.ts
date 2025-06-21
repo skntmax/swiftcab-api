@@ -142,12 +142,7 @@ const  masterService = {
                return failureReturn(err)  
       }
       
-    } , 
-
-
-
-
-    
+    } ,     
      
   }
 

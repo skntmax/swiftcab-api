@@ -15,7 +15,6 @@ enum KycStatus {
   COMPLETED
 }
 
-
 enum LoginBy {
   SWIFTCAB
   GOOGLE
@@ -65,7 +64,10 @@ model vhicle {
   vhicles vhicle_has_other_docs[] @relation("multiple_users_can_have_multiple_doc_of_vhicle")
 
   services vhicle_provides_services[]
-  
+
+  // engaged with which vhicle
+  engaged_with_which_vhicle driver_profile ? @relation("engaged_with_which_vhicle")   
+
 }
 
 
@@ -183,6 +185,8 @@ model users {
   // driver profile 
   driver_profile_id driver_profile? @relation("driver_profile")
   
+  // engaged with  which owner 
+  engaged_with_which_owner driver_profile ? @relation("engaged_with_which_owner") 
   created_on DateTime @default(now())
   updated_on DateTime
 }
@@ -537,10 +541,30 @@ model  driver_profile  {
    insurance String?
    pan_card String?
    adhar_card String?
-
+   is_varified  Boolean?
+   comment String?
    driver Int @unique
    driver_profile_id users @relation(fields: [driver] , references: [id], name: "driver_profile")    
     
+  engaged Boolean?
+  
+  engaged_with_owner Int? @unique
+  engaged_with_which_owner users? @relation(fields: [engaged_with_owner] , references: [id], name: "engaged_with_which_owner")    
+  
+      
+  engaged_with_vhicle Int? @unique
+  engaged_with_which_vhicle vhicle? @relation(fields: [engaged_with_vhicle] , references: [id], name: "engaged_with_which_vhicle")    
+      
+  // wallet info 
+  wallet_code  String?    @unique @default(uuid()) 
+  wallet_balance  Int?   @unique @default(0)
+  
+  // bank related info 
+  bank_account String? 
+  ifsc String? 
+  bank_account_branch String?
+  is_bank_varified Boolean? @default(false) 
+
   created_on DateTime @default(now())
   updated_on DateTime
  
