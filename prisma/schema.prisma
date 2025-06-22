@@ -557,7 +557,7 @@ model  driver_profile  {
       
   // wallet info 
   wallet_code  String?    @unique @default(uuid()) 
-  wallet_balance  Int?   @unique @default(0)
+  wallet_balance  Int?    @default(0)
   
   // bank related info 
   bank_account String? 
