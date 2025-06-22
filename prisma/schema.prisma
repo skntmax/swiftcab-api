@@ -544,8 +544,9 @@ model  driver_profile  {
    comment String?
    driver Int @unique
    driver_profile_id users @relation(fields: [driver] , references: [id], name: "driver_profile")    
-    
-  engaged Boolean? @default(false)
+
+   profile_pic String?  
+   engaged Boolean? @default(false)
   
   engaged_with_owner Int? @unique
   engaged_with_which_owner users? @relation(fields: [engaged_with_owner] , references: [id], name: "engaged_with_which_owner")    
