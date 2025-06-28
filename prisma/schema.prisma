@@ -532,6 +532,16 @@ model  driver_belongs_to_owner  {
  
 }
 
+model Banks {
+  id         Int      @id @default(autoincrement())
+  bank_name  String?  @db.VarChar(255) // optional, you can remove @db.VarChar if using SQLite or PostgreSQL
+  created_on DateTime @default(now())
+  updated_on DateTime @updatedAt        // automatically updates on every update
+
+  @@map("banks")                         // optional: maps to "banks" table in DB
+  @@index([bank_name])                  // optional: adds index on bank_name
+}
+
 model  driver_profile  {
    id Int @id @default(autoincrement())   
 
@@ -545,8 +555,8 @@ model  driver_profile  {
    driver Int @unique
    driver_profile_id users @relation(fields: [driver] , references: [id], name: "driver_profile")    
 
-   profile_pic String?  
-   engaged Boolean? @default(false)
+  profile_pic String?  
+  engaged Boolean? @default(false)
   
   engaged_with_owner Int? @unique
   engaged_with_which_owner users? @relation(fields: [engaged_with_owner] , references: [id], name: "engaged_with_which_owner")    
