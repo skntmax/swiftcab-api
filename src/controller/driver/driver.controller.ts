@@ -14,8 +14,15 @@ const customerController  = {
          
             let docs =  req.files 
              const {userId , username} = req.userObj
+             const {bank_account_branch,ifsc,bank_account} = req.body
 
-            let driverDetails =await driverService.updateDriverProfile({userId:Number(userId) , docs })
+            let driverDetails =await driverService.updateDriverProfile({
+                                                         userId:Number(userId) ,
+                                                         bank_account,
+                                                         bank_account_branch,
+                                                         ifsc,
+                                                         docs
+                                                         })
             if(!driverDetails.status)
                return failureResponse({data:driverDetails.data, message:""} , res )  
           

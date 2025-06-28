@@ -142,7 +142,54 @@ const  masterService = {
                return failureReturn(err)  
       }
       
-    } ,     
+    } ,
+    
+    getbanks :  async function(cacheKey?:string) {
+
+      try {
+
+          let banks =await prismaClient.banks.findMany({
+             select:{
+                id:true,
+                bank_name :true
+             }
+          })
+
+         if(cacheKey && banks ){
+           await redisClient1.set(cacheKey , JSON.stringify(banks), )
+           await redisClient1.expire(cacheKey ,config.cache_time  )
+         }
+        return successReturn(banks)  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } ,
+    getBankBranch :  async function(params:{cacheKey:string, bankId:Number}) {
+
+      try {
+
+          const {cacheKey, bankId} = params
+          let bankBranches= await prismaClient.$queryRawUnsafe<{id:number, branch_name :string}[]>(`
+               select bb.id , bb.branch_name from banks b 
+                right join  bank_branch bb on bb.bank_id = b.id 
+                where bb.bank_id=$1
+            `,bankId)
+         
+          if(cacheKey && bankBranches ){
+           await redisClient1.set(cacheKey , JSON.stringify(bankBranches), )
+           await redisClient1.expire(cacheKey ,config.cache_time  )
+         }
+        return successReturn(bankBranches)  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } ,
      
   }
 

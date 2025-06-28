@@ -1,4 +1,4 @@
-import { Response , Request  } from "express"
+import { Response , Request, query  } from "express"
 import primsaClient from "../../db"
 import masterService from "../../services/master/master.service"
 import { failureResponse, succesResponse } from "../../config/utils"
@@ -99,6 +99,47 @@ const masterController  = {
          }
       
        } ,
+
+       getbanks: async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+ 
+          const { cacheKey }  = req 
+          let banklist =await masterService.getbanks(cacheKey)
+          
+          if(!banklist.status)
+             return succesResponse({data:banklist.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:banklist.data, message:" bank list" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+       getBankBranch: async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+ 
+          const { cacheKey }  = req
+          const { bankId }  = req.query
+
+          let bankBranch =await masterService.getBankBranch({bankId:Number(bankId),cacheKey})
+          
+          if(!bankBranch.status)
+             return succesResponse({data:bankBranch.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:bankBranch.data, message:" bank branch list" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
     
 
     

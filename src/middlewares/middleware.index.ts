@@ -267,11 +267,17 @@ export const middlewares = {
     
           try{
               
-            if(req.params || req.query) {
-              req.cacheKey = `${key}:${Object.values(req.params || req.query ).join(':')}` 
-            }else{
-              req.cacheKey = key
-            }
+          if (req.params && Object.keys(req.params).length > 0) {
+            req.cacheKey = `${key}:${Object.entries(req.params)
+              .map(([k, v]) => `${k}=${v}`)
+              .join(":")}`;
+          } else if (req.query && Object.keys(req.query).length > 0) {
+            req.cacheKey = `${key}:${Object.entries(req.query)
+              .map(([k, v]) => `${k}=${v}`)
+              .join(":")}`;
+          } else {
+            req.cacheKey = key;
+          }
 
              let data = await redisClient1.get(req.cacheKey)
               
