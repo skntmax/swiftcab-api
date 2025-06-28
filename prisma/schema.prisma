@@ -539,7 +539,22 @@ model Banks {
   updated_on DateTime @updatedAt        // automatically updates on every update
 
   @@map("banks")                         // optional: maps to "banks" table in DB
-  @@index([bank_name])                  // optional: adds index on bank_name
+  @@index([bank_name])
+  
+  bank_has_branch bank_branch[]
+  drive_has_bank_account driver_profile[]                  // optional: adds index on bank_name
+}
+
+model bank_branch {
+  id         Int      @id @default(autoincrement())
+  branch_name  String?  @db.VarChar(255) // optional, you can remove @db.VarChar if using SQLite or PostgreSQL
+  
+  bank_id Int
+  bank_has_branch Banks @relation(fields: [bank_id] , references: [id] )
+  created_on DateTime @default(now())
+  updated_on DateTime @updatedAt        // automatically updates on every update
+                  // optional: adds index on bank_name
+  bank_have_branch driver_profile[] 
 }
 
 model  driver_profile  {
@@ -570,9 +585,15 @@ model  driver_profile  {
   wallet_balance  Int?    @default(0)
   
   // bank related info 
-  bank_account String? 
+  bank_account Int
+  drive_has_bank_account  Banks @relation(fields: [bank_account] , references: [id])
+
   ifsc String? 
-  bank_account_branch String?
+
+  bank_account_branch Int
+  bank_have_branch  bank_branch @relation(fields: [bank_account_branch] , references: [id])
+
+
   is_bank_varified Boolean? @default(false) 
 
   created_on DateTime @default(now())

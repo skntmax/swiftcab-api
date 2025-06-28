@@ -72,12 +72,15 @@ import { driverDetails, getDriverDetails } from "../../types/driver.types"
 
               let updateDriverProfile =  await prismaClient.driver_profile.create({
                 data:{
-                  DL:dlUrl,
-                  RC: rcUrl,
-                  insurance: insuranceUrl,
-                  adhar_card: adhaarCardUrl,
-                  pan_card: panCardUrl,
+                  DL:dlUrl || "",
+                  RC: rcUrl || "",
+                  insurance: insuranceUrl || "",
+                  adhar_card: adhaarCardUrl || "",
+                  pan_card: panCardUrl || "",
                   driver:payload.userId,
+                  bank_account:Number(payload.bank_account)  ,
+                  bank_account_branch:Number(payload.bank_account_branch)  ,
+                  ifsc:payload.ifsc || "",
                   is_varified: false ,
                   created_on: new Date(),
                   updated_on : new Date(),

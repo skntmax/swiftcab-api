@@ -32,6 +32,17 @@ masterRouter.get('/get-vhicle-type/',
     middlewares.inCache(REDIS_KEYS.VHICLE_TYPE),
     masterController.getVhicleType )
 
+            
+masterRouter.get('/get-banks/',
+    middlewares.inCache(REDIS_KEYS.BANKS),
+    masterController.getbanks )
+
+
+                
+masterRouter.get('/get-bank-branches/',
+    middlewares.inCache(REDIS_KEYS.BANK_BRANCHES),
+    masterController.getBankBranch )
+
 
              
 masterRouter.get('/get-navbar/:userType',
