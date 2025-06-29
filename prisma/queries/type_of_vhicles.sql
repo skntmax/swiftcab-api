@@ -18,3 +18,4 @@ VALUES
   ('autoNCR', 'Auto (NCR)', CURRENT_TIMESTAMP, true, 'https://res.cloudinary.com/dw0hahzkn/image/upload/v1751209237/auto_zdiutr.png'),
   ('cabPremium', 'Cab Premium', CURRENT_TIMESTAMP, true, 'https://res.cloudinary.com/dw0hahzkn/image/upload/v1745653257/33_bkyvma.png'),
   ('sharedCab', 'Shared Cab', CURRENT_TIMESTAMP, true, 'https://res.cloudinary.com/dw0hahzkn/image/upload/v1745653255/0_ogjocj.png');
+  
