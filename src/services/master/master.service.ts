@@ -126,7 +126,10 @@ const  masterService = {
              select:{
                 id:true,
                vhicle_type:true,
-               avatar:true
+               avatar:true,
+             },
+             where:{
+               is_active:true
              }
           })
 
