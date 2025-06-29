@@ -92,6 +92,7 @@ model type_of_vhicle {
   
   v_type vhicle[]   // 1-1 relation
   avatar  String? 
+  is_active Boolean @default(false)
   // vhicle_type_relation  owner_has_vhicles[]
   created_on DateTime @default(now())
   updated_on DateTime
