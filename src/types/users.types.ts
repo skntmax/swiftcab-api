@@ -55,8 +55,9 @@ export interface doesUserHaveRoleOrNot  {
 
 export interface verifyMailLinkpayload  { 
     role: number  
-    userId:number , 
+    userId:number  
     username:string
+    roleTypeName?: string
 
 }
 

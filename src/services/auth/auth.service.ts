@@ -33,6 +33,7 @@ type UserResult = {
   is_active?:boolean ,
   phone_no?:string,
   avatar?:string
+  role?: string
 };
 
 
@@ -80,15 +81,15 @@ const  authService = {
                 FROM (
                   SELECT u.id ,  u.username username , u.avatar ,   
               u.email email,
-              uhr.role_id AS role_id, u.is_active , u.phone_no,
+              uhr.role_id AS role_id, r.name  as role , u.is_active , u.phone_no,
                 COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password user_password 
                   FROM users u
                   INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
+                  INNER JOIN roles r ON r.id = uhr.role_id
                   WHERE (u.email = $1  OR u.username = $1 OR  u.phone_no=$3  )
                 ) x
                 WHERE x.role_id = $2 AND x.is_active = true  ` ,   emailOrUsername , userType , phone
           ) 
-      
       
           // Fix: Assign the first object to a new variable
         let newUser: UserResult | undefined = newUserArray.length > 0 ? newUserArray[0] : undefined;
@@ -116,7 +117,6 @@ const  authService = {
               login_user_otp.enqueue('user_otp' ,{phone , id:newUser.id , username: newUser.username })
              }
             
-          
            return successReturn("OTP has been sent on your Mobile"+ phone)   
         
           }
@@ -132,7 +132,7 @@ const  authService = {
         
           let payload = {id:newUser.id , username: newUser.username  } 
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
-          return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name , avatar:newUser.avatar }}  )  
+          return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name , avatar:newUser.avatar , roleTypeName:newUser?.role  }}  )  
 
       }catch(err) {
           console.log(err)
@@ -276,6 +276,7 @@ const  authService = {
             userPayload.accountStatus = false // by default 
           }
 
+          let roleTypeName = ""
           const {  email , password, userType , username} = userPayload 
           let userExist  =await  prismaClient.users.findFirst({ 
             where:{ 
@@ -324,7 +325,15 @@ const  authService = {
               updated_on:new Date() ,
             }
            })
+          
+          let role =  await prismaClient.roles.findFirst({
+          where:{ id: userType},
+          select:{ name:true}
+          })
 
+          if(role)
+            roleTypeName= role?.name
+        
 
         let payload = {id:newUser.id , username: newUser.username  }
         let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
@@ -338,10 +347,11 @@ const  authService = {
           expiresIn: "5m", // Correct format
         });
         //  adding to  queue 
-        let  authUrl  = `${process.env.NEXT_PUBLIC_API_URL}/${version}/auth/verify-mail-link?token=${authToken}&role=${userType}`
-        signup_user_queue.enqueue('user',{authenticateUri:authUrl ,  userId:payload?.id ,email})
+        let  authUrl  = `${process.env.NEXT_PUBLIC_API_URL}/${version}/auth/verify-mail-link?token=${authToken}&role=${userType}&roleTypeName=${roleTypeName}`
+        signup_user_queue.enqueue('user',{authenticateUri:authUrl ,  userId:payload?.id ,email ,  roleTypeName })
 
-        return successReturn({token , is_active:newUser?.is_active,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :newUser.last_name  , avatar:newUser.avatar?? null }}  )
+        console.log("authUrl>>", authUrl)
+        return successReturn({token , is_active:newUser?.is_active,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :newUser.last_name  , avatar:newUser.avatar?? null , roleTypeName  }}  )
          
       }catch(err) {
                 console.log(err)
@@ -355,7 +365,7 @@ const  authService = {
       try{
 
        // let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username  }})
-      const {  role ,userId , username} = payload
+      const {  role ,userId , username, roleTypeName} = payload
        
      let updateStatus = await prismaClient.users.update({
       where:{
@@ -370,13 +380,12 @@ const  authService = {
        let userExist:any  =await  prismaClient.users.findFirst({ 
         where:{ id:userId}})
 
-      let userPayload = {id:userExist.id , username: userExist.username , first_name:userExist.first_name , last_name:userExist.last_name     }
+      let userPayload = {id:userExist.id , username: userExist.username , first_name:userExist.first_name , last_name:userExist.last_name , roleTypeName     }
       let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
           expiresIn: "2h",
       })
 
-      
-      return successReturn({token , usersObj :{  username: userPayload.username , firstName :userPayload.first_name , lastName :userPayload.last_name }}  )
+      return successReturn({token , usersObj :{  username: userPayload.username , firstName :userPayload.first_name , lastName :userPayload.last_name , roleTypeName:userPayload.roleTypeName }}  )
      
 
       }catch(err) {
