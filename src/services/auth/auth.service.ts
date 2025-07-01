@@ -349,8 +349,6 @@ const  authService = {
         //  adding to  queue 
         let  authUrl  = `${process.env.NEXT_PUBLIC_API_URL}/${version}/auth/verify-mail-link?token=${authToken}&role=${userType}&roleTypeName=${roleTypeName}`
         signup_user_queue.enqueue('user',{authenticateUri:authUrl ,  userId:payload?.id ,email ,  roleTypeName })
-
-        console.log("authUrl>>", authUrl)
         return successReturn({token , is_active:newUser?.is_active,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName :newUser.last_name  , avatar:newUser.avatar?? null , roleTypeName  }}  )
          
       }catch(err) {
