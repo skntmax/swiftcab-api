@@ -128,7 +128,7 @@ export const middlewares = {
     validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
       try{
-        req.userObj={userId:"" , username:""}       
+        req.userObj={userId:"" , username:"",roleTypeName: ""}       
         const token = req.headers['authorization']        
         if(!token) return  failureResponse( {data:"un autherised user "} , res  );
         const bearer_token = token.split(' ')[1]  
@@ -150,17 +150,18 @@ export const middlewares = {
        validateValidAccount : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
         try{
-          req.userObj={userId:"" , username:""}       
-          const {token:bearer_token , role } = req.query        
+          req.userObj={userId:"" , username:"", roleTypeName: ""}       
+          const {token:bearer_token , role , roleTypeName } = req.query        
           if(!bearer_token) return  failureResponse( {data:"un autherised user "} , res  );
           let decoded =  jwt.verify(bearer_token as string, dotenv.SECRET_KEY )  as JwtPayload 
   
-          const { id:userId ,username} = decoded 
+          const { id:userId ,username,} = decoded 
   
           if(!userId || !username) return failureResponse( {data:` expired token or not a valid user `} , res  );
   
            req.userObj.userId = userId 
            req.userObj.username = username
+           req.userObj.roleTypeName = typeof roleTypeName === "string" ? roleTypeName : ""
            next()
             }catch(err){
               console.log("error message", err);
@@ -172,7 +173,7 @@ export const middlewares = {
     checkRoles : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
       try{
-        req.userObj={userId:"" , username:""}       
+        req.userObj={userId:"" , username:"",roleTypeName: ""}       
         const token = req.headers['authorization']
         if(!token) return  failureResponse( {data:"un autherised user "} , res  );
         const bearer_token = token.split(' ')[1]  
@@ -204,7 +205,7 @@ export const middlewares = {
     roleWisePermission :  async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
         try{
-          req.userObj={userId:"" , username:""}       
+          req.userObj={userId:"" , username:"",roleTypeName: ""}       
           const token = req.headers['authorization']
           if(!token) return  failureResponse( {data:"un autherised user "} , res  );
           const bearer_token = token.split(' ')[1]  
@@ -229,7 +230,7 @@ export const middlewares = {
         return async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     
           try{
-            req.userObj={userId:"" , username:""}       
+            req.userObj={userId:"" , username:"",roleTypeName: ""}       
             const token = req.headers['authorization']
             if(!token) return   failureResponse( {data:"un autherised user "} , res  );
             const bearer_token = token.split(' ')[1]  
@@ -312,7 +313,7 @@ export const middlewares = {
           try{
             
             let {userType} = req.params 
-            req.userObj={userId:"" , username:""}       
+            req.userObj={userId:"" , username:"",roleTypeName: ""}       
             const token = req.headers['authorization']
             if(!token) return   failureResponse( {data:"un autherised user "} , res  );
             const bearer_token = token.split(' ')[1]  

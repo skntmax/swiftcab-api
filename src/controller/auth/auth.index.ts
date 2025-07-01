@@ -47,8 +47,8 @@ const authController  = {
         verifyMailLink : async  function (req:Request, res:Response):Promise<any> {
 
          try {
-            const {userId , username} = req.userObj
-          let userVarify =await authService.verifyMailLink({userId : Number(userId) , username  ,role: Number(req.query?.role) })
+            const {userId , username, roleTypeName } = req.userObj
+            let userVarify =await authService.verifyMailLink({userId : Number(userId) , username  ,role: Number(req.query?.role), roleTypeName  })
           
         
             if (!userVarify.status) {
@@ -56,10 +56,10 @@ const authController  = {
             }
 
             if(Number(req.query?.role)==20)  // client 
-            return res.redirect(`${process.env.NEXT_PUBLIC_CLIENT_PORTAL}?token=${userVarify?.data?.token}&username=${userVarify?.data?.usersObj?.username}&firstName=${userVarify?.data?.usersObj?.firstName}&lastName=${userVarify?.data?.usersObj?.lastName}`);
+            return res.redirect(`${process.env.NEXT_PUBLIC_CLIENT_PORTAL}?token=${userVarify?.data?.token}&username=${userVarify?.data?.usersObj?.username}&firstName=${userVarify?.data?.usersObj?.firstName}&lastName=${userVarify?.data?.usersObj?.lastName}&roleTypeName=${roleTypeName}`);
 
             if(Number(req.query?.role)!=21)  // client 
-            return res.redirect(`${process.env.NEXT_PUBLIC_ADMIN_PORTAL}?token=${userVarify?.data?.token}&username=${userVarify?.data?.usersObj?.username}&firstName=${userVarify?.data?.usersObj?.firstName}&lastName=${userVarify?.data?.usersObj?.lastName}`);
+            return res.redirect(`${process.env.NEXT_PUBLIC_ADMIN_PORTAL}?token=${userVarify?.data?.token}&username=${userVarify?.data?.usersObj?.username}&firstName=${userVarify?.data?.usersObj?.firstName}&lastName=${userVarify?.data?.usersObj?.lastName}&roleTypeName=${roleTypeName}`);
 
 
          }catch(err) {
