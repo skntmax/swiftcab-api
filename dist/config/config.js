@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("./dotenv"));
 const config = {
+    defaulProfileUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Christopher",
     cache_time: 7200, // 2 hrs in secods
     quizCacheTime: 36000,
     notification_cache_clear: 60,

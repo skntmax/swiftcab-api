@@ -39,6 +39,17 @@ export interface navigation_bar  {
 }   
 
 
+
+export interface assingDriverToVhicle  {
+   userId:number
+   owner: string, 
+   driver:number , 
+   vhicle_assigned:number
+   self : boolean
+}   
+
+
+
 export interface vhicleDetail  {
    vhicleIds:number[] , 
    ownerId :number

@@ -30,24 +30,37 @@ exports.failureResponse = failureResponse;
 ;
 ;
 function transformNavItems(navItems, username, roleType) {
+    var _a, _b, _c, _d;
     const transformedArray = [];
     const seenNavItems = new Set();
     let idCounter = 1;
     for (const item of navItems) {
         if (!seenNavItems.has(item.nav_item)) {
             transformedArray.push({
-                navlabel: true,
+                navlabel: item.sub_menu,
                 subheader: item.nav_item,
-                href: `/${roleType}/${username}/?tabs=undefined`
+                href: `/${roleType}/${username}/?tabs=${item === null || item === void 0 ? void 0 : item.href}`
             });
             seenNavItems.add(item.nav_item);
         }
-        transformedArray.push({
-            id: idCounter.toString(),
-            title: item.sub_nav_item,
-            icon: item.sub_icon,
-            href: `/${roleType}/${username}/?tabs=${item.sub_href.replace("/", "")} `
-        });
+        // having submenu
+        if (item.sub_menu) {
+            transformedArray.push({
+                id: idCounter.toString(),
+                title: item.sub_nav_item,
+                icon: item.sub_icon,
+                href: `/${roleType}/${username}/?tabs=${(_b = (_a = ((item === null || item === void 0 ? void 0 : item.sub_href) || (item === null || item === void 0 ? void 0 : item.href))) === null || _a === void 0 ? void 0 : _a.replace("/", "")) !== null && _b !== void 0 ? _b : ""} `
+            });
+        }
+        // single menu 
+        if (!item.sub_menu) {
+            transformedArray.push({
+                id: idCounter.toString(),
+                title: item.nav_item,
+                icon: item.icon,
+                href: `/${roleType}/${username}/?tabs=${(_d = (_c = (item === null || item === void 0 ? void 0 : item.href)) === null || _c === void 0 ? void 0 : _c.replace("/", "")) !== null && _d !== void 0 ? _d : ""} `
+            });
+        }
         idCounter++;
     }
     return transformedArray;

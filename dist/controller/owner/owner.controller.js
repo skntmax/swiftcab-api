@@ -183,5 +183,67 @@ const ownerController = {
             }
         });
     },
+    removeUserByUsername: function (req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { username } = req.body;
+                const { user_has_roles } = req;
+                let userRemoved = yield owner_service_1.default.removeUserByUsername({ username });
+                if (!userRemoved.status)
+                    return (0, utils_1.succesResponse)({ data: "null", message: userRemoved === null || userRemoved === void 0 ? void 0 : userRemoved.data }, res);
+                return (0, utils_1.succesResponse)({ data: userRemoved.data, message: " User removed" }, res);
+            }
+            catch (err) {
+                console.log(err);
+                return (0, utils_1.failureResponse)({ data: err }, res);
+            }
+        });
+    },
+    blockUnblockuser: function (req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { username, isActive = false } = req.body;
+                const { user_has_roles } = req;
+                let userRemoved = yield owner_service_1.default.blockUnblockuser({ isActive, username });
+                if (!userRemoved.status)
+                    return (0, utils_1.succesResponse)({ data: "null", message: userRemoved === null || userRemoved === void 0 ? void 0 : userRemoved.data }, res);
+                return (0, utils_1.succesResponse)({ data: userRemoved.data, message: " User removed" }, res);
+            }
+            catch (err) {
+                console.log(err);
+                return (0, utils_1.failureResponse)({ data: err }, res);
+            }
+        });
+    },
+    updateVhicleAvatar: function (req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let docs = req.files;
+                let updateVhicleAvatar = yield owner_service_1.default.updateVhicleAvatar({ docs });
+                if (!updateVhicleAvatar.status)
+                    return (0, utils_1.succesResponse)({ data: updateVhicleAvatar === null || updateVhicleAvatar === void 0 ? void 0 : updateVhicleAvatar.data, message: updateVhicleAvatar === null || updateVhicleAvatar === void 0 ? void 0 : updateVhicleAvatar.data }, res);
+                return (0, utils_1.succesResponse)({ data: updateVhicleAvatar.data, message: " User removed" }, res);
+            }
+            catch (err) {
+                console.log(err);
+                return (0, utils_1.failureResponse)({ data: err }, res);
+            }
+        });
+    },
+    uploadMasterDoc: function (req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let docs = req.files;
+                let masterUploadDoc = yield owner_service_1.default.uploadMasterDoc({ docs });
+                if (!masterUploadDoc.status)
+                    return (0, utils_1.failureResponse)({ data: masterUploadDoc === null || masterUploadDoc === void 0 ? void 0 : masterUploadDoc.data, message: masterUploadDoc === null || masterUploadDoc === void 0 ? void 0 : masterUploadDoc.data }, res);
+                return (0, utils_1.succesResponse)({ data: masterUploadDoc.data, message: " Doc Uploaded" }, res);
+            }
+            catch (err) {
+                console.log(err);
+                return (0, utils_1.failureResponse)({ data: err }, res);
+            }
+        });
+    },
 };
 exports.default = ownerController;

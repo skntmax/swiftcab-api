@@ -1,4 +1,5 @@
 import config from "../../config/config"
+import { userRoles } from "../../config/constant"
 import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import prismaClient from "../../db"
@@ -194,6 +195,34 @@ const  masterService = {
       
     } ,
      
+    getDriverList :  async function(params:{cacheKey:string}) {
+
+      try {
+
+          const {cacheKey} = params
+          let driverLists= await prismaClient.$queryRawUnsafe<{driver_id :number, driver_username:string}[]>(`
+                select   u.id as driver_id , u.username as driver_username from users u 
+                inner join  user_has_roles uhr  on uhr.user_id = u.id 
+                inner join roles r on r.id  = uhr.role_id 
+                where r."name" =$1
+                
+            `, userRoles.driverPartner)
+         
+          if(cacheKey && driverLists ){
+           await redisClient1.set(cacheKey , JSON.stringify(driverLists), )
+           await redisClient1.expire(cacheKey ,config.cache_time  )
+         }
+        return successReturn(driverLists)  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } ,
+     
+
+
   }
 
 

@@ -27,7 +27,8 @@ exports.userRoles = {
     partnerManager: "partner-manager",
     vendorCoordinator: "vendor-coordinator",
     customer: "customer",
-    owner: "owner"
+    owner: "owner",
+    driverPartner: "driver-partner"
 };
 exports.REDIS_KEYS = {
     USER_ROLE: "USER_ROLE",
@@ -35,10 +36,14 @@ exports.REDIS_KEYS = {
     GET_STATES: "GET_STATES",
     GET_CITY: "GET_CITY",
     GET_LOCALITY: "GET_LOCALITY",
-    ALL_ROLES: "ALL_ROLES"
+    ALL_ROLES: "ALL_ROLES",
+    VHICLE_TYPE: "VHICLE_TYPE",
+    BANKS: "BANKS",
+    BANK_BRANCHES: "BANK_BRANCHES",
+    DRIVER_LIST: "DRIVER_LIST"
 };
 exports.REDIS_QUEUES = {
-    USER_SIGNUP: "USER_SIGNUP",
-    USERS_OTP: "USERS_OTP",
+    USER_SIGNUP: "USER_SIGNUP", // for user login and singup 
+    USERS_OTP: "USERS_OTP", //  for  users otp service 
 };
 exports.default = Object.freeze(constants);

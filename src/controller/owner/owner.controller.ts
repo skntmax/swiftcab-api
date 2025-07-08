@@ -103,6 +103,22 @@ const ownerController  = {
          }
       },
 
+       ownerVarifiedVhicles  : async  function (req:Request, res:Response):Promise<any> {
+
+         try {
+          const {userId , username} = req.userObj
+           let ownerVarifiedVhicle =await ownerService.ownerVarifiedVhicles({ ownerId: Number(userId) } ) 
+
+           if(!ownerVarifiedVhicle.status)  return succesResponse({data: "null" ,  message:ownerVarifiedVhicle?.data } , res )
+           
+            return succesResponse({data:ownerVarifiedVhicle.data, message:"vhicle serviced added" } , res )  
+         
+         }catch(err) {
+           console.log(err)
+           return  failureResponse({data:err}, res )
+         }
+      },
+
 
       getVhicleServicesList  : async  function (req:Request, res:Response):Promise<any> {
 
@@ -139,6 +155,26 @@ const ownerController  = {
           return  failureResponse({data:err}, res )
         }
      },
+
+    assignDriver: async function (req:Request, res:Response):Promise<any> {
+
+        try {
+         const {userId , username} = req.userObj
+         const { user_has_roles } = req
+         const { owner, driver , vhicle_assigned , self } = req.body
+         
+          let driverAssigned =await ownerService.assignDriver({ userId:Number(userId), owner, driver , vhicle_assigned , self } ) 
+
+          if(!driverAssigned.status)  return succesResponse({data: "null" ,  message:driverAssigned?.data } , res )
+
+          return succesResponse({data:driverAssigned.data, message:"driver assigned " } , res )  
+        
+        }catch(err) {
+          console.log(err)
+          return  failureResponse({data:err}, res )
+        }
+     },
+
 
      getActiveUsers  : async  function (req:Request, res:Response):Promise<any> {
 
