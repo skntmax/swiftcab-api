@@ -211,10 +211,10 @@ const ownerService = {
             var _a;
             try {
                 let navbarByRole = yield db_2.default.$queryRawUnsafe(` 
-              select r."name" as role , ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , sni.icon  as sub_icon    from nav_items ni 
+              select r."name" as role , ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , ni.icon as icon, sni.icon  as sub_icon    from nav_items ni 
               inner join nav_has_permission_by_role nhpbr ON nhpbr.nav_item_id = ni.id 
               inner join roles r ON r.id = nhpbr.role_id 
-              inner join  sub_nav_items sni on  ni.id  = sni.nav_item_id
+              left join  sub_nav_items sni on  ni.id  = sni.nav_item_id
               where nhpbr.role_id = ${payload.role}
               `);
                 if ((navbarByRole === null || navbarByRole === void 0 ? void 0 : navbarByRole.length) == 0)
@@ -239,7 +239,7 @@ const ownerService = {
                     // if searched by username or email 
                     let where = `WHERE (u.email like '%${payload.usernameOrEmail}%'  OR u.username like '%${payload.usernameOrEmail}%') AND r."name"='${constant_1.userRoles.owner}'`;
                     let query = ` 
-                      SELECT u.id ,  u.username username,  u.email email, uhr.role_id AS role_id  , r."name"  as role ,
+                      SELECT u.id ,  u.username username,  u.email email, u.is_active as email_verification_pending ,  uhr.role_id AS role_id  , r."name"  as role ,
                       v.id as vhicle_id , v.username as vhicle_username
                       FROM users u
                       INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
@@ -277,7 +277,7 @@ const ownerService = {
                     return (0, utils_1.successReturn)({ users: finalResult, metadata: { page, limit, total: Number(totalUsersWithVhicles[0].total || 0) } });
                 }
                 // without any search filter 
-                let query = ` select  u.id ,  u.username , u.email,  uhr.role_id ,  r."name" as role  from  users u
+                let query = ` select  u.id  , u.username , u.email,  uhr.role_id , u.is_active as email_verification_pending ,  r."name" as role  from  users u
               inner join user_has_roles uhr on uhr.user_id = u.id 
               inner join  roles r on r.id  = uhr.role_id `;
                 if (Array.isArray(payload.role) && payload.role.length > 0) {
@@ -331,6 +331,92 @@ const ownerService = {
                     }
                 });
                 return (0, utils_1.successReturn)(updatedVhicleKycStatus);
+            }
+            catch (err) {
+                console.log("err>>", err);
+                return (0, utils_1.failureReturn)(err);
+            }
+            ``;
+        });
+    },
+    removeUserByUsername: function (payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let userRemoveQuery = ` 
+                WITH deleted_roles AS (
+                DELETE FROM user_has_roles 
+                  USING users 
+                  WHERE users.id = user_has_roles.user_id 
+                  AND users.username  = '${payload.username}'
+                  RETURNING user_has_roles.user_id
+              )
+              DELETE FROM users 
+              WHERE id IN (SELECT user_id FROM deleted_roles);
+              `;
+                let userRemoved = yield db_2.default.$queryRawUnsafe(userRemoveQuery);
+                return (0, utils_1.successReturn)({ user: payload.username });
+            }
+            catch (err) {
+                console.log("err>>", err);
+                return (0, utils_1.failureReturn)(err);
+            }
+            ``;
+        });
+    },
+    blockUnblockuser: function (payload) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let blockUnblockQuery = ` 
+                update  users u  
+                set is_active= ${payload.isActive} 
+                where u.username ='${payload.username}'
+                `;
+                let userRemoved = yield db_2.default.$queryRawUnsafe(blockUnblockQuery);
+                return (0, utils_1.successReturn)({ user: payload.username });
+            }
+            catch (err) {
+                console.log("err>>", err);
+                return (0, utils_1.failureReturn)(err);
+            }
+            ``;
+        });
+    },
+    updateVhicleAvatar: function (_a) {
+        return __awaiter(this, arguments, void 0, function* ({ docs }) {
+            var _b;
+            try {
+                const { vh_avatar } = docs;
+                if (vh_avatar && (vh_avatar === null || vh_avatar === void 0 ? void 0 : vh_avatar.length) == 0)
+                    return (0, utils_1.failureReturn)(" Documents if mendatory");
+                let vhicleAvatarPath = yield cloudinary_1.cld1.upload((_b = vh_avatar[0]) === null || _b === void 0 ? void 0 : _b.path, `${new Date()}-${(0, uuid_1.v4)()}`);
+                if (!vhicleAvatarPath) {
+                    return (0, utils_1.failureReturn)({ erroMessage: "Not uploaded on cloudinary ", error: { vhicleAvatarPath } });
+                }
+                let { url: avatar_url } = vhicleAvatarPath;
+                yield (0, middleware_index_1.deleteFiles)([vh_avatar[0]]);
+                return (0, utils_1.successReturn)({ avatar_url });
+            }
+            catch (err) {
+                console.log("err>>", err);
+                return (0, utils_1.failureReturn)(err);
+            }
+            ``;
+        });
+    },
+    uploadMasterDoc: function (_a) {
+        return __awaiter(this, arguments, void 0, function* ({ docs }) {
+            var _b;
+            try {
+                const { doc } = docs;
+                if (doc && (doc === null || doc === void 0 ? void 0 : doc.length) == 0)
+                    return (0, utils_1.failureReturn)(" Documents if mendatory");
+                let docPath = yield cloudinary_1.cld1.upload((_b = doc[0]) === null || _b === void 0 ? void 0 : _b.path, `${new Date()}-${(0, uuid_1.v4)()}`);
+                if (!docPath) {
+                    return (0, utils_1.failureReturn)({ erroMessage: "Not uploaded on cloudinary ", error: { docPath } });
+                }
+                let { url: doc_url } = docPath;
+                yield (0, middleware_index_1.deleteFiles)([doc[0]]);
+                return (0, utils_1.successReturn)({ doc_url });
             }
             catch (err) {
                 console.log("err>>", err);

@@ -45,7 +45,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.middlewares = exports.vhicleDocUpload = exports.upload = void 0;
+exports.middlewares = exports.driverProfileUpload = exports.commmonDocUpload = exports.vhicleAvatarUpload = exports.vhicleDocUpload = exports.upload = void 0;
 exports.deleteFiles = deleteFiles;
 const celebrate_1 = require("celebrate"); // Import celebrate's error handler
 const cors_1 = __importDefault(require("cors"));
@@ -92,7 +92,18 @@ exports.upload = (0, multer_1.default)({
     limits: { fileSize: 5 * 1024 * 1024 },
     fileFilter: fileFilter
 });
+// owner section
 exports.vhicleDocUpload = exports.upload.fields([{ name: 'ss_one', maxCount: 1 }, { name: 'ss_two', maxCount: 1 }, { name: 'rc_doc', maxCount: 1 }]);
+exports.vhicleAvatarUpload = exports.upload.fields([{ name: 'vh_avatar', maxCount: 1 }]);
+exports.commmonDocUpload = exports.upload.fields([{ name: 'doc', maxCount: 1 }]);
+//  driver section 
+exports.driverProfileUpload = exports.upload.fields([
+    { name: 'dl', maxCount: 1 },
+    { name: 'rc', maxCount: 1 },
+    { name: 'insurance', maxCount: 1 },
+    { name: 'adhaar_card', maxCount: 1 },
+    { name: 'pan_card', maxCount: 1 }
+]);
 function deleteFiles(files) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -136,7 +147,7 @@ exports.middlewares = {
     validateUser: function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                req.userObj = { userId: "", username: "" };
+                req.userObj = { userId: "", username: "", roleTypeName: "" };
                 const token = req.headers['authorization'];
                 if (!token)
                     return (0, utils_1.failureResponse)({ data: "un autherised user " }, res);
@@ -158,16 +169,17 @@ exports.middlewares = {
     validateValidAccount: function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                req.userObj = { userId: "", username: "" };
-                const { token: bearer_token, role } = req.query;
+                req.userObj = { userId: "", username: "", roleTypeName: "" };
+                const { token: bearer_token, role, roleTypeName } = req.query;
                 if (!bearer_token)
                     return (0, utils_1.failureResponse)({ data: "un autherised user " }, res);
                 let decoded = jsonwebtoken_1.default.verify(bearer_token, dotenv_1.default.SECRET_KEY);
-                const { id: userId, username } = decoded;
+                const { id: userId, username, } = decoded;
                 if (!userId || !username)
                     return (0, utils_1.failureResponse)({ data: ` expired token or not a valid user ` }, res);
                 req.userObj.userId = userId;
                 req.userObj.username = username;
+                req.userObj.roleTypeName = typeof roleTypeName === "string" ? roleTypeName : "";
                 next();
             }
             catch (err) {
@@ -179,7 +191,7 @@ exports.middlewares = {
     checkRoles: function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                req.userObj = { userId: "", username: "" };
+                req.userObj = { userId: "", username: "", roleTypeName: "" };
                 const token = req.headers['authorization'];
                 if (!token)
                     return (0, utils_1.failureResponse)({ data: "un autherised user " }, res);
@@ -209,7 +221,7 @@ exports.middlewares = {
     roleWisePermission: function (req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                req.userObj = { userId: "", username: "" };
+                req.userObj = { userId: "", username: "", roleTypeName: "" };
                 const token = req.headers['authorization'];
                 if (!token)
                     return (0, utils_1.failureResponse)({ data: "un autherised user " }, res);
@@ -232,7 +244,7 @@ exports.middlewares = {
         return function (req, res, next) {
             return __awaiter(this, void 0, void 0, function* () {
                 try {
-                    req.userObj = { userId: "", username: "" };
+                    req.userObj = { userId: "", username: "", roleTypeName: "" };
                     const token = req.headers['authorization'];
                     if (!token)
                         return (0, utils_1.failureResponse)({ data: "un autherised user " }, res);
@@ -262,8 +274,15 @@ exports.middlewares = {
         return function (req, res, next) {
             return __awaiter(this, void 0, void 0, function* () {
                 try {
-                    if (req.params || req.query) {
-                        req.cacheKey = `${key}:${Object.values(req.params || req.query).join(':')}`;
+                    if (req.params && Object.keys(req.params).length > 0) {
+                        req.cacheKey = `${key}:${Object.entries(req.params)
+                            .map(([k, v]) => `${k}=${v}`)
+                            .join(":")}`;
+                    }
+                    else if (req.query && Object.keys(req.query).length > 0) {
+                        req.cacheKey = `${key}:${Object.entries(req.query)
+                            .map(([k, v]) => `${k}=${v}`)
+                            .join(":")}`;
                     }
                     else {
                         req.cacheKey = key;
@@ -299,7 +318,7 @@ exports.middlewares = {
             return __awaiter(this, void 0, void 0, function* () {
                 try {
                     let { userType } = req.params;
-                    req.userObj = { userId: "", username: "" };
+                    req.userObj = { userId: "", username: "", roleTypeName: "" };
                     const token = req.headers['authorization'];
                     if (!token)
                         return (0, utils_1.failureResponse)({ data: "un autherised user " }, res);

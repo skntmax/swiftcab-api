@@ -140,6 +140,29 @@ const masterController  = {
       
        } ,
 
+       
+       getDriverList: async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+ 
+          const { cacheKey }  = req
+          const { bankId }  = req.query
+
+          let driverList =await masterService.getDriverList({cacheKey})
+          
+          if(!driverList.status)
+             return succesResponse({data:driverList.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:driverList.data, message:" driver list" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+
     
 
     

@@ -23,6 +23,12 @@ ownerRouter.post('/create-vhicle-provide-services',
     ownerController.ownerActiveVhicleList )
 
 
+        ownerRouter.get('/owner-varified-vhicle-list',
+    middlewares.checkUserRoles(userRoles.owner) ,
+    ownerController.ownerVarifiedVhicles )
+
+
+
         
     ownerRouter.get('/get-vhicle-services-list',
     middlewares.checkUserRoles(userRoles.owner) ,
@@ -45,7 +51,14 @@ ownerRouter.get('/get-nav',
     middlewares.checkUserRoles(userRoles.owner),
     ownerController.getNavbar)
 
+
     
+        
+ownerRouter.post('/assign-driver-to-vhicle',
+    middlewares.checkUserRoles(userRoles.owner),
+    ownerController.assignDriver)
+
+
 
 
     

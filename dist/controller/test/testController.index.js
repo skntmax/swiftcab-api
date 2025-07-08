@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const db_1 = __importDefault(require("../../db"));
+// import {redisClient1} from "../../services/redis/redis.index"
 const cloudinary_1 = require("../../services/cloudinary");
 const mailConfig_1 = require("../../config/mailConfig");
 const dotenv_1 = __importDefault(require("../../config/dotenv"));

@@ -15,6 +15,14 @@ enum KycStatus {
   COMPLETED
 }
 
+
+enum payMethod {
+  UPI
+  CASH
+  ONLINE
+}
+
+
 enum LoginBy {
   SWIFTCAB
   GOOGLE
@@ -68,6 +76,9 @@ model vhicle {
   // engaged with which vhicle
   engaged_with_which_vhicle driver_profile ? @relation("engaged_with_which_vhicle")   
 
+  //  vhicle assigned to  driver
+  assigned_vhicle_to_driver driver_belongs_to_owner ? @relation("assigned_vhicle_to_driver")
+
 }
 
 
@@ -114,7 +125,7 @@ model vhicle_services {
 model owner_has_vhicles{
   id  Int @id @default(autoincrement())
   owner Int
-  v_type Int
+  v_type Int 
 
   // owner_of_vhicle users @relation(fields: [owner] , references: [id])
   // vhicle_type_relation type_of_vhicle @relation(fields: [v_type], references: [id])  
@@ -137,7 +148,6 @@ model vhicle_provides_services {
   vhicle         vhicle          @relation(fields: [vhicle_id], references: [id])
   vhicle_service vhicle_services @relation(fields: [service_id], references: [id])
  
-   vh_service  users_have_rides?
   @@unique([vhicle_id, service_id]) // Ensures unique combinations of vhicle and service
 }
 
@@ -188,6 +198,9 @@ model users {
   
   // engaged with  which owner 
   engaged_with_which_owner driver_profile ? @relation("engaged_with_which_owner") 
+  
+  // driver assigned by 
+  driver_assigned_by driver_belongs_to_owner[] @relation("driver_assigned_by")
   created_on DateTime @default(now())
   updated_on DateTime
 }
@@ -342,8 +355,8 @@ model utils_config {
 model users_have_rides {
   id Int @id @default(autoincrement())
   
-  vh_service_id Int @unique  
-  vh_service vhicle_provides_services @relation(fields: [vh_service_id] , references: [id])
+  vhicle_driver Int @unique  
+  assigned_driver_to_vhicle driver_belongs_to_owner? @relation(fields: [vhicle_driver] , references: [id] , name: "assigned_driver_to_vhicle")
   
   
   pickup_date DateTime? 
@@ -356,8 +369,6 @@ model users_have_rides {
   user_id Int   // customer user id 
   user_has_rides users @relation(fields: [user_id] , references: [id] )
 
-
-  
   // state_id Int
   // source_state states @relation(fields: [state_id], references: [id])
 
@@ -397,9 +408,12 @@ model users_have_rides {
   travel_way       Int
   ride_travel_way  travel_ways @relation(fields: [travel_way], references: [id])
 
+  is_running Boolean @default(false)
   is_active Boolean @default(false)
 
-  total_price Int
+  total_fare Int
+  payment_method payMethod @default(CASH)
+  
   created_on DateTime @default(now())
   updated_on DateTime
 
@@ -527,7 +541,20 @@ model  driver_belongs_to_owner  {
 
    driver Int
    driver_id users @relation(fields: [driver] , references: [id], name: "active_driver")    
+   
+   assigned_vhicle  Int? @unique
+   assigned_vhicle_to_driver vhicle?  @relation(fields: [assigned_vhicle] , references: [id], name: "assigned_vhicle_to_driver")
   
+  // for users has rides  table 
+  assigned_driver_to_vhicle  users_have_rides? @relation(name: "assigned_driver_to_vhicle") 
+  
+  self Boolean @default(false)
+  
+  updated_by  Int
+  driver_assigned_by  users @relation(fields: [updated_by], references: [id], name:"driver_assigned_by")
+  
+  engaged Boolean @default(false)
+  is_active Boolean  @default(true)
   created_on DateTime @default(now())
   updated_on DateTime
  
@@ -596,8 +623,9 @@ model  driver_profile  {
 
 
   is_bank_varified Boolean? @default(false) 
-
+   
   created_on DateTime @default(now())
   updated_on DateTime @default(now())
- 
+
+
 }

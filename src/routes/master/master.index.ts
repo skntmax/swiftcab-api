@@ -49,12 +49,19 @@ masterRouter.get('/get-navbar/:userType',
     middlewares.getLoggedinuserRoleId(),
      ownerController.getNavbar )
 
-    
 
 masterRouter.post('/upload/doc',
     // middlewares.getLoggedinuserRoleId(),
     commmonDocUpload,
      ownerController.uploadMasterDoc )
+
+
+     
+                 
+masterRouter.get('/get-driver-list',
+     middlewares.inCache(REDIS_KEYS.DRIVER_LIST),
+     masterController.getDriverList )
+
 
 
 export default masterRouter 

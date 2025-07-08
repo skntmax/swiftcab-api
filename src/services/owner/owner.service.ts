@@ -3,7 +3,7 @@ import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successR
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { activeUserType, approveKycStatus, blockUnblockPayload, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, removeUserByUsername, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
+import { activeUserType, approveKycStatus, assingDriverToVhicle, blockUnblockPayload, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, removeUserByUsername, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
@@ -155,6 +155,32 @@ import { KycStatus } from "@prisma/client"
                   return failureReturn(err)
               }
           } , 
+          
+          ownerVarifiedVhicles : async function(payload:owner_vhicles) {
+          try {
+    
+             let ownerVarifiedVhicle =await  prismaClient.$queryRawUnsafe(` 
+              SELECT 
+              v.id,
+              v.is_kyc,
+              v.username AS vhicle_username,
+              tov.vhicle_type AS name
+            FROM vhicle v
+            INNER JOIN type_of_vhicle tov ON tov.id = v.vhicle_type_id
+            LEFT JOIN driver_belongs_to_owner dbto 
+              ON dbto.assigned_vhicle = v.id
+            WHERE 
+              v.vhicle_owner_id = $1
+              AND v.is_active = true
+              AND v.is_kyc = true
+              AND dbto.assigned_vhicle IS NULL;
+              `,payload.ownerId)
+                return successReturn(ownerVarifiedVhicle)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }
+          } , 
   
 
           kycRequest : async function(payload:kyc_varify_details , docs:any  ) {
@@ -250,6 +276,39 @@ import { KycStatus } from "@prisma/client"
               let nav = transformNavItems(navbarByRole , payload.username, navbarByRole[0].role?.toLocaleLowerCase())
              
               return successReturn(nav)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+
+          assignDriver : async function(payload:assingDriverToVhicle) {
+
+            try {
+    
+            let userInfo = await this.getUserInfoByUsername(payload.owner)
+            console.log("userInfo",userInfo)
+            if(!userInfo?.status)
+               return failureReturn({message:"owner id not found" })
+             
+            let ownerId = userInfo?.data?.id 
+            let driverAssigned =await  prismaClient.driver_belongs_to_owner.create({
+              data:{
+                owner: ownerId,
+                driver: payload.self==true? ownerId: payload.driver,
+                assigned_vhicle:payload.vhicle_assigned,
+                updated_by:payload.userId,
+                self: payload.self,
+                created_on: new Date(),
+                updated_on: new Date()
+              }
+             })
+
+            
+            if(!driverAssigned)
+              return failureReturn(driverAssigned)
+        
+            return successReturn(driverAssigned)
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)
@@ -463,6 +522,25 @@ import { KycStatus } from "@prisma/client"
               let {url:doc_url}  = docPath 
               await deleteFiles([doc[0]]);
               return successReturn({doc_url })
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+
+            getUserInfoByUsername :   async function(username:string) {
+            try {
+              
+              let usersInfo = await prismaClient.users.findFirst({
+                where:{
+                  username
+                }
+              })
+              
+              if(!usersInfo) 
+                 return failureReturn(usersInfo)
+
+              return successReturn(usersInfo)
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)

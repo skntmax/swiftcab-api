@@ -37,18 +37,18 @@ const authService = {
                 let newUserArray = yield index_1.default.$queryRawUnsafe(` 
                  SELECT x.*
                 FROM (
-                  SELECT u.id ,  u.username username, 
+                  SELECT u.id ,  u.username username , u.avatar ,   
               u.email email,
-              uhr.role_id AS role_id, u.is_active , u.phone_no,
+              uhr.role_id AS role_id, r.name  as role , u.is_active , u.phone_no,
                 COALESCE(u.first_name::text, '') as first_name  , COALESCE (u.last_name::text, '') as last_name , u.password user_password 
                   FROM users u
                   INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
+                  INNER JOIN roles r ON r.id = uhr.role_id
                   WHERE (u.email = $1  OR u.username = $1 OR  u.phone_no=$3  )
                 ) x
                 WHERE x.role_id = $2 AND x.is_active = true  `, emailOrUsername, userType, phone);
                 // Fix: Assign the first object to a new variable
                 let newUser = newUserArray.length > 0 ? newUserArray[0] : undefined;
-                console.log(newUser, "newUser");
                 // if logged in by phone m then added in the queue 
                 if (phone) {
                     if (!newUser) { // if phone exist and  newuser does not . then create a new user and send otp on the number   
@@ -78,7 +78,7 @@ const authService = {
                     return (0, utils_1.failureReturn)('Invalid credential');
                 let payload = { id: newUser.id, username: newUser.username };
                 let token = jsonwebtoken_1.default.sign(payload, dotenv_1.default.SECRET_KEY, { expiresIn: "2h" });
-                return (0, utils_1.successReturn)({ token, usersObj: { username: newUser.username, firstName: newUser.first_name, lastName: newUser.last_name } });
+                return (0, utils_1.successReturn)({ token, usersObj: { username: newUser.username, firstName: newUser.first_name, lastName: newUser.last_name, avatar: newUser.avatar, roleTypeName: newUser === null || newUser === void 0 ? void 0 : newUser.role } });
             }
             catch (err) {
                 console.log(err);
@@ -111,7 +111,7 @@ const authService = {
                     });
                     if (!userExist) {
                         // user does not  exist , then create a new record
-                        let newUserObj = { email: newUser.email, password: config_1.default.defaultPass, username: (0, utils_1.generateUsername)(newUser.name), userType: userPayload.userType, trafficBy: userPayload.trafficBy, accountStatus: true };
+                        let newUserObj = { email: newUser.email, password: config_1.default.defaultPass, username: (0, utils_1.generateUsername)(newUser.name), userType: userPayload.userType, trafficBy: userPayload.trafficBy, avatar: objPrototype.profile_pic, accountStatus: true };
                         let userCreated = yield this.createUser(newUserObj);
                         if (!userCreated.status)
                             return (0, utils_1.failureReturn)({ data: userCreated.data, message: "User already exist" });
@@ -123,7 +123,7 @@ const authService = {
                         let payload = { id: userExist.id, username: userExist.username };
                         let token = jsonwebtoken_1.default.sign(payload, dotenv_1.default.SECRET_KEY, { expiresIn: "2h" });
                         // Fix: Assign the first object to a new variable
-                        return (0, utils_1.successReturn)({ token, usersObj: { username: userExist.username, firstName: userExist.first_name, lastName: userExist.last_name } });
+                        return (0, utils_1.successReturn)({ token, usersObj: { username: userExist.username, firstName: userExist.first_name, lastName: userExist.last_name, avatar: userExist.avatar } });
                     }
                 }
                 // return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name}}  )  
@@ -194,11 +194,12 @@ const authService = {
     },
     createUser: function (userPayload) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
+            var _a, _b, _c, _d;
             try {
                 if (!userPayload.accountStatus) {
                     userPayload.accountStatus = false; // by default 
                 }
+                let roleTypeName = "";
                 const { email, password, userType, username } = userPayload;
                 let userExist = yield index_1.default.users.findFirst({
                     where: {
@@ -230,6 +231,7 @@ const authService = {
                         phone_no: (_a = userPayload.phone) !== null && _a !== void 0 ? _a : null,
                         is_active: userPayload.accountStatus,
                         traffic_from: (_b = userPayload.trafficBy) !== null && _b !== void 0 ? _b : client_1.LoginBy.SWIFTCAB,
+                        avatar: (_c = userPayload.avatar) !== null && _c !== void 0 ? _c : null,
                         created_on: new Date(),
                         updated_on: new Date(),
                     }
@@ -243,6 +245,12 @@ const authService = {
                         updated_on: new Date(),
                     }
                 });
+                let role = yield index_1.default.roles.findFirst({
+                    where: { id: userType },
+                    select: { name: true }
+                });
+                if (role)
+                    roleTypeName = role === null || role === void 0 ? void 0 : role.name;
                 let payload = { id: newUser.id, username: newUser.username };
                 let token = jsonwebtoken_1.default.sign(payload, dotenv_1.default.SECRET_KEY, {
                     expiresIn: "2h",
@@ -252,9 +260,9 @@ const authService = {
                     expiresIn: "5m", // Correct format
                 });
                 //  adding to  queue 
-                let authUrl = `${process.env.NEXT_PUBLIC_API_URL}/${server_1.version}/auth/verify-mail-link?token=${authToken}&role=${userType}`;
-                queues_1.signup_user_queue.enqueue('user', { authenticateUri: authUrl, userId: payload === null || payload === void 0 ? void 0 : payload.id, email });
-                return (0, utils_1.successReturn)({ token, is_active: newUser === null || newUser === void 0 ? void 0 : newUser.is_active, usersObj: { username: newUser.username, firstName: newUser.first_name, lastName: newUser.last_name } });
+                let authUrl = `${process.env.NEXT_PUBLIC_API_URL}/${server_1.version}/auth/verify-mail-link?token=${authToken}&role=${userType}&roleTypeName=${roleTypeName}`;
+                queues_1.signup_user_queue.enqueue('user', { authenticateUri: authUrl, userId: payload === null || payload === void 0 ? void 0 : payload.id, email, roleTypeName });
+                return (0, utils_1.successReturn)({ token, is_active: newUser === null || newUser === void 0 ? void 0 : newUser.is_active, usersObj: { username: newUser.username, firstName: newUser.first_name, lastName: newUser.last_name, avatar: (_d = newUser.avatar) !== null && _d !== void 0 ? _d : null, roleTypeName } });
             }
             catch (err) {
                 console.log(err);
@@ -266,7 +274,7 @@ const authService = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 // let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username  }})
-                const { role, userId, username } = payload;
+                const { role, userId, username, roleTypeName } = payload;
                 let updateStatus = yield index_1.default.users.update({
                     where: {
                         id: userId
@@ -278,11 +286,11 @@ const authService = {
                 let userExist = yield index_1.default.users.findFirst({
                     where: { id: userId }
                 });
-                let userPayload = { id: userExist.id, username: userExist.username, first_name: userExist.first_name, last_name: userExist.last_name };
+                let userPayload = { id: userExist.id, username: userExist.username, first_name: userExist.first_name, last_name: userExist.last_name, roleTypeName };
                 let token = jsonwebtoken_1.default.sign(payload, dotenv_1.default.SECRET_KEY, {
                     expiresIn: "2h",
                 });
-                return (0, utils_1.successReturn)({ token, usersObj: { username: userPayload.username, firstName: userPayload.first_name, lastName: userPayload.last_name } });
+                return (0, utils_1.successReturn)({ token, usersObj: { username: userPayload.username, firstName: userPayload.first_name, lastName: userPayload.last_name, roleTypeName: userPayload.roleTypeName } });
             }
             catch (err) {
                 console.log(err);
