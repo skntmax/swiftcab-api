@@ -40,7 +40,7 @@ class RedisConn {
 
  const redisClient1 = (new  RedisConn()).redisClient // for common use with databse 0 
  
- const redisClient2 = (new  RedisConn(config.redisConn.redisConnection2)).redisClient // for common use with databse 0 
+ const redisClient2 = (new  RedisConn(config.redisConn.redisConnection1)).redisClient // for common use with databse 0 
  
 
  export  {redisClient1 , redisClient2}
