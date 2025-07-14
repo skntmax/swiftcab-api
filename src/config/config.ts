@@ -9,8 +9,11 @@ const config =  {
       devEnv:"./.env.development",
       prodEnv:"./.env.production",
       qaEnv:"./.env.qa",
-      redisConn :{
+      s3Config:{
       
+      }, 
+      
+      redisConn :{
       redisConnection1: { // be default 
         host: "localhost",
         port: Number(dotenv.REDIS_PORT) ,

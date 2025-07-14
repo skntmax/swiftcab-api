@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_ENV=DEV nodemon ./src/server.ts",
+    "dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development nodemon ./src/server.ts",
     "prisma:status:dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development  -- npx prisma migrate status",
     "prisma:status:prod": "cross-env NODE_ENV=PROD  dotenv -e .env.production  -- npx prisma migrate status",
     "prisma:migrate:dev": "cross-env NODE_ENV=DEV  dotenv -e .env.development  -- npx prisma migrate dev",
@@ -17,8 +17,8 @@
     "prisma:reset:dev": "dotenv -e .env.development  -- npx prisma  migrate reset ",
     "prisma:reset:prod": "dotenv -e .env.production  -- npx prisma  migrate reset ",
     "prod": "npx tsc  && cross-env NODE_ENV=PROD node ./dist/server.js",
-    "dev_multi_instance":"node ./load_balancer/dev_multi_instance.js",
-    "prod_multi_instance":"node ./load_balancer/prod_multi_instance.js"
+    "dev_multi_instance": "node ./load_balancer/dev_multi_instance.js",
+    "prod_multi_instance": "node ./load_balancer/prod_multi_instance.js"
   },
   "author": "",
   "license": "ISC",
@@ -31,6 +31,8 @@
     "nodemon": "^3.1.9"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.844.0",
+    "@aws-sdk/s3-request-presigner": "^3.844.0",
     "@prisma/client": "^6.2.1",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.8",

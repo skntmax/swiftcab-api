@@ -6,6 +6,7 @@ import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import { redisClient1 } from "../redis/redis.index"
+import { s3Client1 } from "../s3Bucket/s3Bucket"
 
 const  masterService = {
     
@@ -213,6 +214,33 @@ const  masterService = {
            await redisClient1.expire(cacheKey ,config.cache_time  )
          }
         return successReturn(driverLists)  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } ,
+
+
+    uploadToS3 : async function(payload:{fileName:string , contentType:string}) {
+      try {
+        let key = payload?.fileName
+        let contentType = payload?.contentType
+        let puturl = await s3Client1.getSignedPutUrl(key,contentType)
+        return successReturn(puturl)  
+
+      }catch(err) {
+          console.log(err)
+               return failureReturn(err)  
+      }
+      
+    } ,
+
+    getUploadedFile :  async function(key:string) {
+      try {
+        let puturl = await s3Client1.getPublicUrl(key)
+        return successReturn(puturl)  
 
       }catch(err) {
           console.log(err)

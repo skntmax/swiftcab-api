@@ -159,8 +159,44 @@ const masterController  = {
          }catch(err) {
           return  failureResponse({data:err}, res )
          }
+       } ,
+         
+       uploadToS3: async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+          const { fileName , contentType} = req.body
+          let putUrlObject =await masterService.uploadToS3({fileName , contentType})
+          
+          if(!putUrlObject.status)
+             return failureResponse({data:putUrlObject.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:putUrlObject.data, message:" s3 put url" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
       
        } ,
+
+       getUploadedFile : async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+          const { key } = req.params 
+          let downloadFile =await masterService.getUploadedFile(key)
+          
+          if(!downloadFile.status)
+             return failureResponse({data:downloadFile.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:downloadFile.data, message:" download file" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
 
 
     

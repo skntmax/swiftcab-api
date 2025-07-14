@@ -55,12 +55,22 @@ masterRouter.post('/upload/doc',
     commmonDocUpload,
      ownerController.uploadMasterDoc )
 
-
      
                  
 masterRouter.get('/get-driver-list',
      middlewares.inCache(REDIS_KEYS.DRIVER_LIST),
      masterController.getDriverList )
+
+     
+                 
+// put url will return, fire a put requets along with the file to that url        
+masterRouter.post('/upload-to-s3',
+     masterController.uploadToS3 )
+                 
+// extract the  file using used key      
+masterRouter.get('/get-uploaded-file/:key',
+     masterController.getUploadedFile )
+
 
 
 
