@@ -1,6 +1,5 @@
 npx dotenv -e .env.production -- npx prisma migrate deploy
 
-
 2017  npm i -g cross-env
  2018  cross-env NODE_ENV=PROD  dotenv -e .env.production  -- npx prisma migrate deploy
  2019  dotenv -e .env.production -- cross-env NODE_ENV=production npx prisma migrate deploy
@@ -13,6 +12,9 @@ npx dotenv -e .env.production -- npx prisma migrate deploy
  2026  history
 
 
- for backup >  psql  -h localhost -p 5432 -U postgres swc < ./29june.sql 
-
+ <!-- for backup >  psql  -h localhost -p 5432 -U postgres swc < ./29june.sql  -->
  copy from local to server >  scp 29june.sql  sknt@164.52.219.98:/home/sknt/29june.sql
+
+
+ <!-- for deleting history of git environment  -->
+ python git-filter-repo.py --path .env.development --path .env.production --path .env.qa --invert-paths
