@@ -272,8 +272,25 @@ import { KycStatus } from "@prisma/client"
             
             if(navbarByRole?.length==0)
               return successReturn(navbarByRole)
+
+              //  Group by role
+              const grouped: Record<string, NavItem[]> = navbarByRole.reduce((acc, item) => {
+                if (!acc[item.role]) {
+                  acc[item.role] = [];
+                }
+                acc[item.role].push(item);
+                return acc;
+              }, {} as Record<string, NavItem[]>);
+
+              //  Sort each role group by `nav_item`
+              Object.keys(grouped).forEach(role => {
+                grouped[role].sort((a, b) => a.nav_item.localeCompare(b.nav_item));
+              });
+
+              //  Flatten to one array in the same structure
+              const sortedFlattened: NavItem[] = Object.values(grouped).flat();
               
-              let nav = transformNavItems(navbarByRole , payload.username, navbarByRole[0].role?.toLocaleLowerCase())
+              let nav = transformNavItems(sortedFlattened , payload.username, navbarByRole[0].role?.toLocaleLowerCase())
              
               return successReturn(nav)
               }catch(err) {
