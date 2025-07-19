@@ -196,6 +196,26 @@ const ownerController  = {
         }
     },
    
+    getActiveUsersByRole  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+       const {userId , username} = req.userObj
+       const { user_has_roles } = req
+       const { roles=[] , page=1 , limit=20 , usernameOrEmail=undefined , } = req.body
+       
+        let activeUsers =await ownerService.getActiveUsersByRole({userId:Number(userId) , usernameOrEmail ,page,limit , roles} ) 
+
+        if(!activeUsers.status)  return succesResponse({data: "null" ,  message:activeUsers?.data } , res )
+
+        return succesResponse({data:activeUsers.data, message:" Users with roles and vhicles " } , res )  
+
+      
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+   
     getVhicleDetailsById  : async  function (req:Request, res:Response):Promise<any> {
 
       try {

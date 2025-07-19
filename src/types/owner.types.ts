@@ -55,6 +55,14 @@ export interface vhicleDetail  {
    ownerId :number
 }   
 
+export interface driverSearch  {
+userId : number
+usernameOrEmail : string
+page:number
+limit : number
+roles : number[]
+}   
+
 
 export interface approveKycStatus  {
    vhicleId:number , 

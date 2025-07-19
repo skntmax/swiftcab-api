@@ -103,7 +103,8 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                 adhaar_card: adhaarCardUrl,
                 insurance: insuranceUrl,
                 pan_card: panCardUrl,
-                profile_pic: profilePicUrl
+                profile_pic: profilePicUrl,
+                passbook: passbookUrl 
               } = payload.docs;
 
               let wallCode = getShortDriverWalletCode();
@@ -121,6 +122,8 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                   pan_card: panCardUrl || "",
                   bank_account: Number(payload.bank_account),
                   bank_account_branch: Number(payload.bank_account_branch),
+                  passbook: passbookUrl || "",
+                  bank_account_no: Number(payload.bank_account_no) || null,
                   ifsc: payload.ifsc || "",
                   updated_on: new Date(),
                 },
@@ -134,6 +137,8 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                   driver: payload.userId,
                   bank_account: Number(payload.bank_account),
                   bank_account_branch: Number(payload.bank_account_branch),
+                  passbook: passbookUrl || "",
+                  bank_account_no:  payload.bank_account_no  || 0,
                   ifsc: payload.ifsc || "",
                   is_varified: false,
                   wallet_code: wallCode,
@@ -142,7 +147,13 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                 }
               });
 
-              return successReturn(updateOrCreateDriverProfile);
+              return successReturn(
+                JSON.parse(
+                  JSON.stringify(updateOrCreateDriverProfile, (_, value) =>
+                    typeof value === 'bigint' ? value.toString() : value
+                  )
+                )
+              );
           }catch(err) {
             console.log("err>>",err)
               return failureReturn(err)
@@ -165,7 +176,13 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                  }
                 }
               })
-              return successReturn(partnerDetails)
+               return successReturn(
+                JSON.parse(
+                  JSON.stringify(partnerDetails, (_, value) =>
+                    typeof value === 'bigint' ? value.toString() : value
+                  )
+                )
+              );
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)

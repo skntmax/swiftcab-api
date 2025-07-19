@@ -47,6 +47,13 @@ adminRouter.post('/get-active-users',
 
      
      
+adminRouter.post('/get-active-by-role',
+     middlewares.checkUserRoles(userRoles.admin),
+     ownerController.getActiveUsersByRole )
+
+     
+     
+     
 adminRouter.post('/get-vhicle-details',
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.getVhicleDetailsById )

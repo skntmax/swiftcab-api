@@ -38,11 +38,12 @@ const customerController  = {
          
 
              const {userId , username} = req.userObj
-             const {bank_account_branch,ifsc,bank_account} = req.body
+             const {bank_account_branch,ifsc,bank_account,bank_account_no} = req.body
             let driverDetails =await driverService.updateDriverProfile2({
                                                          userId:Number(userId) ,
                                                          bank_account,
                                                          bank_account_branch,
+                                                         bank_account_no,
                                                          ifsc,
                                                          docs:req.body.docs
                                                          })

@@ -24,9 +24,11 @@ export interface driverDetails2  {
         insurance?: string
         adhaarCard?: string
         panCard?:  string
+        passbook?: string
     },
     bank_account:number
     bank_account_branch: number
+    bank_account_no?:bigint
     ifsc?:string
     docs: any
  }   

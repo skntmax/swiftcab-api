@@ -3,7 +3,7 @@ import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successR
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { activeUserType, approveKycStatus, assingDriverToVhicle, blockUnblockPayload, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, removeUserByUsername, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
+import { activeUserType, approveKycStatus, assingDriverToVhicle, blockUnblockPayload, driverSearch, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, removeUserByUsername, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
@@ -289,7 +289,7 @@ import { KycStatus } from "@prisma/client"
 
               //  Flatten to one array in the same structure
               const sortedFlattened: NavItem[] = Object.values(grouped).flat();
-              
+            
               let nav = transformNavItems(sortedFlattened , payload.username, navbarByRole[0].role?.toLocaleLowerCase())
              
               return successReturn(nav)
@@ -357,10 +357,8 @@ import { KycStatus } from "@prisma/client"
                    let totalQuery =  `
                   select count(dt.id) as total from (${query}) as dt `
  
-                    
                   query=  query+`offset  ${skip} limit ${limit}`
 
-                  console.log(query)
                   let totalUsersWithVhicles:totalCount[] =await  prismaClient.$queryRawUnsafe(totalQuery)
                   let searchByuser:assingedVhiclesToUser[] =await prismaClient.$queryRawUnsafe(query)
                   
@@ -388,10 +386,6 @@ import { KycStatus } from "@prisma/client"
                
               }
               
-
-
-
-
               // without any search filter 
               let query = ` select  u.id  , u.username , u.email,  uhr.role_id , u.is_active as email_verification_pending ,  r."name" as role  from  users u
               inner join user_has_roles uhr on uhr.user_id = u.id 
@@ -417,6 +411,18 @@ import { KycStatus } from "@prisma/client"
               }
           } , 
 
+        getActiveUsersByRole :  async function(payload:driverSearch) {
+
+            try {
+
+            
+
+              return successReturn([])
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
 
           getVhicleDetailsById : async function(payload:vhicleDetail) {
 

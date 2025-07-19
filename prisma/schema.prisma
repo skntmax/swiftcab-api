@@ -593,6 +593,7 @@ model  driver_profile  {
    insurance String?
    pan_card String?
    adhar_card String?
+   passbook String?
    is_varified  Boolean?
    comment String?
    driver Int @unique
@@ -615,6 +616,8 @@ model  driver_profile  {
   // bank related info 
   bank_account Int
   drive_has_bank_account  Banks @relation(fields: [bank_account] , references: [id])
+
+  bank_account_no BigInt? @unique
 
   ifsc String? 
 
