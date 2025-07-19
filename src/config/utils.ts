@@ -1,4 +1,6 @@
 import { Response , Request  } from "express"
+import { v4 as uuidv4 } from 'uuid'
+
 interface commonResponse {   
     status? : number
     data?:  any 
@@ -162,4 +164,12 @@ export function generateEmail(name: string): string {
 // Helper function (Ensure it's properly defined)
 function getRandomNumberInRange(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+// Function to shorten a UUID (hash-based)
+export function getShortDriverWalletCode() {
+  const uuid = uuidv4()
+   const timePart = Date.now().toString(36).toUpperCase()
+   const randomPart = Math.random().toString(36).substring(2, 10) 
+   return `DR_WALL_${timePart}${randomPart}`
 }

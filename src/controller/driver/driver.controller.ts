@@ -33,6 +33,29 @@ const customerController  = {
             return  failureResponse({data:err}, res )
            }
        } ,
+        updateDriverProfile2 : async function (req:Request, res:Response):Promise<any> {
+        try {
+         
+
+             const {userId , username} = req.userObj
+             const {bank_account_branch,ifsc,bank_account} = req.body
+            let driverDetails =await driverService.updateDriverProfile2({
+                                                         userId:Number(userId) ,
+                                                         bank_account,
+                                                         bank_account_branch,
+                                                         ifsc,
+                                                         docs:req.body.docs
+                                                         })
+            if(!driverDetails.status)
+               return failureResponse({data:driverDetails.data, message:""} , res )  
+          
+            return succesResponse({data:driverDetails.data, message:"Driver Details updated " } , res )  
+           
+           }catch(err) {
+            console.log(err)
+            return  failureResponse({data:err}, res )
+           }
+       } ,
 
         getDriverDetails : async function (req:Request, res:Response):Promise<any> {
         try {

@@ -609,7 +609,7 @@ model  driver_profile  {
   engaged_with_which_vhicle vhicle? @relation(fields: [engaged_with_vhicle] , references: [id], name: "engaged_with_which_vhicle")    
       
   // wallet info 
-  wallet_code  String?    @unique @default(uuid()) 
+  wallet_code  String?     
   wallet_balance  Int?    @default(0)
   
   // bank related info 
@@ -623,7 +623,7 @@ model  driver_profile  {
 
 
   is_bank_varified Boolean? @default(false) 
-   
+
   created_on DateTime @default(now())
   updated_on DateTime @default(now())
 

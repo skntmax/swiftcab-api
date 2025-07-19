@@ -13,6 +13,11 @@ driverRouter.post('/update-driver-profile',
      driverProfileUpload,
      driverController.updateDriverProfile )
      
+driverRouter.post('/update-driver-profile2', 
+     // middlewares.validateUser,
+     middlewares.checkUserRoles(userRoles.driverPartner),
+     driverController.updateDriverProfile2 )
+     
 
 driverRouter.get('/get-driver-details', 
      // middlewares.validateUser,

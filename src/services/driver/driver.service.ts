@@ -1,5 +1,5 @@
 import dotenv from "../../config/dotenv"
-import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successReturn, totalCount, transformNavItems, userTypes } from "../../config/utils"
+import { assingedVhiclesToUser, failureReturn, getShortDriverWalletCode, NavItem, succesResponse, successReturn, totalCount, transformNavItems, userTypes } from "../../config/utils"
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
@@ -13,8 +13,7 @@ import { cld1 } from "../cloudinary"
 import { deleteFiles } from "../../middlewares/middleware.index"
 import { KycStatus } from "@prisma/client"
 import { customerDetails, updateCustomerDetails } from "../../types/customer"
-import { driverDetails, getDriverDetails } from "../../types/driver.types"
-  
+import { driverDetails, driverDetails2, getDriverDetails } from "../../types/driver.types"
   const  customerService = {
    
       getCustomerDetails : async function(payload:customerDetails) {
@@ -93,6 +92,62 @@ import { driverDetails, getDriverDetails } from "../../types/driver.types"
                   return failureReturn(err)
               }``
           } ,
+            
+          updateDriverProfile2 : async function(payload:driverDetails2) {
+
+        try {
+          
+                  const {
+                dl: dlUrl,
+                rc: rcUrl,
+                adhaar_card: adhaarCardUrl,
+                insurance: insuranceUrl,
+                pan_card: panCardUrl,
+                profile_pic: profilePicUrl
+              } = payload.docs;
+
+              let wallCode = getShortDriverWalletCode();
+
+              const updateOrCreateDriverProfile = await prismaClient.driver_profile.upsert({
+                where: {
+                  driver: payload.userId,
+                },
+                update: {
+                  profile_pic: profilePicUrl,
+                  DL: dlUrl || "",
+                  RC: rcUrl || "",
+                  insurance: insuranceUrl || "",
+                  adhar_card: adhaarCardUrl || "",
+                  pan_card: panCardUrl || "",
+                  bank_account: Number(payload.bank_account),
+                  bank_account_branch: Number(payload.bank_account_branch),
+                  ifsc: payload.ifsc || "",
+                  updated_on: new Date(),
+                },
+                create: {
+                  profile_pic: profilePicUrl,
+                  DL: dlUrl || "",
+                  RC: rcUrl || "",
+                  insurance: insuranceUrl || "",
+                  adhar_card: adhaarCardUrl || "",
+                  pan_card: panCardUrl || "",
+                  driver: payload.userId,
+                  bank_account: Number(payload.bank_account),
+                  bank_account_branch: Number(payload.bank_account_branch),
+                  ifsc: payload.ifsc || "",
+                  is_varified: false,
+                  wallet_code: wallCode,
+                  created_on: new Date(),
+                  updated_on: new Date(),
+                }
+              });
+
+              return successReturn(updateOrCreateDriverProfile);
+          }catch(err) {
+            console.log("err>>",err)
+              return failureReturn(err)
+          }
+             } ,
 
           getDriverDetails : async function(payload:getDriverDetails) {
              
@@ -101,6 +156,13 @@ import { driverDetails, getDriverDetails } from "../../types/driver.types"
               let partnerDetails = await prismaClient.driver_profile.findFirst({
                 where:{
                 driver: payload.userId  
+                },
+                include: {
+                 bank_have_branch:{
+                  select:{
+                    branch_name:true
+                  }
+                 }
                 }
               })
               return successReturn(partnerDetails)
