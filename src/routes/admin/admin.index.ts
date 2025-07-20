@@ -51,6 +51,11 @@ adminRouter.post('/get-active-by-role',
      middlewares.checkUserRoles(userRoles.admin),
      ownerController.getActiveUsersByRole )
 
+          
+adminRouter.post('/get-driver-detail-by-userid',
+     middlewares.checkUserRoles(userRoles.admin),
+     ownerController.getDriverDetailsById )
+
      
      
      

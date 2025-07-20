@@ -46,7 +46,7 @@ export interface verifyOtp  {
 
 export interface doesUserHaveRoleOrNot  {
     userId : number ,
-    roleName:string 
+    roleName: string | string[] 
 
 }
 

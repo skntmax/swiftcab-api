@@ -4,6 +4,7 @@ import authService from "../../services/auth/auth.service"
 import { failureResponse, succesResponse } from "../../config/utils"
 import ownerService from "../../services/owner/owner.service"
 import { KycStatus } from "@prisma/client"
+import driverService from "../../services/driver/driver.service"
 
 const ownerController  = {
     
@@ -210,6 +211,25 @@ const ownerController  = {
         return succesResponse({data:activeUsers.data, message:" Users with roles and vhicles " } , res )  
 
       
+      }catch(err) {
+        console.log(err)
+        return  failureResponse({data:err}, res )
+        }
+    },
+
+    getDriverDetailsById  : async  function (req:Request, res:Response):Promise<any> {
+
+      try {
+       const {userId , username} = req.userObj
+       const { user_has_roles } = req
+       const { driverId , } = req.body
+       
+        // let activeUsers =await ownerService.getDriverDetailsById({driverId, userId : Number(driverId)} ) 
+        let driverDetails =await driverService.getDriverDetails({userId:Number(driverId) })
+        if(!driverDetails.status)  return succesResponse({data: "null" ,  message:driverDetails?.data } , res )
+
+        return succesResponse({data:driverDetails.data, message:" Driver Details " } , res )  
+
       }catch(err) {
         console.log(err)
         return  failureResponse({data:err}, res )

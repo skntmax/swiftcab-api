@@ -55,6 +55,11 @@ export interface vhicleDetail  {
    ownerId :number
 }   
 
+export interface driverDetailById  {
+   userId : number
+   driverId: number
+}   
+
 export interface driverSearch  {
 userId : number
 usernameOrEmail : string

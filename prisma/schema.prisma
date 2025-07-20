@@ -594,7 +594,7 @@ model  driver_profile  {
    pan_card String?
    adhar_card String?
    passbook String?
-   is_varified  Boolean?
+   is_varified  KycStatus @default(INITIATED)
    comment String?
    driver Int @unique
    driver_profile_id users @relation(fields: [driver] , references: [id], name: "driver_profile")    

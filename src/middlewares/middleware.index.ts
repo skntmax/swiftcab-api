@@ -225,7 +225,7 @@ export const middlewares = {
             }
       },
 
-      checkUserRoles : function(roleName:string ) {
+      checkUserRoles : function(roleName:string | string[] ) {
         
         return async function(req:Request, res:Response, next:NextFunction):Promise<any> {
     

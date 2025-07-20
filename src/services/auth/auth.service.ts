@@ -527,14 +527,21 @@ const  authService = {
     
         try {
   
-          let userrHasrole: UserRole[] =await prismaClient.$queryRawUnsafe(` 
-                  select uhr.role_id ,r."name" from users u 
-                  inner join user_has_roles uhr on uhr.user_id = u.id 
-                  inner join roles r on r.id = uhr.role_id 
-                  where u.id  =${param.userId} and  r."name" = '${param.roleName}'
-            `)
+          let roleNames = Array.isArray(param.roleName)
+          ? param.roleName
+          : [param.roleName]; // normalize to array
+        
+        let placeholders = roleNames.map((_, index) => `$${index + 2}`).join(", "); // $2, $3, ...
+        let query = `
+          SELECT uhr.role_id, r."name"
+          FROM users u
+          INNER JOIN user_has_roles uhr ON uhr.user_id = u.id
+          INNER JOIN roles r ON r.id = uhr.role_id
+          WHERE u.id = $1 AND r."name" IN (${placeholders})
+        `;
+        
+         let userrHasrole: UserRole[] = await prismaClient.$queryRawUnsafe(query, param.userId, ...roleNames);
 
-  
           if(userrHasrole && Array.isArray(userrHasrole) && userrHasrole.length==0)
               return failureReturn( {role_id:null}) 
             

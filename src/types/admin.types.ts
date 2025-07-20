@@ -1,3 +1,4 @@
+import { KycStatus } from "@prisma/client";
 
 
 export interface kyc_varify_details  {
@@ -93,7 +94,7 @@ export interface getDriverPartners{
 
  
   export interface driverAms{
-  status: boolean
+  status: KycStatus
   driverId: number
   comment?:string
   };

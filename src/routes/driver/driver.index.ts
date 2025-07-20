@@ -21,7 +21,7 @@ driverRouter.post('/update-driver-profile2',
 
 driverRouter.get('/get-driver-details', 
      // middlewares.validateUser,
-     middlewares.checkUserRoles(userRoles.driverPartner),
+     middlewares.checkUserRoles([userRoles.driverPartner,  userRoles.admin ]),
      driverController.getDriverDetails )
 
 

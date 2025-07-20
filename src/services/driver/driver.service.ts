@@ -14,7 +14,7 @@ import { deleteFiles } from "../../middlewares/middleware.index"
 import { KycStatus } from "@prisma/client"
 import { customerDetails, updateCustomerDetails } from "../../types/customer"
 import { driverDetails, driverDetails2, getDriverDetails } from "../../types/driver.types"
-  const  customerService = {
+  const  driverService = {
    
       getCustomerDetails : async function(payload:customerDetails) {
 
@@ -80,7 +80,7 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                   bank_account:Number(payload.bank_account)  ,
                   bank_account_branch:Number(payload.bank_account_branch)  ,
                   ifsc:payload.ifsc || "",
-                  is_varified: false ,
+                  is_varified: KycStatus.INITIATED ,
                   created_on: new Date(),
                   updated_on : new Date(),
                 }
@@ -140,7 +140,7 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                   passbook: passbookUrl || "",
                   bank_account_no:  payload.bank_account_no  || 0,
                   ifsc: payload.ifsc || "",
-                  is_varified: false,
+                  is_varified: KycStatus.INITIATED,
                   wallet_code: wallCode,
                   created_on: new Date(),
                   updated_on: new Date(),
@@ -155,7 +155,7 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                 )
               );
           }catch(err) {
-            console.log("err>>",err)
+              console.log("err>>",err)
               return failureReturn(err)
           }
              } ,
@@ -172,6 +172,12 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
                  bank_have_branch:{
                   select:{
                     branch_name:true
+                  }
+                 },
+                 driver_profile_id:{
+                  select:{
+                    username:true,
+                    email:true
                   }
                  }
                 }
@@ -193,7 +199,7 @@ import { driverDetails, driverDetails2, getDriverDetails } from "../../types/dri
   }
 
 
-export default  customerService
+export default  driverService
 
 
 

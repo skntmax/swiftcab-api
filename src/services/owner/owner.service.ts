@@ -3,7 +3,7 @@ import { assingedVhiclesToUser, failureReturn, NavItem, succesResponse, successR
 import primsaClient from "../../db"
 import { loginPayload, userCreatePayload } from "../../types/users.types"
 import {bcrypt , jwt } from '../../packages/auth.package'
-import { activeUserType, approveKycStatus, assingDriverToVhicle, blockUnblockPayload, driverSearch, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, removeUserByUsername, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
+import { activeUserType, approveKycStatus, assingDriverToVhicle, blockUnblockPayload, driverDetailById, driverSearch, kyc_request, navigation_bar, owner_vhicles, owner_vhicles_payload, removeUserByUsername, vhicle_provides_services, vhicleDetail } from "../../types/owner.types"
 import { userRoles } from "../../config/constant"
 import prismaClient from "../../db"
 import { redisClient1 } from "../redis/redis.index"
@@ -414,10 +414,55 @@ import { KycStatus } from "@prisma/client"
         getActiveUsersByRole :  async function(payload:driverSearch) {
 
             try {
+              const {limit,page , roles ,userId ,usernameOrEmail } = payload
+              let skip =(page-1)*limit
 
-            
+              if(usernameOrEmail){
+              // with username search first one result  
+              let query = `  select * from users u 
+              inner join  user_has_roles uhr on uhr.user_id = u.id 
+              inner join  roles r  on r.id = uhr.role_id 
+            `
+          
+            if (Array.isArray(payload.roles)  && payload.roles.length>0) {
+                    query   = query+` where  ( u.username = '${usernameOrEmail}' or  u.email like '%${usernameOrEmail}%' ) and r.id in (${payload.roles.join(',')})` 
+              }
+             
+              let totalQuery =  `
+              select count(*) as total from users u 
+              inner join  user_has_roles uhr on uhr.user_id = u.id 
+              inner join  roles r  on r.id = uhr.role_id 
+              where  ( u.username like '%${usernameOrEmail}%' or  u.email like '%${usernameOrEmail}%' ) and r.id in (${payload.roles.join(',')})  `
 
-              return successReturn([])
+              let users:any[] =await  prismaClient.$queryRawUnsafe(query)
+              let totalUsers:any[] =await  prismaClient.$queryRawUnsafe(totalQuery)
+
+              return successReturn({users , metadata:{page,limit , total: Number(totalUsers[0].total) } })
+              }
+              
+
+            // without any search filter 
+            let query = ` select * from users u 
+            inner join  user_has_roles uhr on uhr.user_id = u.id 
+            inner join  roles r  on r.id = uhr.role_id 
+           `
+        
+          if (Array.isArray(payload.roles)  && payload.roles.length>0) {
+                  query   = query+`where r.id in(${payload.roles.join(',')})` 
+            }
+              let totalQuery =  `
+              select count(*) as total from users u 
+              inner join  user_has_roles uhr on uhr.user_id = u.id 
+              inner join  roles r  on r.id = uhr.role_id 
+              where r.id in (${payload.roles.join(',')})  `
+
+            query=  query+` offset  ${skip} limit ${limit} ` 
+              
+            let users:any[] =await  prismaClient.$queryRawUnsafe(query)
+            let totalUsers:any[] =await  prismaClient.$queryRawUnsafe(totalQuery)
+          
+              // by role only 
+              return successReturn({users , metadata:{page,limit , total: Number(totalUsers[0].total) } })
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)
@@ -440,6 +485,18 @@ import { KycStatus } from "@prisma/client"
              })
 
               return successReturn(vhicleDetail)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }``
+          } ,
+
+          getDriverDetailsById  : async function(payload:driverDetailById) {
+
+            try {
+
+           
+              return successReturn([])
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)
