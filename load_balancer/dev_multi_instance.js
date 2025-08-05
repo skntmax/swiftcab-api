@@ -19,7 +19,8 @@ ports.forEach((port) => {
 
 
     console.log("command>>>" ,command)
-  console.log(`Starting server on port ${port}...`);
+  console.log(`Starting server on 
+port ${port}...`);
 
   exec(command, (error, stdout, stderr) => {
     if (error) {

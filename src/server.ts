@@ -12,6 +12,7 @@ import fs from 'fs'
 import path from "path";
 import customerRouter from "./routes/customer/customer.index";
 import driverRouter from "./routes/driver/driver.index";
+import { AESSecurtiyEncryption } from "./config/encryption";
 let app = Express()
 
 let port =  process.env.PORT  || 4000  
@@ -19,13 +20,13 @@ export let version:String =  process.env.VERSION || "v1"
 
 middlewares.globalMiddlewares(app)  
 
-app.use(`/${version}/auth`, authRouter )
-app.use(`/${version}/owner`, ownerRouter )
-app.use(`/${version}/customer`, customerRouter )
-app.use(`/${version}/test`, testRouter )
-app.use(`/${version}/admin`, adminRouter )
-app.use(`/${version}/master`, masterRouter )
-app.use(`/${version}/driver`, driverRouter )
+app.use(`/${version}/auth`,AESSecurtiyEncryption, authRouter )
+app.use(`/${version}/owner`, AESSecurtiyEncryption , ownerRouter )
+app.use(`/${version}/customer`,AESSecurtiyEncryption , customerRouter )
+app.use(`/${version}/test`,AESSecurtiyEncryption, testRouter )
+app.use(`/${version}/admin`,AESSecurtiyEncryption, adminRouter )
+app.use(`/${version}/master`,AESSecurtiyEncryption,  masterRouter )
+app.use(`/${version}/driver`,AESSecurtiyEncryption, driverRouter )
 
 
 // intialise uploads  folder 

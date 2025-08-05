@@ -17,7 +17,7 @@ const  all_env =  {
    S3_ACCCESS_KEY:process.env.S3_ACCCESS_KEY as string , 
    S3_SECRET_KEY:process.env.S3_SECRET_KEY as string, 
    S3_BASE_PATH:process.env.S3_BASE_PATH as string, 
-   
+   SECURITY_ENCRYPTION_ENABLED:process.env.SECURITY_ENCRYPTION_ENABLED as string
 }
 
 console.log(all_env)

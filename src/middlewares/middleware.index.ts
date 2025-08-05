@@ -103,10 +103,10 @@ export const middlewares = {
      ,   
     globalMiddlewares: function (app:Express){
 
-        app.use(cors(this.corsOptions))
-        app.use(bodyParser.urlencoded({ extended: false }))
+        app.use(cors(this.corsOptions)) // for cors option 
+        app.use(bodyParser.urlencoded({ extended: false })) //  for  JSON reuests coming 
         app.use(express.json()) 
-        app.use(errors()); 
+        app.use(errors());  //  for error handling with celebrate
         app.use((err: any, req: Request, res: Response, next: NextFunction):any => {
             if (err.joi) {
               return res.status(400).json({
@@ -115,7 +115,6 @@ export const middlewares = {
                 details: err.joi.details.map((detail: any) => detail.message), // Extracts Joi validation errors
               });
             }
-          
             // If it's not a Celebrate error, pass it to the default handler
             next(err);
           });
