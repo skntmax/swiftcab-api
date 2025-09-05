@@ -197,6 +197,63 @@ const masterController  = {
       
        } ,
 
+       
+       getPermissions : async function (req:Request, res:Response):Promise<any> {
+            
+        try {
+          const { pn , rowPerPage} = req.params
+          const {cacheKey} = req 
+          let permissionlist =await masterService.getPermissions(Number(pn) ,Number(rowPerPage),cacheKey,)
+          
+          if(!permissionlist.status)
+             return failureResponse({data:permissionlist.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:permissionlist.data, message:" permissionlist" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+
+       roleHasCapabilites : async function (req:Request, res:Response):Promise<any> {
+        try {
+          const {userId , username} = req.userObj  
+           const { user_has_roles } = req
+          let roleHasCaps =await masterService.roleHasCapabilites(user_has_roles)
+          
+          if(!roleHasCaps.status)
+             return failureResponse({data:roleHasCaps.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:roleHasCaps.data, message:" roleHasCaps" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
+       capHasPermsissions : async function (req:Request, res:Response):Promise<any> {
+        try {
+          const {userId , username} = req.userObj  
+           const { user_has_roles } = req
+          let permissionlist =await masterService.capHasPermsissions(user_has_roles)
+          
+          if(!permissionlist.status)
+             return failureResponse({data:permissionlist.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:permissionlist.data, message:" permissionlist" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
+
 
 
     

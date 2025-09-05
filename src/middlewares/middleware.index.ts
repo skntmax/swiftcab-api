@@ -278,6 +278,8 @@ export const middlewares = {
           } else {
             req.cacheKey = key;
           }
+          
+            console.log("cache key>>", req.cacheKey)
 
              let data = await redisClient1.get(req.cacheKey)
               
@@ -324,7 +326,6 @@ export const middlewares = {
           // is token valid or not 
           if(!userId || !username) return failureResponse( {data:[] , message: `Token expired or user not found` } , res  );   
 
-          
             //  does this user has this role or userType or not ?
             let doesRoleExist = await authService.userHasRolesOrNot({roleName:userType ,userId:userId})
                       

@@ -71,6 +71,25 @@ masterRouter.post('/upload-to-s3',
 masterRouter.get('/get-uploaded-file/:key',
      masterController.getUploadedFile )
 
+masterRouter.get('/get-menu-permissions/',
+middlewares.inCache(REDIS_KEYS.MENU_PERMISSIONS),
+masterController.getPermissions )
+     
+masterRouter.get('/get-menu-permissions/:pn/:rowPerPage',
+     middlewares.inCache(REDIS_KEYS.MENU_PERMISSIONS),
+     masterController.getPermissions )
+
+// role has capabilities      
+masterRouter.get('/get-role-has-capabilities/:userType',
+    middlewares.getLoggedinuserRoleId(),
+     masterController.roleHasCapabilites )
+
+// capanilities has permissions      
+masterRouter.get('/get-cap-has-permissions/:userType',
+    middlewares.getLoggedinuserRoleId(),
+     masterController.capHasPermsissions )
+
+
 
 
 

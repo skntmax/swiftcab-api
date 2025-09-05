@@ -10,8 +10,6 @@ let adminRouter  =   Router()
 adminRouter.get('/get-all-vhicles', 
      // middlewares.checkUserRoles(userRoles.owner),
      adminController.getAllVhicles )
-
-
      
 adminRouter.get('/service-list', 
 adminController.serviceList )
@@ -124,10 +122,38 @@ adminRouter.post('/ams-drivers',
      middlewares.checkUserRoles(userRoles.admin),
      adminController.driverAms )
 
+     
+adminRouter.post('/add-permissions',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.addPermissions )
+ 
+             
+adminRouter.post('/add-permission-identiefer-to-subnav',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.addPermissionIdentifierToSubnav )
 
-          
-          
-          
+            
+adminRouter.post('/add-capabilities',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.addCapabilities )
+      
+            
+adminRouter.post('/add-capabilities-have-permissions',
+     middlewares.checkUserRoles(userRoles.admin),
+     adminController.addCapabilitiesHavePermissions )
+ 
+
+adminRouter.get('/get-capabilities',
+     // middlewares.checkUserRoles(userRoles.admin),
+     adminController.getCapabilites )
+
+adminRouter.get('/get-capabilities/:pn/:rowPerPage',
+     // middlewares.checkUserRoles(userRoles.admin),
+     adminController.getCapabilites )
+ 
+
+
+
 
 
 

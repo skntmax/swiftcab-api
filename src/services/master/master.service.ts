@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client"
 import config from "../../config/config"
 import { userRoles } from "../../config/constant"
 import dotenv from "../../config/dotenv"
@@ -248,7 +249,128 @@ const  masterService = {
       }
       
     } ,
+
+    getPermissions : async function(pn:number , rowPerPage:number,cacheKey:string ,) {
+    try {
+          let permList;
+          let totalCount;
+
+          console.log("pn , rowPerPage", pn , rowPerPage)
+          if (pn && rowPerPage) {
+            // Paginated fetch
+            const skip = (pn - 1) * rowPerPage;
+            const limit = rowPerPage;
+
+            [permList, totalCount] = await Promise.all([
+              prismaClient.permissions.findMany({
+                skip,
+                take: limit,
+                select: {
+                  id: true,
+                  permission_name: true,
+                  permission_identifer: true,
+                  active_role_perm: { select: { role_id: true } },
+                },
+              }),
+              prismaClient.permissions.count(),
+            ]);
+          } else {
+            // Fetch all (no pagination)
+            [permList, totalCount] = await Promise.all([
+              prismaClient.permissions.findMany({
+                select: {
+                  id: true,
+                  permission_name: true,
+                  permission_identifer: true,
+                  active_role_perm: { select: { role_id: true } },
+                },
+              }),
+              prismaClient.permissions.count(),
+            ]);
+          }
+
+          const result = {
+            permissions: permList,
+            totalCount,
+            currentPage: pn ?? 1,
+            totalPages: pn && rowPerPage ? Math.ceil(totalCount / rowPerPage) : 1,
+          };
+
+          if (cacheKey && permList) {
+            await redisClient1.set(cacheKey, JSON.stringify(result));
+            await redisClient1.expire(cacheKey, config.cache_time);
+          }
+
+          return successReturn(result);
+        } catch (err) {
+          console.log(err);
+          return failureReturn(err);
+        }
+
+    } ,
+
      
+     roleHasCapabilites: async function (user_has_roles: number[] | number) {
+        try {
+          // Normalize input to an array
+          const roles = Array.isArray(user_has_roles) ? user_has_roles : [user_has_roles];
+
+          if (roles.length === 0) {
+            return failureReturn("No roles provided");
+          }
+
+          // Use parameterized query with ANY() for arrays
+          const roleHasCapabilites = await prismaClient.$queryRaw<
+            { id: number; capability_name: string; capability_identifier: string }[]
+          >`
+            SELECT c.id, c.capability_name, c.capability_identifier 
+            FROM capabilities c
+            JOIN roles r ON r.id = c.role_id 
+            WHERE r.id = ANY(${roles}::int[])
+          `;
+
+          return successReturn(roleHasCapabilites);
+        } catch (err) {
+          console.error(err);
+          return failureReturn(err);
+        }
+      },
+
+        capHasPermsissions: async function getRoleHasCapabilities(user_has_roles: number[] | number) {
+        try {
+          // Normalize input to an array
+          const roles = Array.isArray(user_has_roles) ? user_has_roles : [user_has_roles];
+
+          if (roles.length === 0) {
+            return failureReturn("No roles provided");
+          }
+
+          // Convert array into SQL-friendly format for ANY()
+          const roleIds = `{${roles.join(",")}}`; // → {1,2,3}
+
+          const query = `
+            SELECT sni.permission_id, p.permission_name, chp.*
+            FROM capabilities_have_permissions chp
+            JOIN permissions p ON p.id = chp.permission_id
+            JOIN sub_nav_items sni ON sni.permission_id = chp.permission_id
+            WHERE chp.capability_id IN (
+              SELECT c.id
+              FROM capabilities c
+              JOIN roles r ON r.id = c.role_id
+              WHERE r.id = ANY('${roleIds}'::int[])
+            )
+          `;
+
+          const roleHasCapabilites = await prismaClient.$queryRawUnsafe(query);
+
+          return successReturn(roleHasCapabilites);
+        } catch (err) {
+          console.error(err);
+          return failureReturn(err);
+        }
+      }
+
+          
 
 
   }

@@ -266,7 +266,7 @@ import { KycStatus } from "@prisma/client"
               inner join nav_has_permission_by_role nhpbr ON nhpbr.nav_item_id = ni.id 
               inner join roles r ON r.id = nhpbr.role_id 
               left join  sub_nav_items sni on  ni.id  = sni.nav_item_id
-              where nhpbr.role_id = ${payload.role}
+              where nhpbr.role_id = ${payload.role} and  ni.is_active = true and sni.is_active = true
               `)
 
             

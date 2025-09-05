@@ -424,25 +424,64 @@ model roles {
    id Int @id @default(autoincrement())
    name String 
   
+   label String?
    created_on DateTime @default(now())
    updated_on DateTime
+   is_active Boolean @default(true) 
    
    user_role user_has_roles[] @relation("user_has_roles")
    role_perm role_has_permissions[] @relation("role_perm")
+   roles_have_many_capabilities capabilities[] @relation("roles_have_many_capabilities")
+   capability_have_permissions capabilities_have_permissions[] @relation("capability_have_permissions" )
 
    role_nav_perm  nav_has_permission_by_role[] @relation("nav_perm_by_roles")
+   @@unique([name,label])
 }
 
-model permissions {
-  id Int @id @default(autoincrement())
-  permission_name String
+model capabilities {
+   id Int @id @default(autoincrement())
+   capability_name String 
+   capability_identifier String? 
+   is_active Boolean @default(true)
 
+   role_id Int
+   roles_have_many_capabilities roles @relation(fields: [role_id] , references: [id] , name: "roles_have_many_capabilities" )
+  
    created_on DateTime @default(now())
    updated_on DateTime
+   
+   @@unique([capability_name, capability_identifier])
+}
 
 
-active_role_perm role_has_permissions[] @relation("active_role_perm")
+model permissions {
+    id Int @id @default(autoincrement())
+    permission_name String
+    permission_identifer String?
 
+    created_on DateTime @default(now())
+    updated_on DateTime
+    is_active Boolean @default(true)
+
+    active_role_perm role_has_permissions[] @relation("active_role_perm")
+    permission_occupied_by_capability capabilities_have_permissions[] @relation("permission_occupied_by_capability")
+    permission_identifier sub_nav_items[]
+    @@unique([permission_name, permission_identifer])
+}
+
+model capabilities_have_permissions {
+  id Int @id @default(autoincrement())
+  
+  capability_id Int
+  permission_id Int
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  capability_have_permissions roles @relation(fields: [capability_id] , references: [id] , name: "capability_have_permissions" )
+  permission_occupied_by_capability permissions @relation(fields: [permission_id], references: [id] , name:"permission_occupied_by_capability")    
+
+  @@unique([capability_id ,permission_id])
 }
 
 model user_has_roles {
@@ -451,8 +490,8 @@ model user_has_roles {
   user_id Int
   role_id Int
 
-   created_on DateTime @default(now())
-   updated_on DateTime
+  created_on DateTime @default(now())
+  updated_on DateTime
 
   user_role roles @relation(fields: [role_id] , references: [id]  , name: "user_has_roles") 
   active_role  users @relation(fields: [user_id], references: [id])    
@@ -468,7 +507,7 @@ model role_has_permissions {
   perm_id Int
 
   created_on DateTime @default(now())
-   updated_on DateTime
+  updated_on DateTime
 
   role_perm roles @relation(fields: [role_id] , references: [id] , name: "role_perm" )
   active_role_perm  permissions @relation(fields: [perm_id], references: [id] , name:"active_role_perm")    
@@ -488,7 +527,7 @@ model nav_items {
 
   sub_nav_belogs_to sub_nav_items[]
   nav_item_perm_by_role  nav_has_permission_by_role[] @relation("nav_item_perm_by_role")
-
+  is_active Boolean @default(true)
 }
 
 model sub_nav_items  {
@@ -502,8 +541,13 @@ model sub_nav_items  {
   nav_item_id Int
   is_active Boolean @default(true)
   sub_nav_belogs_to  nav_items @relation(fields: [nav_item_id] , references: [id])
+  extra_paths String @default("[]")
   created_on DateTime @default(now())
-  updated_on DateTime   
+  updated_on DateTime
+
+  permission_id  Int?
+  permission_identifier permissions? @relation(fields: [permission_id] , references: [id] )    
+  @@unique([permission_id])
 }
 
  

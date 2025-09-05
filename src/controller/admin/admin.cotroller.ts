@@ -179,8 +179,8 @@ const adminController  = {
          try {
  
            // const {userId , username} = req.userObj
-           const {  sub_nav_item , sub_menu=true  , href="/"  , icon=null ,nav_item_id  ,  } = req.body
-           let subMenuItemAdded =await authService.addSubNavbar({sub_nav_item ,   sub_menu  , href  , icon ,nav_item_id  ,})
+           const {  sub_nav_item , sub_menu=true  , href="/"  , icon=null ,nav_item_id  , extra_paths = [] } = req.body
+           let subMenuItemAdded =await authService.addSubNavbar({sub_nav_item ,   sub_menu  , href  , icon ,nav_item_id ,extra_paths})
            if(!subMenuItemAdded.status)
               return failureResponse({data:subMenuItemAdded.data, message:"Might be href already lies in navitem , please try using other href " } , res )  
          
@@ -221,6 +221,92 @@ const adminController  = {
               return failureResponse({data:driverAmsStatus.data, message:"status update failure" } , res )  
          
            return succesResponse({data:driverAmsStatus.data, message:"success" } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+         } ,
+
+         addPermissions    : async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const { permission_name ,permission_identifer   } = req.body
+           let addedPermission =await adminService.addPermissions({ permission_name ,permission_identifer   })
+           if(!addedPermission.status)
+              return failureResponse({data:addedPermission.data, message:"permission added" } , res )  
+         
+           return succesResponse({data:addedPermission.data, message:"success" } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+         } ,
+
+         
+         addPermissionIdentifierToSubnav    : async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const { subnavId , permissionIdentifierId   } = req.body
+           let addedPermissionIdentifier =await adminService.addPermissionIdentifierToSubnav({ subnavId , permissionIdentifierId   })
+           if(!addedPermissionIdentifier.status)
+              return failureResponse({data:addedPermissionIdentifier.data, message:"permission identifier added" } , res )  
+         
+           return succesResponse({data:addedPermissionIdentifier.data, message:"success" } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+         } ,
+
+         addCapabilities: async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const {   capability_name,  capability_identifier  , role_id } = req.body
+           let addedCapabilities =await adminService.addCapabilities({ capability_name,  capability_identifier  , role_id   })
+           if(!addedCapabilities.status)
+              return failureResponse({data:addedCapabilities.data, message:"capabiliites added" } , res )  
+         
+           return succesResponse({data:addedCapabilities.data, message:"success" } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+         } ,
+
+         addCapabilitiesHavePermissions: async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const {   capabilityId,  permissionId  } = req.body
+           let addedCapabilityHavePermissions =await adminService.addCapabilitiesHavePermissions({ capabilityId,  permissionId   })
+           if(!addedCapabilityHavePermissions.status)
+              return failureResponse({data:addedCapabilityHavePermissions.data, message:"added permissions to capabilities" } , res )  
+         
+           return succesResponse({data:addedCapabilityHavePermissions.data, message:"success" } , res )  
+            
+          }catch(err) {
+           console.log("err",err)
+           return  failureResponse({data:err}, res )
+          }
+         } ,
+
+       getCapabilites: async function (req:Request, res:Response):Promise<any> {
+         try {
+ 
+           // const {userId , username} = req.userObj
+           const {   pn, rowPerPage  } = req.params
+           let capabilities =await adminService.getCapabilities({pn: Number(pn) , rowPerPage:Number(rowPerPage)   })
+           if(!capabilities.status)
+              return failureResponse({data:capabilities.data, message:"capabilites" } , res )  
+         
+           return succesResponse({data:capabilities.data, message:"success" } , res )  
             
           }catch(err) {
            console.log("err",err)

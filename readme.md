@@ -18,3 +18,40 @@ npx dotenv -e .env.production -- npx prisma migrate deploy
 
  <!-- for deleting history of git environment  -->
  python git-filter-repo.py --path .env.development --path .env.production --path .env.qa --invert-paths
+
+
+
+ <!-- delete all the process on these particular ports  -->
+
+ for port in 5001 7001 7002 7005; do
+  pid=$(lsof -t -i:$port -sTCP:LISTEN)
+  if [ -n "$pid" ]; then
+    echo "Killing process on port $port (PID: $pid)"
+    kill -9 $pid
+  else
+    echo "No process running on port $port"
+  fi
+done
+
+
+certbot :
+If you want HTTPS with Let's Encrypt:
+
+Install Certbot:
+
+bash
+Copy
+Edit
+sudo apt install certbot python3-certbot-nginx
+Run:
+
+bash
+Copy
+Edit
+sudo certbot --nginx -d swiftcab-api.365itsolution.com
+Let me know if you'd like to auto-redirect HTTP to HTTPS too.
+
+
+<!-- delete process at some port in windows  -->
+netstat -ano | findstr :5000
+taskkill /PID 12345 /F

@@ -2,7 +2,7 @@ import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
-import { add_navigation, add_roles_to_user, add_sub_navigation, addMenuItemsParams, driverAms, get_users_by_role_schema, getDriverPartners, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, roleTypeUserTypes } from "../../types/admin.types"
+import { add_navigation, add_roles_to_user, add_sub_navigation, addMenuItemsParams, capabilitiesHavePermissions, capabilityParams, driverAms, get_users_by_role_schema, getDriverPartners, kyc_varify_details, nav_has_permission_by_role_schema, nav_menu_item, PermissionIdentifier, permObject, roleTypeUserTypes } from "../../types/admin.types"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import ownerService from "../owner/owner.service"
 
@@ -309,7 +309,8 @@ const  adminService = {
 
     addNavbar : async function (params:add_navigation) {
   
-    let exist =await primsaClient.nav_items.findFirst({
+    // if navitem or href already exist 
+      let exist =await primsaClient.nav_items.findFirst({
       where:{
          OR:[
             {nav_item: params.nav_item},
@@ -344,7 +345,7 @@ const  adminService = {
       
     addSubNavbar : async function (params:add_sub_navigation) {
 
-    // checking existing record 
+    // checking existing record of navitem  
     let exist = await prismaClient.sub_nav_items.findFirst({
         where: {
           AND: [
@@ -359,6 +360,30 @@ const  adminService = {
       }
     
 
+    //  permisison identifier 
+    let permIdentifer = `allow-${params.href.replace(/\//g, '_').replace(/^_+|_+$/g, '')}` // eg- allow-_admin_subnav 
+    
+    let addedPermissionIdentifier = await primsaClient.permissions.create({
+       data:{
+         permission_name: `allow ${params.sub_nav_item}`,
+         updated_on: new Date(),
+         created_on: new Date(),
+         permission_identifer: permIdentifer
+       }
+     })
+
+     if(!addedPermissionIdentifier){
+        // rollback if permission identifier not added
+        await primsaClient.permissions.deleteMany({
+          where:{
+            permission_identifer: permIdentifer
+          }
+        })
+        return failureReturn("error in adding permission identifier") 
+     }
+    
+
+     // adding subnav item
      let addedSubNavbar = await  primsaClient.sub_nav_items.create({
        data:{
          sub_nav_item:params.sub_nav_item,
@@ -366,16 +391,19 @@ const  adminService = {
          href: params.href,
          icon:params.icon,
          nav_item_id:params.nav_item_id,
+         extra_paths: params.extra_paths?JSON.stringify(params.extra_paths):"[]" ,
+         permission_id: addedPermissionIdentifier.id,
          created_on:  new Date() ,
          updated_on: new Date()
        }
      })
      
 
-     if(!addedSubNavbar) 
+     if(!addedSubNavbar)
         return failureReturn({data:"some failure occured"})
     
         return  successReturn(addedSubNavbar)   
+      
       } ,
    
       varifiedUnvarifiedDrivers : async function (payload:getDriverPartners) {    
@@ -415,7 +443,144 @@ const  adminService = {
          return  successReturn(updatedAmspartners)   
     } , 
 
+
+    addPermissions  : async function (payload:permObject) {    
       
+        let  insertPermissions = await primsaClient.permissions.create(
+           { 
+            data:{
+            permission_name:payload.permission_name,
+            permission_identifer:payload.permission_identifer,
+            created_on:  new Date() ,
+            updated_on: new Date()
+          }
+      })
+       if(!insertPermissions)
+         return  failureReturn(insertPermissions)   
+      
+       return  successReturn(insertPermissions)   
+    } , 
+      
+    addPermissionIdentifierToSubnav :  async function (payload:PermissionIdentifier) {    
+      
+        let  updateSubnavIdentifier = await primsaClient.sub_nav_items.update({
+           data:{
+            permission_id:payload.permissionIdentifierId,
+            updated_on: new Date()
+           },
+           where:{
+            id: payload.subnavId
+           }
+     })
+
+       if(!updateSubnavIdentifier)
+         return  failureReturn(updateSubnavIdentifier)   
+      
+       return  successReturn(updateSubnavIdentifier)   
+    } ,
+    
+     addCapabilities :   async function (payload:capabilityParams) {    
+      
+        let  addedCapability = await primsaClient.capabilities.create({
+           data:{
+            capability_name:payload.capability_name,
+            capability_identifier:payload.capability_identifier,
+            role_id:Number(payload.role_id) ,
+            created_on:  new Date() ,
+            updated_on: new Date()       
+          }
+          })
+
+       if(!addedCapability)
+         return  failureReturn(addedCapability)   
+      
+       return  successReturn(addedCapability)   
+    } ,
+
+     getCapabilities: async function (payload: any) {
+     try {
+        const { pn, rowPerPage } = payload;
+
+        let capabilities;
+        let totalCount;
+
+        if (pn && rowPerPage) {
+          // Paginated fetch
+          [capabilities, totalCount] = await Promise.all([
+            primsaClient.capabilities.findMany({
+              skip: (pn - 1) * rowPerPage,
+              take: rowPerPage,
+              orderBy: { created_on: "desc" },
+            }),
+            primsaClient.capabilities.count(),
+          ]);
+        } else {
+          // Fetch all
+          [capabilities, totalCount] = await Promise.all([
+            primsaClient.capabilities.findMany({
+              orderBy: { created_on: "desc" },
+            }),
+            primsaClient.capabilities.count(),
+          ]);
+        }
+
+        return successReturn({
+          data: capabilities,
+          total: totalCount,
+          page: pn ?? 1,
+          pageSize: rowPerPage ?? totalCount, // if no pagination, pageSize = total
+        });
+      } catch (error) {
+        console.error("Error fetching capabilities:", error);
+        return failureReturn(error);
+      }
+    },
+    
+ addCapabilitiesHavePermissions : async function ( payload: capabilitiesHavePermissions ){
+  try {
+    let addedPermToCapability
+
+    // Case 1: permissionId is a single number
+    if (typeof payload.permissionId === "number") {
+      addedPermToCapability = await prismaClient.capabilities_have_permissions.create({
+        data: {
+          capability_id: payload.capabilityId,
+          permission_id: payload.permissionId,
+          updated_on: new Date()
+        },
+      })
+    }
+
+    // Case 2: permissionId is an array of numbers
+    else if (Array.isArray(payload.permissionId) && payload.permissionId.length > 0) {
+      const data = payload.permissionId.map((permId: number) => ({
+        capability_id: payload.capabilityId,
+        permission_id: permId,
+        updated_on: new Date()
+      }))
+
+      // Bulk insert
+      addedPermToCapability = await prismaClient.capabilities_have_permissions.createMany({
+        data,
+        skipDuplicates: true, // avoids duplicate rows if constraint exists
+      })
+    }
+
+    // Invalid case (null, empty, etc.)
+    else {
+      return failureReturn("Invalid permissionId")
+    }
+
+    if (!addedPermToCapability) {
+      return failureReturn("Failed to add permissions")
+    }
+
+    return successReturn(addedPermToCapability)
+  } catch (error) {
+    console.error("Error in addCapabilitiesHavePermissions:", error)
+    return failureReturn(error)
+  }
+}
   }
 
 

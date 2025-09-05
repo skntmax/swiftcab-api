@@ -509,7 +509,7 @@ const  authService = {
       try {
 
           let roles  =await prismaClient.roles.findMany({
-            select:{id:true , name:true}
+            select:{id:true , name:true, label:true},
           })                
 
           if(cacheKey &&  roles  ){

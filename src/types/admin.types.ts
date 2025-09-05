@@ -72,6 +72,7 @@ export interface add_sub_navigation  {
   nav_item_id:  number
   sub_menu:  boolean
   href: string
+  extra_paths: string | string[]
   icon?: string
 }   
 
@@ -99,6 +100,33 @@ export interface getDriverPartners{
   comment?:string
   };
 
+
+    export interface permObject  {
+  permission_name: string 
+  permission_identifer :string   
+ };
+
+    export interface PermissionIdentifier  {
+  subnavId :number , 
+  permissionIdentifierId :number
+
+ };
+
  
+    export interface capabilityParams  {
+  capability_name  :string , 
+  capability_identifier  :string
+  role_id : number | number[]
+ };
+
+
+  export interface capabilitiesHavePermissions  {
+    capabilityId :number , 
+    permissionId :number | number[]  
+  };    
+
+
+ 
+
 
  
