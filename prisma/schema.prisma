@@ -296,8 +296,8 @@ id   Int    @id @default(autoincrement())
      state_have_cities states_have_cities @relation(fields: [shc_id] , references: [id])
      localities_r1 localities @relation(fields: [locality_id] , references: [id])
 
-      source_location users_have_rides[] @relation("source_address")
-      destination_location users_have_rides[] @relation("destination_address")
+      // source_location users_have_rides[] @relation("source_address")
+      // destination_location users_have_rides[] @relation("destination_address")
      created_on DateTime @default(now())
      updated_on DateTime
 
@@ -349,9 +349,6 @@ model utils_config {
 }
 
 
-
-
-
 model users_have_rides {
   id Int @id @default(autoincrement())
   
@@ -376,8 +373,8 @@ model users_have_rides {
 
   //  source  location  , lat  , lng   
   // for future booking ,
-  source Int 
-  source_location shc_have_localities @relation(fields: [source] , references: [id] ,name: "source_address") 
+  // source Int 
+  // source_location shc_have_localities @relation(fields: [source] , references: [id] ,name: "source_address") 
   
   
  // for  quick booking 
@@ -387,8 +384,8 @@ model users_have_rides {
 
 
  // for future booking ,
-  destination  Int
-  destination_location shc_have_localities @relation(fields: [destination] , references: [id], name: "destination_address")
+  // destination  Int
+  // destination_location shc_have_localities @relation(fields: [destination] , references: [id], name: "destination_address")
 
  // for  quick booking  ,   
   destination_name String?
@@ -408,9 +405,12 @@ model users_have_rides {
   travel_way       Int
   ride_travel_way  travel_ways @relation(fields: [travel_way], references: [id])
 
-  is_running Boolean @default(false)
-  is_active Boolean @default(false)
+  otp_varified Boolean @default(false) // trip started 
+  is_active Boolean @default(false) //  ride is active or not 
 
+  otp  Int? 
+  ride_started Boolean @default(false) // will be true , otp_varified  turned true   
+  
   total_fare Int
   payment_method payMethod @default(CASH)
   
