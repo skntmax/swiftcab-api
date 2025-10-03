@@ -13,7 +13,7 @@ export const encryptPayload = (data:any) => {
 };
 
 export const AESSecurtiyEncryption = (req:any, res:any, next:any) => {
- console.log(CONSOLE_COLORS.BgBlue, "<<AES Encryption enabled? >>" , all_env.SECURITY_ENCRYPTION_ENABLED )
+    console.log(CONSOLE_COLORS.BgBlue, "<<AES Encryption enabled? >>" , all_env.SECURITY_ENCRYPTION_ENABLED )
         
     if (!req.body || all_env.SECURITY_ENCRYPTION_ENABLED!="true") {
             return next();

@@ -15,7 +15,7 @@ let ports =  process.env.PORT.split(',')
 
 console.log("server>>" , ports )
 exec('npx tsc', (error, stdout, stderr) => {
-  if (error) {
+  if (error) {  
     console.error(`❌ Error generating production build`, error.message);
     return;
   }

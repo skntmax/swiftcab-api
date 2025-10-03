@@ -19,6 +19,7 @@ testRouter.get('/insert-perm', testController.insertPermissions )
 
 testRouter.get('/insertFile',  upload.single('test') ,  testController.inserFile )
 testRouter.get('/test-mail', testController.testMail )
+testRouter.get('/server-sent-events', testController.serverSentEvents )
 
 export default testRouter 
 

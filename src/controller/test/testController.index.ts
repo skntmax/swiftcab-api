@@ -275,9 +275,36 @@ insertPermissions : async function (req:Request, res:Response){
             }catch(err) {
             console.log("err>>",err)
             }
-            
+        },
 
-    }
+          serverSentEvents : async function (req:Request, res:Response) {
+            try{
+
+
+            res.setHeader("Content-Type", "text/event-stream");
+            res.setHeader("Cache-Control", "no-cache");
+            res.setHeader("Connection", "keep-alive");
+            
+            let i=0 
+            const interval = setInterval(() => {
+            const data = { time: new Date().toISOString() };
+            i++
+            res.write(JSON.stringify({message:"test message"+i}))  
+            }, 5000);
+
+            // Handle client disconnect
+            req.on("close", () => {
+                clearInterval(interval);
+                console.log("Client disconnected from SSE");
+            });
+
+            // res.send({message:result})  
+                
+            }catch(err) {
+            console.log("err>>",err)
+            }
+        }
+
 
 
      
