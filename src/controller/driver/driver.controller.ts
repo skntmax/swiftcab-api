@@ -72,6 +72,22 @@ const customerController  = {
             return  failureResponse({data:err}, res )
            }
        } ,
+
+       getDriverLiveLocation : async function (req:Request, res:Response):Promise<any> {
+        try {
+             const {lat,lng} = req.query
+             let userCoords = {location:{lat:lat,lng:lng}}
+            let driverLiveLocation =await driverService.getDriverLiveLocation(req, res , userCoords)
+            // if(!driverLiveLocation.status)
+            //    return failureResponse({data:driverLiveLocation.data, message:""} , res )  
+          
+            // return succesResponse({data:driverLiveLocation.data, message:"drivers live location " } , res )  
+           
+           }catch(err) {
+            console.log(err)
+            return  failureResponse({data:err}, res )
+           }
+       } 
 }
 
 

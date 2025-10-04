@@ -84,4 +84,9 @@ export const CONSOLE_COLORS = {
   BgGray: "\x1b[100m",
   
 }
+
+export const GOE_HASH_KEYS = {
+    NOIDA_GEO_HASH:"driver:location:noida:geo", // for driver location
+}
+
 export default Object.freeze(constants)  
