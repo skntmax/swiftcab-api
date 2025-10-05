@@ -77,11 +77,12 @@ const customerController  = {
         try {
              const {lat,lng} = req.query
              let userCoords = {location:{lat:lat,lng:lng}}
-            let driverLiveLocation =await driverService.getDriverLiveLocation(req, res , userCoords)
-            // if(!driverLiveLocation.status)
-            //    return failureResponse({data:driverLiveLocation.data, message:""} , res )  
+            // let driverLiveLocation =await driverService.getDriverLiveLocation(req, res , userCoords)
+            let driverLiveLocation2 =await driverService.getDriverLiveLocation2(userCoords)
+            if(!driverLiveLocation2.status)
+               return failureResponse({data:driverLiveLocation2.data, message:""} , res )  
           
-            // return succesResponse({data:driverLiveLocation.data, message:"drivers live location " } , res )  
+            return succesResponse({data:driverLiveLocation2.data, message:"drivers live location " } , res )  
            
            }catch(err) {
             console.log(err)

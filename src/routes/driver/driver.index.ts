@@ -31,7 +31,7 @@ driverRouter.get('/associate-driver-to-owner',
      driverController.getDriverDetails )
 
 driverRouter.get('/get-driver-live-location', 
-     // middlewares.validateUser,
+     middlewares.validateUser,
      // middlewares.checkUserRoles(userRoles.driverPartner),
      driverController.getDriverLiveLocation )
 
