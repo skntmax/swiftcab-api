@@ -11,7 +11,7 @@ import { v4 as uuidv4 } from "uuid";
 import { kyc_varify_details } from "../../types/admin.types"
 import { cld1 } from "../cloudinary"
 import { deleteFiles } from "../../middlewares/middleware.index"
-import { KycStatus } from "@prisma/client"
+import { KycStatus, Prisma } from "@prisma/client"
 import { customerDetails, updateCustomerDetails } from "../../types/customer"
 import { driverDetails, driverDetails2, getDriverDetails } from "../../types/driver.types"
 import { redisClient1 } from "../redis/redis.index"
@@ -197,120 +197,11 @@ import { Request, Response } from "express"
               }
           },
 
-          getDriverLiveLocation : async function( req:Request, res:Response ,userCoords:any) {
-        try {
-          const { lat, lng } =userCoords?.location
-
-          if (!lat || !lng) {
-            return res.status(400).json({ message: "lat and lng are required" });
-          }
-
-        const pickupLat = parseFloat(lat as string);
-        const pickupLng = parseFloat(lng as string);
-        const RADIUS_KM = 5;
-        const GEO_KEY = GOE_HASH_KEYS.NOIDA_GEO_HASH || "driver:location:noida:geo";
-
-        // Set SSE Headers
-        res.setHeader("Content-Type", "text/event-stream");
-        res.setHeader("Cache-Control", "no-cache");
-        res.setHeader("Connection", "keep-alive");
-        res.setHeader("Access-Control-Allow-Origin", "https://panel.swiftcab.in");
-        res.setHeader("Access-Control-Allow-Credentials", "true");
-        res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-        res.flushHeaders();
-
-        res.write(`data: ${JSON.stringify({ message: "Connected to live driver stream" })}\n\n`);
-        console.log(`📡 SSE connected for lat=${pickupLat}, lng=${pickupLng}`);
-
-        // Function to fetch all available drivers within 5 km
-        const findNearbyDrivers = async () => {
-          try {
-            const nearbyDrivers = (await redisClient1.geosearch(
-              GEO_KEY,
-              "FROMLONLAT",
-              pickupLng,
-              pickupLat,
-              "BYRADIUS",
-              RADIUS_KM,
-              "km",
-              "WITHDIST"
-            )) as [string, string][];
-
-            // console.log("nearbyDrivers>>",nearbyDrivers,pickupLat ,pickupLng)
-
-            const driverList: any[] = [];
-            for (const [username, distance] of nearbyDrivers) {
-              console.log([username, distance])
-              const metaKey = `driver:${username}:meta`;
-              const meta = await redisClient1.hgetall(metaKey);
-
-              // console.log("meta", meta)
-              if (meta && meta.isAvailable === "true") {
-                driverList.push({
-                  username,
-                  distance: `${distance} km`,
-                  lat: parseFloat(meta.lat),
-                  lng: parseFloat(meta.lng),
-                  correlationId: meta.correlationId,
-                  timestamp: meta.timestamp,
-                });
-              }
-            }
-
-          console.log(driverList)
-            return driverList;
-          } catch (err) {
-            console.error("Redis error in findNearbyDrivers:", err);
-            return [];
-          }
-        };
-
-        // Function to send driver updates to client
-        const sendDriversUpdate = async () => {
-          const drivers = await findNearbyDrivers();
-          const payload = {
-            time: new Date().toISOString(),
-            totalDrivers: drivers.length,
-            drivers,
-          };
-
-          res.write(`data: ${JSON.stringify(payload)}\n\n`);
-        };
-
-            // Send immediately and then every 5 seconds
-            await sendDriversUpdate();
-            const interval = setInterval(async () => {
-              await sendDriversUpdate();
-            }, 5000);
-
-            // Handle client disconnect
-            req.on("close", () => {
-              clearInterval(interval);
-              console.log("SSE client disconnected");
-            });
-          } catch (err) {
-            console.error(" Error in getDriverLiveLocation:", err);
-            return failureReturn(err);
-          }
-        } ,
-
-        getDriverLiveLocation2 : async function( userCoords:any) {
-        try {
-          const { lat, lng } =userCoords?.location
-
-          if (!lat || !lng) {
-            return failureReturn({message: "lat and lng are required" });
-          }
-
-        const pickupLat = parseFloat(lat as string);
-        const pickupLng = parseFloat(lng as string);
-        const RADIUS_KM = 5;
-        const GEO_KEY = GOE_HASH_KEYS.NOIDA_GEO_HASH || "driver:location:noida:geo";
-
-        // Function to fetch all available drivers within 5 km
-        const findNearbyDrivers = async () => {
-          try {
+          findNearbyDrivers :async function(pickupLat:number,pickupLng: number ) {
+            const RADIUS_KM = 5;
+            const GEO_KEY = GOE_HASH_KEYS.NOIDA_GEO_HASH || "driver:location:noida:geo";
+  
+            try {
             const nearbyDrivers = (await redisClient1.geosearch(
               GEO_KEY,
               "FROMLONLAT",
@@ -349,22 +240,114 @@ import { Request, Response } from "express"
             console.error("Redis error in findNearbyDrivers:", err);
             return [];
           }
-        };
+          } , 
+
+          sendDriversUpdate  : async function(pickupLat:number,pickupLng:number) {
+              const drivers = await this.findNearbyDrivers(pickupLat,pickupLng);
+              const usernames =  drivers.map((ele: any) => ele.username);
+              const payload = {
+                time: new Date().toISOString(),
+                totalDrivers: 0,
+                drivers,
+              };
+
+              if(usernames.length === 0) {
+                return  payload
+              }
+
+              const driverWithVhicleAssigned:any = await prismaClient.$queryRaw` 
+                SELECT 
+                v.username AS vhicle_username, 
+                v."name" AS vhicle_name,
+                tov.avatar,
+                tov.vhicle_type 
+              FROM users u
+              LEFT JOIN driver_belongs_to_owner dbto ON dbto.driver = u.id
+              LEFT JOIN vhicle v ON v.id = dbto.assigned_vhicle
+              LEFT JOIN type_of_vhicle tov ON tov.id = v.vhicle_type_id
+              WHERE u.username IN (${Prisma.join(usernames)}) `
+
+              drivers.forEach((item:any , index:number)=>{
+                item.vhicle_username = driverWithVhicleAssigned[index].vhicle_username || null
+                item.vhicle_name = driverWithVhicleAssigned[index].vhicle_name || null
+                item.vhicle_type = driverWithVhicleAssigned[index].vhicle_type || null
+                item.avatar = driverWithVhicleAssigned[index].avatar || null
+              })
+            
+              return  payload
+          }, 
+
+          getDriverLiveLocation : async function( req:Request, res:Response ,userCoords:any) {
+        try {
+          const { lat, lng } =userCoords?.location
+
+          if (!lat || !lng) {
+            return res.status(400).json({ message: "lat and lng are required" });
+          }
+
+        const pickupLat = parseFloat(lat as string);
+        const pickupLng = parseFloat(lng as string);
+        const RADIUS_KM = 5;
+        const GEO_KEY = GOE_HASH_KEYS.NOIDA_GEO_HASH || "driver:location:noida:geo";
+
+        // Set SSE Headers
+        res.setHeader("Content-Type", "text/event-stream");
+        res.setHeader("Cache-Control", "no-cache");
+        res.setHeader("Connection", "keep-alive");
+        res.setHeader("Access-Control-Allow-Origin", "https://panel.swiftcab.in");
+        res.setHeader("Access-Control-Allow-Credentials", "true");
+        res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        res.flushHeaders();
+
+        res.write(`data: ${JSON.stringify({ message: "Connected to live driver stream" })}\n\n`);
+        console.log(`📡 SSE connected for lat=${pickupLat}, lng=${pickupLng}`);
+
+        // Function to fetch all available drivers within 5 km
 
         // Function to send driver updates to client
         const sendDriversUpdate = async () => {
-          const drivers = await findNearbyDrivers();
+          const drivers = await this.findNearbyDrivers(pickupLat , pickupLng);
           const payload = {
             time: new Date().toISOString(),
             totalDrivers: drivers.length,
             drivers,
           };
 
-          return  payload
+          res.write(`data: ${JSON.stringify(payload)}\n\n`);
         };
 
             // Send immediately and then every 5 seconds
-            let result = await sendDriversUpdate();
+            await sendDriversUpdate();
+            const interval = setInterval(async () => {
+              await sendDriversUpdate();
+            }, 5000);
+
+            // Handle client disconnect
+            req.on("close", () => {
+              clearInterval(interval);
+              console.log("SSE client disconnected");
+            });
+          } catch (err) {
+            console.error(" Error in getDriverLiveLocation:", err);
+            return failureReturn(err);
+          }
+        } ,
+
+        getDriverLiveLocation2 : async function( userCoords:any) {
+          try {
+            const { lat, lng } =userCoords?.location
+
+            if (!lat || !lng) {
+              return failureReturn({message: "lat and lng are required" });
+            }
+
+            const pickupLat = parseFloat(lat as string);
+            const pickupLng = parseFloat(lng as string);
+
+            // Send immediately and then every 5 seconds
+            let result = await this.sendDriversUpdate(pickupLat,pickupLng);
+            // console.log("result",result)
             return successReturn(result)
             
           } catch (err) {
