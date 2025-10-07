@@ -68,7 +68,7 @@ class S3Service {
 
    async getPublicUrl(key: string): Promise<string> {
   // If basePath exists, prepend it
-  const fullKey = `${this.basePath}${key}`;
+  const fullKey = `${this.basePath}${decodeURI(key)}`;
   return `https://${this.bucketName}.s3.${this.region}.amazonaws.com/${fullKey}`;
  }
 
