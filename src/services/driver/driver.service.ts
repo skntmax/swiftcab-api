@@ -166,7 +166,7 @@ import { Request, Response } from "express"
              
             try {   
              
-              let partnerDetails = await prismaClient.driver_profile.findFirst({
+              let partnerDetails: any = await prismaClient.driver_profile.findFirst({
                 where:{
                 driver: payload.userId  
                 },
@@ -184,6 +184,21 @@ import { Request, Response } from "express"
                  }
                 }
               })
+              
+              if (!partnerDetails) return failureReturn("Driver profile not found")
+
+              let vhicleDetails: any = await prismaClient.$queryRaw`
+                WITH vhicle_data AS (
+                      select  v.username  as vehicle_id ,  v.chassis_number as vehicle_number , v.color as vh_color  ,v.model as vh_model ,  v.vhicle_type_id  , v.vhicle_owner_id  from vhicle v where id in ( select assigned_vhicle from driver_belongs_to_owner dbto where dbto.driver = ${partnerDetails?.driver} )       
+                )
+
+                select  vhicle_data.* , tov.vhicle_type , u.username ,concat(u.first_name  , ' ', u.last_name)  as owner_name  ,  u.phone_no as owner_contact from  vhicle_data 
+                inner join  type_of_vhicle tov on tov.id = vhicle_data.vhicle_type_id
+                inner join  users u  on u.id = vhicle_data.vhicle_owner_id  
+              `
+               // 3️⃣ Attach vehicle details into partnerDetails
+                partnerDetails.vhicleDetails = vhicleDetails && vhicleDetails.length ? vhicleDetails[0] : null;
+
                return successReturn(
                 JSON.parse(
                   JSON.stringify(partnerDetails, (_, value) =>

@@ -206,7 +206,8 @@ const  masterService = {
                 select   u.id as driver_id , u.username as driver_username from users u 
                 inner join  user_has_roles uhr  on uhr.user_id = u.id 
                 inner join roles r on r.id  = uhr.role_id 
-                where r."name" =$1
+                where r."name" =$1 and u.is_active = true
+                AND u.id   NOT IN  (  select  dbto.driver from driver_belongs_to_owner dbto  )
                 
             `, userRoles.driverPartner)
          
