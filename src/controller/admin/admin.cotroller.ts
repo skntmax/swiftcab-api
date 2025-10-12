@@ -287,7 +287,7 @@ const adminController  = {
            const {   capabilityId,  permissionId  } = req.body
            let addedCapabilityHavePermissions =await adminService.addCapabilitiesHavePermissions({ capabilityId,  permissionId   })
            if(!addedCapabilityHavePermissions.status)
-              return failureResponse({data:addedCapabilityHavePermissions.data, message:"added permissions to capabilities" } , res )  
+              return failureResponse({data:addedCapabilityHavePermissions.data, message:"some error occured" } , res )  
          
            return succesResponse({data:addedCapabilityHavePermissions.data, message:"success" } , res )  
             

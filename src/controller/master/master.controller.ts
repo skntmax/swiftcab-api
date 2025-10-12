@@ -254,11 +254,44 @@ const masterController  = {
       
        } ,
 
+       permissionByCapId : async function (req:Request, res:Response):Promise<any> {
+        try {
+          const {userId , username} = req.userObj  
+           const { user_has_roles } = req
+           const  { capId } = req.params
+          let permByCapId =await masterService.permissionByCapId(Number(capId))
+          
+          if(!permByCapId.status)
+             return failureResponse({data:permByCapId.data, message:"" } , res )  
+        
+          
+          return succesResponse({data:permByCapId.data, message:" permByCapId" } , res )  
+          
+         }catch(err) {
+          return  failureResponse({data:err}, res )
+         }
+      
+       } ,
 
+       
+       getNavbarList : async function (req:Request, res:Response):Promise<any> {
+         try {
+        //  const {userId , username} = req.userObj
+        //  const { user_has_roles } = req
+         
+          let navbar =await masterService.getNavbarList() 
 
-    
+          if(!navbar.status)  return succesResponse({data: "null" ,  message:navbar?.data } , res )
 
-    
+          return succesResponse({data:navbar.data, message:"nav bar " } , res )  
+
+        
+        }catch(err) {
+          console.log(err)
+          return  failureResponse({data:err}, res )
+        }
+       } ,
+   
 }
 
 

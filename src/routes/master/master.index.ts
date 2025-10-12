@@ -90,6 +90,17 @@ masterRouter.get('/get-cap-has-permissions/:userType',
      masterController.capHasPermsissions )
 
 
+masterRouter.get('/get-perm-by-cap-id/:capId',
+    middlewares.validateUser,
+        masterController.permissionByCapId )
+
+
+
+masterRouter.get('/get-navbar-list',
+    //    middlewares.getLoggedinuserRoleId(),
+        masterController.getNavbarList )
+
+
 
 
 

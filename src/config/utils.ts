@@ -45,6 +45,7 @@ export interface NavItem  {
     sub_href: string;
     sub_icon: string;
     icon?:string
+    permission_id?: number
   };
 
   
@@ -76,6 +77,7 @@ export interface assingedVhiclesToUser  {
     id?: string;
     title?: string;
     icon?: string;
+    permission_id?: number
   };
   
 
@@ -97,7 +99,8 @@ export function transformNavItems(navItems: NavItem[] , username: string, roleTy
       transformedArray.push({
         navlabel: item.sub_menu,
         subheader: item.nav_item,
-        href: `/${roleType}/${username}/?tabs=${item?.href}`
+        href: `/${roleType}/${username}/?tabs=${item?.href}`,
+        permission_id: item?.permission_id
       });
       seenNavItems.add(item.nav_item);
     }
@@ -110,7 +113,8 @@ export function transformNavItems(navItems: NavItem[] , username: string, roleTy
         icon: item.sub_icon,
         href: `/${roleType}/${username}/?tabs=${
           (item?.sub_href ||  item?.href)?.replace("/", "")?? 
-          ""} `
+          ""} `,
+        permission_id: item?.permission_id
       });  
     }
 
@@ -123,7 +127,8 @@ export function transformNavItems(navItems: NavItem[] , username: string, roleTy
         icon: item.icon,
         href: `/${roleType}/${username}/?tabs=${
           (item?.href)?.replace("/", "")?? 
-          ""} `
+          ""} `,
+        permission_id: item?.permission_id
       });  
     }
 

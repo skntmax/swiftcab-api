@@ -2,12 +2,13 @@ import { Prisma } from "@prisma/client"
 import config from "../../config/config"
 import { userRoles } from "../../config/constant"
 import dotenv from "../../config/dotenv"
-import { failureReturn, succesResponse, successReturn } from "../../config/utils"
+import { failureReturn, NavItem, succesResponse, successReturn, transformNavItems } from "../../config/utils"
 import prismaClient from "../../db"
 import primsaClient, { executeStoredProcedure } from "../../db"
 import { checkValidUser, doesUserHaveRoleOrNot, loginPayload, userCreatePayload } from "../../types/users.types"
 import { redisClient1 } from "../redis/redis.index"
 import { s3Client1 } from "../s3Bucket/s3Bucket"
+import { navigation_bar_list } from "../../types/master.types"
 
 const  masterService = {
     
@@ -272,6 +273,9 @@ const  masterService = {
                   permission_identifer: true,
                   active_role_perm: { select: { role_id: true } },
                 },
+                where:{
+                  is_active:true
+                }
               }),
               prismaClient.permissions.count(),
             ]);
@@ -285,6 +289,9 @@ const  masterService = {
                   permission_identifer: true,
                   active_role_perm: { select: { role_id: true } },
                 },
+                 where:{
+                  is_active:true
+                }
               }),
               prismaClient.permissions.count(),
             ]);
@@ -369,7 +376,88 @@ const  masterService = {
           console.error(err);
           return failureReturn(err);
         }
-      }
+      },
+
+      permissionByCapId : async function getRoleHasCapabilities(capId:number) {
+        try {
+
+          if (!capId || isNaN(capId)) {
+            return failureReturn("Capability ID is required and must be a number");
+          }
+
+            const query = `
+              SELECT sni.permission_id, p.permission_name, chp.*
+              FROM capabilities_have_permissions chp
+              JOIN permissions p ON p.id = chp.permission_id
+              JOIN sub_nav_items sni ON sni.permission_id = chp.permission_id
+              WHERE chp.capability_id IN (
+                SELECT c.id
+                FROM capabilities c
+          WHERE c.id =${capId}
+              )
+
+            `;
+
+          const permByCapId = await prismaClient.$queryRawUnsafe(query);
+
+          return successReturn(permByCapId);
+        } catch (err) {
+          console.error(err);
+          return failureReturn(err);
+        }
+      },
+  
+
+          getNavbarList: async function (payload?: navigation_bar_list) {
+
+              try {
+    
+             let navbarByRole:NavItem[] =await  prismaClient.$queryRawUnsafe(` 
+               select ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , ni.icon as icon, sni.icon  as sub_icon , sni.permission_id    
+               from nav_items ni 
+              left join  sub_nav_items sni on  ni.id  = sni.nav_item_id
+              where  ni.is_active = true and sni.is_active = true
+              `)
+
+            
+            if(navbarByRole?.length==0)
+              return successReturn(navbarByRole)
+
+            // filter menu items by  capabilites has permissions 
+
+            // let capHasPermission = await masterService.capHasPermsissions(payload.role)
+
+            console.log("before>>", navbarByRole.length)
+            console.log("after>>", navbarByRole.length)
+
+
+              //  Group by role
+              const grouped: Record<string, NavItem[]> = navbarByRole.reduce((acc, item) => {
+                if (!acc[item.nav_item]) {
+                  acc[item.nav_item] = [];
+                }
+                acc[item.nav_item].push(item);
+                return acc;
+              }, {} as Record<string, NavItem[]>);
+
+              //  Sort each role group by `nav_item`
+              Object.keys(grouped).forEach(nav_item => {
+                grouped[nav_item].sort((a, b) => a.nav_item.localeCompare(b.nav_item));
+              });
+
+              //  Flatten to one array in the same structure
+              const sortedFlattened: NavItem[] = Object.values(grouped).flat();
+            
+              let nav = transformNavItems(sortedFlattened , "", navbarByRole[0].nav_item?.toLocaleLowerCase())
+             
+              return successReturn(nav)
+              }catch(err) {
+                console.log("err>>",err)
+                  return failureReturn(err)
+              }
+                
+            },
+
 
           
 

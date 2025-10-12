@@ -12,6 +12,7 @@ import { kyc_varify_details } from "../../types/admin.types"
 import { cld1 } from "../cloudinary"
 import { deleteFiles } from "../../middlewares/middleware.index"
 import { KycStatus } from "@prisma/client"
+import masterService from "../master/master.service"
   
   const  ownerService = {
     
@@ -262,7 +263,7 @@ import { KycStatus } from "@prisma/client"
             try {
     
              let navbarByRole:NavItem[] =await  prismaClient.$queryRawUnsafe(` 
-              select r."name" as role , ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , ni.icon as icon, sni.icon  as sub_icon    from nav_items ni 
+              select r."name" as role , ni.nav_item , ni.sub_menu , ni.href, sni.sub_nav_item , sni.href  as sub_href  , ni.icon as icon, sni.icon  as sub_icon , sni.permission_id     from nav_items ni 
               inner join nav_has_permission_by_role nhpbr ON nhpbr.nav_item_id = ni.id 
               inner join roles r ON r.id = nhpbr.role_id 
               left join  sub_nav_items sni on  ni.id  = sni.nav_item_id
@@ -272,6 +273,17 @@ import { KycStatus } from "@prisma/client"
             
             if(navbarByRole?.length==0)
               return successReturn(navbarByRole)
+
+            // filter menu items by  capabilites has permissions 
+
+            let capHasPermission = await masterService.capHasPermsissions(payload.role)
+
+            console.log("before>>", navbarByRole.length)
+            if(capHasPermission.status && Array.isArray(capHasPermission.data) && capHasPermission.data.length>0) {
+             navbarByRole = navbarByRole.filter((ele)=> capHasPermission.data.some((innerEle:any)=>innerEle?.permission_id == ele?.permission_id ))
+            }
+            console.log("after>>", navbarByRole.length)
+
 
               //  Group by role
               const grouped: Record<string, NavItem[]> = navbarByRole.reduce((acc, item) => {
