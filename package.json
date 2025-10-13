@@ -18,7 +18,17 @@
     "prisma:reset:prod": "dotenv -e .env.production  -- npx prisma  migrate reset ",
     "prod": "npx tsc  && cross-env NODE_ENV=PROD node ./dist/server.js",
     "dev_multi_instance": "node ./load_balancer/dev_multi_instance.js",
-    "prod_multi_instance": "node ./load_balancer/prod_multi_instance.js"
+    "prod_multi_instance": "node ./load_balancer/prod_multi_instance.js",
+
+    "global:swift:dev:server:spawn": "node ./swift_server_load_balancer/dev/dev_multi_instance.js spawn ",
+    "global:swift:dev:server:remove": "node ./swift_server_load_balancer/dev/dev_multi_instance.js remove ",
+    "global:swift:dev:server:restart": "node ./swift_server_load_balancer/dev/dev_multi_instance.js restart ",
+
+    
+    "global:swift:prod:server:spawn": "node ./swift_server_load_balancer/prod/prod_multi_instance.js spawn ",
+    "global:swift:prod:server:remove": "node ./swift_server_load_balancer/prod/prod_multi_instance.js remove ",
+    "global:swift:prod:server:restart": "node ./swift_server_load_balancer/prod/prod_multi_instance.js restart "
+    
   },
   "author": "",
   "license": "ISC",
