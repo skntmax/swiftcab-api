@@ -432,8 +432,6 @@ model roles {
    user_role user_has_roles[] @relation("user_has_roles")
    role_perm role_has_permissions[] @relation("role_perm")
    roles_have_many_capabilities capabilities[] @relation("roles_have_many_capabilities")
-   capability_have_permissions capabilities_have_permissions[] @relation("capability_have_permissions" )
-
    role_nav_perm  nav_has_permission_by_role[] @relation("nav_perm_by_roles")
    @@unique([name,label])
 }
@@ -447,6 +445,7 @@ model capabilities {
    role_id Int
    roles_have_many_capabilities roles @relation(fields: [role_id] , references: [id] , name: "roles_have_many_capabilities" )
   
+   capability_have_permissions capabilities_have_permissions[] @relation("capability_have_permissions" )
    created_on DateTime @default(now())
    updated_on DateTime
    
@@ -478,7 +477,7 @@ model capabilities_have_permissions {
   created_on DateTime @default(now())
   updated_on DateTime
 
-  capability_have_permissions roles @relation(fields: [capability_id] , references: [id] , name: "capability_have_permissions" )
+  capability_have_permissions capabilities @relation(fields: [capability_id] , references: [id] , name: "capability_have_permissions" )
   permission_occupied_by_capability permissions @relation(fields: [permission_id], references: [id] , name:"permission_occupied_by_capability")    
 
   @@unique([capability_id ,permission_id])

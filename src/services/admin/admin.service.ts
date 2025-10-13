@@ -540,6 +540,7 @@ const  adminService = {
   try {
     let addedPermToCapability
 
+    console.log("ppaylaod", payload)
     // Case 1: permissionId is a single number
     if (typeof payload.permissionId === "number") {
       addedPermToCapability = await prismaClient.capabilities_have_permissions.create({
