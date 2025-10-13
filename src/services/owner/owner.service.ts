@@ -287,7 +287,7 @@ import masterService from "../master/master.service"
 
               //  Group by role
               const grouped: Record<string, NavItem[]> = navbarByRole.reduce((acc, item) => {
-                if (!acc[item.role]) {
+                if (! acc[item.role]) {
                   acc[item.role] = [];
                 }
                 acc[item.role].push(item);
@@ -308,7 +308,7 @@ import masterService from "../master/master.service"
               }catch(err) {
                 console.log("err>>",err)
                   return failureReturn(err)
-              }``
+              }
           } ,
 
           assignDriver : async function(payload:assingDriverToVhicle) {
