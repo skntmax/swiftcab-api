@@ -1,3 +1,4 @@
+import { KycStatus } from "@prisma/client"
 import dotenv from "../../config/dotenv"
 import { failureReturn, succesResponse, successReturn } from "../../config/utils"
 import prismaClient from "../../db"
@@ -431,8 +432,9 @@ const  adminService = {
 
         let  updatedAmspartners = await primsaClient.driver_profile.update({
           data:{
-            is_varified: payload.status,
+            is_varified: payload.status ,
             comment:payload.comment,
+            is_active: payload.status === KycStatus.VERIFIED || payload.status === KycStatus.COMPLETED,
             updated_on: new Date()
           },
           where:{
