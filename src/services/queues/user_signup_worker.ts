@@ -5,12 +5,11 @@ import authService from '../auth/auth.service';
 
 
 export function initSignupmailWorker() {
-   
+  console.log("[[ Initializing Signup Mail Worker...]]");
 const myWorker = new Worker(REDIS_QUEUES.USER_SIGNUP, async (job) => {
     console.log('Processing job:', job.id);
     console.log(job?.data)
-    await authService.sendAuthMail(JSON.parse(job.data))
-     
+    await authService.sendAuthMail(JSON.parse(job.data))   
 },
  {
     connection: config.redisConn.redisConnection1,

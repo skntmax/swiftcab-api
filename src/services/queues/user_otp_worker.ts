@@ -5,7 +5,7 @@ import authService from '../auth/auth.service';
 
 
 export function initOtpGenerationWorker() {
-   
+  console.log("[[ Initializing OTP Generation Worker... ]]");
 const myWorker = new Worker(REDIS_QUEUES.USERS_OTP, async (job) => {
     console.log('Processing job:', job.id);
      let parsedData =  JSON.parse(job?.data) 

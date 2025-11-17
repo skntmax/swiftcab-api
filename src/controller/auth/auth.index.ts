@@ -92,7 +92,7 @@ const authController  = {
          const { trafficBy = LoginBy.SWIFTCAB } = req.body; // Default value applied here
           let user =await authService.createUser({email:req.body.email ,  password:req.body.password , username:req.body.username , userType:req.body.userType , trafficBy })
           if(!user.status)
-             return succesResponse({data:user.data, message:"User already exist" } , res )  
+             return failureResponse({data:user.data, message:"User already exist" } , res )  
         
           return succesResponse({data:user.data, message:"User created" } , res )  
            
