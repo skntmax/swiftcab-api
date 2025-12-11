@@ -33,7 +33,7 @@ if (multiCore && cluster.isPrimary) {
 
     // Restart worker if crashed
     cluster.on("exit", (worker) => {
-        console.log(`❌ Worker ${worker.process.pid} died. Restarting...`);
+        console.log(`Worker ${worker.process.pid} died. Restarting...`);
         cluster.fork();
     });
 
