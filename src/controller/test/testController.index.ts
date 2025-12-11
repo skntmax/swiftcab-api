@@ -5,7 +5,7 @@ import { cld1 } from "../../services/cloudinary"
 import { UploadedFile } from "../../types/file.types"
 import { sendMail, transporter } from "../../config/mailConfig"
 import all_env from "../../config/dotenv"
-import { logger } from "../../services/logger/logger"
+// import { logger } from "../../services/logger/logger"
 // import redisClient from "../../services/redis/redis.index"
 const testController  = {
     
