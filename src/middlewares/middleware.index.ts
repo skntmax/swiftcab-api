@@ -121,7 +121,6 @@ export const middlewares = {
 
         initSignupmailWorker()
         initOtpGenerationWorker()
-   
       } , 
 
     validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
