@@ -1,7 +1,7 @@
 import CryptoJS from "crypto-js";
 import { CONSOLE_COLORS } from "./constant";
 import all_env from "./dotenv";
-import { logger } from "../services/logger/logger";
+import { logger } from "../services/logger";
 
 const SECRET_KEY = "8a2c7e56f1f22311a9d8b6c7d49e7";
 export const encryptPayload = (data:any) => {
