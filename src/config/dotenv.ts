@@ -7,6 +7,7 @@ const  all_env =  {
    VERSION:process.env.VERSION,
    DATABASE_URL:process.env.DATABASE_URL,
    REDIS_PORT: Number(process.env.REDIS_PORT) ,
+   REDIS_PASSWORD: Number(process.env.REDIS_PASSWORD) as unknown as string ,
    SECRET_KEY:process.env.SECRET_KEY as string,
    CLOUDINARY_CLOUD_NAME:process.env.CLOUDINARY_CLOUD_NAME as string,
    CLOUDINARY_API_KEY:process.env.CLOUDINARY_API_KEY as string,
@@ -17,7 +18,8 @@ const  all_env =  {
    S3_ACCCESS_KEY:process.env.S3_ACCCESS_KEY as string , 
    S3_SECRET_KEY:process.env.S3_SECRET_KEY as string, 
    S3_BASE_PATH:process.env.S3_BASE_PATH as string, 
-   SECURITY_ENCRYPTION_ENABLED:process.env.SECURITY_ENCRYPTION_ENABLED as string
+   SECURITY_ENCRYPTION_ENABLED:process.env.SECURITY_ENCRYPTION_ENABLED as string,
+   MULTI_CORE:process.env.MULTI_CORE as string
 }
 
 console.log(all_env)

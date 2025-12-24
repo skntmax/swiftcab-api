@@ -5,6 +5,7 @@ import { cld1 } from "../../services/cloudinary"
 import { UploadedFile } from "../../types/file.types"
 import { sendMail, transporter } from "../../config/mailConfig"
 import all_env from "../../config/dotenv"
+// import { logger } from "../../services/logger/logger"
 // import redisClient from "../../services/redis/redis.index"
 const testController  = {
     
@@ -12,7 +13,7 @@ const testController  = {
     checkStatus : async function (req:Request, res:Response){
 
         // console.log(vh)
-        res.send({message:"ok", roles: req.user_has_roles || [] , perm:req.role_has_permissions || [] , PORT:all_env.PORT}) 
+        res.send({message:"ok", processId:process.pid , roles: req.user_has_roles || [] , perm:req.role_has_permissions || [] , PORT:all_env.PORT}) 
     } ,
 
     insertVhicle : async function (req:Request, res:Response){

@@ -1,0 +1,6 @@
+for i in {1..50}; do
+  PORT=$(shuf -e 5001 5002 5004 -n1)
+  echo "Hitting port $PORT"
+  curl -s -H "Connection: close" http://localhost:$PORT/v1/test/status
+  echo ""
+done

@@ -1,6 +1,7 @@
 import CryptoJS from "crypto-js";
 import { CONSOLE_COLORS } from "./constant";
 import all_env from "./dotenv";
+import logger  from "./../services/logger";
 
 const SECRET_KEY = "8a2c7e56f1f22311a9d8b6c7d49e7";
 export const encryptPayload = (data:any) => {
@@ -15,6 +16,17 @@ export const encryptPayload = (data:any) => {
 export const AESSecurtiyEncryption = (req:any, res:any, next:any) => {
     console.log(CONSOLE_COLORS.BgBlue, "<<AES Encryption enabled? >>" , all_env.SECURITY_ENCRYPTION_ENABLED )
         
+      // logger functions 
+      
+        logger.log({
+             level: 'info',
+             message: JSON.stringify({
+             body: req.body,
+             processId: process.pid,
+             port: process.env.PORT
+            })
+            });
+
     if (!req.body || all_env.SECURITY_ENCRYPTION_ENABLED!="true") {
             return next();
         }

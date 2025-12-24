@@ -19,16 +19,12 @@
     "prod": "npx tsc  && cross-env NODE_ENV=PROD node ./dist/server.js",
     "dev_multi_instance": "node ./load_balancer/dev_multi_instance.js",
     "prod_multi_instance": "node ./load_balancer/prod_multi_instance.js",
-
     "global:swift:dev:server:spawn": "node ./swift_server_load_balancer/dev/dev_multi_instance.js spawn ",
     "global:swift:dev:server:remove": "node ./swift_server_load_balancer/dev/dev_multi_instance.js remove ",
     "global:swift:dev:server:restart": "node ./swift_server_load_balancer/dev/dev_multi_instance.js restart ",
-
-    
     "global:swift:prod:server:spawn": "node ./swift_server_load_balancer/prod/prod_multi_instance.js spawn ",
     "global:swift:prod:server:remove": "node ./swift_server_load_balancer/prod/prod_multi_instance.js remove ",
     "global:swift:prod:server:restart": "node ./swift_server_load_balancer/prod/prod_multi_instance.js restart "
-    
   },
   "author": "",
   "license": "ISC",
@@ -40,12 +36,12 @@
     "@types/nodemon": "^1.19.6",
     "express": "^4.21.2",
     "nodemon": "^3.1.9",
-    "prisma": "^6.15.0"
+    "prisma": "^6.19.0"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.844.0",
     "@aws-sdk/s3-request-presigner": "^3.844.0",
-    "@prisma/client": "^6.2.1",
+    "@prisma/client": "^6.19.0",
     "@types/cors": "^2.8.17",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/multer": "^1.4.12",
@@ -69,6 +65,7 @@
     "nanoid": "^5.1.5",
     "nodemailer": "^6.10.0",
     "ts-node": "^10.9.2",
-    "uuid": "^11.0.5"
+    "uuid": "^11.0.5",
+    "winston": "^3.19.0"
   }
 }
