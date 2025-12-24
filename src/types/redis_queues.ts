@@ -1,6 +1,5 @@
 import config from "../config/config"
 
-
 export interface redisConnectionType {
     host: string,
     port: number ,

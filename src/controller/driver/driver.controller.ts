@@ -88,6 +88,21 @@ const customerController  = {
             console.log(err)
             return  failureResponse({data:err}, res )
            }
+       } ,
+
+       isActiveRideOrNot : async function (req:Request, res:Response):Promise<any> {
+        try {
+            const {userId } = req.userObj
+            let activeRideOrNot =await driverService.isActiveRideOrNot(Number(userId))
+            if(!activeRideOrNot.status)
+               return failureResponse({data:activeRideOrNot.data, message:""} , res )  
+          
+            return succesResponse({data:activeRideOrNot.data, message:"is any active ride or not by customer " } , res )  
+           
+           }catch(err) {
+            console.log(err)
+            return  failureResponse({data:err}, res )
+           }
        } 
 }
 

@@ -41,6 +41,7 @@ export interface checkValidUser  {
 export interface verifyOtp  {
     otp:string,
     phone:string
+    userType?:number
 }
 
 

@@ -369,7 +369,88 @@ import { Request, Response } from "express"
             console.error(" Error in getDriverLiveLocation:", err);
             return failureReturn(err);
           }
-        }
+        } ,
+          isActiveRideOrNot: async function (userId: number) {
+            try {
+              const rows: any[] = await prismaClient.$queryRaw`
+                SELECT 
+                  uhr.id              AS ride_id,
+                  uhr.source_lat,
+                  uhr.source_lng,
+                  uhr.source_name,
+                  uhr.destination_lat,
+                  uhr.destination_lng,
+                  uhr.destination_name,
+                  uhr.otp,
+
+                  u.id                AS driver_id,
+                  u.username,
+                  u.first_name,
+                  u.last_name,
+                  u.avatar,
+                  u.phone_no
+                FROM users_have_rides uhr
+                inner join driver_belongs_to_owner dbto ON dbto.id= uhr.vhicle_driver 
+                inner join  users u ON u.id = dbto.driver 
+                WHERE uhr.user_id = ${userId}
+                AND uhr.is_active = true
+                LIMIT 1
+              `;
+
+              if (!rows || rows.length === 0) {
+                return successReturn({
+                  isActiveRide: false,
+                  result: null,
+                });
+              }
+
+              const row = rows[0];
+              console.log(`driver:${row.username}:meta`)
+              let driverCorrelationId =  await redisClient1.hget(`driver:${row.username}:meta` , 'correlationId' )
+              
+               if(!driverCorrelationId) {
+               return failureReturn("Driver correlationId not found")   
+               }
+               
+               let driverSocketId = await redisClient1.get(driverCorrelationId)
+              if(!driverSocketId) {
+                  return failureReturn("Driver socketId not found")   
+              }
+               // 🎯 Final response mapping
+              const response = {
+                rideId: row.ride_id,
+                message: "Your ride has been initiated!",
+                driver: {
+                  id: row.driver_id,
+                  username: row.username,
+                  first_name: row.first_name,
+                  last_name: row.last_name,
+                  avatar: row.avatar,
+                  phone_no: row.phone_no,
+                  driverSocketId: driverSocketId, // postgres lowercases aliases
+                },
+                pickup: {
+                  lat: row.source_lat,
+                  lng: row.source_lng,
+                  name: row.source_name,
+                },
+                destination: {
+                  lat: row.destination_lat,
+                  lng: row.destination_lng,
+                  name: row.destination_name,
+                },
+                otp: row.otp,
+              };
+
+              return successReturn({
+                isActiveRide: true,
+                result: response,
+              });
+            } catch (err) {
+              console.error("Error in isActiveRideOrNot:", err);
+              return failureReturn(err);
+            }
+          },
             
   }
 

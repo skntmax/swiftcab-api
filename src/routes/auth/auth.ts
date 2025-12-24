@@ -28,3 +28,9 @@ export default authRouter
 
 
 
+// token payload 
+// "id": 69,
+// "username": "shashikant8605znmtu",
+// "role": "customer",
+
+

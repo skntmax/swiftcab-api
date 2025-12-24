@@ -97,7 +97,7 @@ export async function deleteFiles(files: any): Promise<void> {
 export const middlewares = {
 
     corsOptions : {
-     origin: '*',
+     origin: ["https://panel.swiftcab.in/","http://localhost:3000","http://localhost:3001"],
      optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
       }
      ,   

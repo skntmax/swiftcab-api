@@ -36,6 +36,14 @@ driverRouter.get('/get-driver-live-location',
      driverController.getDriverLiveLocation )
 
 
+     
+driverRouter.get('/is-active-ride', 
+     middlewares.validateUser,
+     // middlewares.checkUserRoles(userRoles.driverPartner),
+     driverController.isActiveRideOrNot )
+
+
+
 
 
 export default driverRouter 

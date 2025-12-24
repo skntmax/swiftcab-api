@@ -26,7 +26,8 @@ export const authCelebrate = {
       otpVerify :  celebrate({
         [Segments.BODY]: Joi.object().keys({
           otp: Joi.string().required(),
-          phone:Joi.string().required()
+          phone:Joi.string().required(),
+          userType:Joi.number().optional()
         }),
       })   ,
 

@@ -72,7 +72,7 @@ const authController  = {
 
          try {
             
-          let otpVerify =await authService.verifyOtp({otp: req.body.otp , phone: req.body.phone})
+          let otpVerify =await authService.verifyOtp({otp: req.body.otp , phone: req.body.phone ,userType:req.body.userType  })
           
           if(!otpVerify.status)
           return failureResponse({data:otpVerify.data, message:"Otp not verified" } , res )  

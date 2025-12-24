@@ -33,7 +33,6 @@ npx dotenv -e .env.production -- npx prisma migrate deploy
   fi
 done
 
-
 certbot :
 If you want HTTPS with Let's Encrypt:
 

@@ -91,6 +91,11 @@ const  authService = {
                 WHERE x.role_id = $2 AND x.is_active = true  ` ,   emailOrUsername , userType , phone
           ) 
       
+           let  userRole =  await prismaClient.roles.findFirst({
+          where:{ id: userType},
+          select:{ name:true, id:true}
+          }) 
+
           // Fix: Assign the first object to a new variable
         let newUser: UserResult | undefined = newUserArray.length > 0 ? newUserArray[0] : undefined;
           
@@ -111,7 +116,7 @@ const  authService = {
                if(!userCreated.status)
                   return failureReturn({data:userCreated.data, message:"User already exist" } )  
    
-                login_user_otp.enqueue('user_otp' ,{phone , id:userCreated?.data?.id , username: userCreated?.data?.username })
+                login_user_otp.enqueue('user_otp' ,{phone , id:userCreated?.data?.id , username: userCreated?.data?.username ,role:userRole?.name })
                }
              }else{ // if phone payload exist and  user also  exist relaetd to  this  phone , then simply  send login otp    
               login_user_otp.enqueue('user_otp' ,{phone , id:newUser.id , username: newUser.username })
@@ -129,8 +134,8 @@ const  authService = {
           
         if(!isPass)
           return  failureReturn('Invalid credential')
-        
-          let payload = {id:newUser.id , username: newUser.username  } 
+
+          let payload = {id:newUser.id , username: newUser.username ,role:userRole?.name  } 
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
           return successReturn({token ,  usersObj :{  username: newUser.username , firstName :newUser.first_name , lastName : newUser.last_name , avatar:newUser.avatar , roleTypeName:newUser?.role  }}  )  
 
@@ -183,7 +188,15 @@ const  authService = {
           }else{
              // if user already exist 
           console.log("user already exist")
-          let payload = {id:userExist.id , username: userExist.username  }
+          // getting role name 
+          let  userRole =  await prismaClient.roles.findFirst({
+          where:{ id: userType},
+          select:{ name:true, id:true}
+          }) 
+
+          console.log("ok>>", {id:userExist.id , username: userExist.username ,role:userRole?.name  })
+
+          let payload = {id:userExist.id , username: userExist.username ,role:userRole?.name  }
           let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
            // Fix: Assign the first object to a new variable
 
@@ -251,8 +264,14 @@ const  authService = {
             updated_on:new Date() ,
           }
          })
+         
+      // getting role name 
+      let  userRole =  await prismaClient.roles.findFirst({
+      where:{ id: userType},
+      select:{ name:true}
+      }) 
 
-      let payload = {id:newUser.id , username: newUser.username  }
+      let payload = {id:newUser.id , username: newUser.username , role:userRole?.name  }
       let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
           expiresIn: "2h",
       })
@@ -335,10 +354,10 @@ const  authService = {
             roleTypeName= role?.name
         
 
-        let payload = {id:newUser.id , username: newUser.username  }
-        let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
-            expiresIn: "2h",
-        })
+          let payload = {id:newUser.id , username: newUser.username ,role:roleTypeName }
+          let  token =  jwt.sign(payload ,  dotenv.SECRET_KEY , {
+              expiresIn: "2h",
+          })
 
 
         
@@ -384,8 +403,7 @@ const  authService = {
       })
 
       return successReturn({token , usersObj :{  username: userPayload.username , firstName :userPayload.first_name , lastName :userPayload.last_name , roleTypeName:userPayload.roleTypeName }}  )
-     
-
+    
       }catch(err) {
        console.log(err)
        return failureReturn(err)
@@ -419,12 +437,12 @@ const  authService = {
     verifyOtp:async function(payload:verifyOtp ) {
       try{
 
-        const  { otp ,phone}  = payload
+       const  { otp ,phone, userType}  = payload
        // let userExistOrNot =await prismaClient.users.findFirst({ where:{ username:payload.username  }})
        let user = await prismaClient.users.findFirst({
         where: {
-          phone_no: payload.phone,
-          otp: payload.otp,
+          phone_no: phone,
+          otp: otp,
           expiresIn: {
             gte: new Date(), // Check if expiresIn is greater than or equal to the current time
           },
@@ -432,6 +450,13 @@ const  authService = {
       });
   
 
+
+      // getting role name
+      let  userRole =  await prismaClient.roles.findFirst({
+        where:{ id: userType},
+        select:{ name:true, id:true}
+        }) 
+        
      
       if (!user) {
         return failureReturn("Invalid or expired OTP");
@@ -444,7 +469,7 @@ const  authService = {
       });
 
 
-      let userPayload = {id:user.id , username: user.username  } 
+      let userPayload = {id:user.id , username: user.username ,role:userRole?.name  } 
       let  token =  jwt.sign(userPayload ,  dotenv.SECRET_KEY , { expiresIn: "2h"})
       return successReturn({token ,  usersObj :{  username: user.username , firstName :user.first_name , lastName : user.last_name}}  )  
      
@@ -481,7 +506,7 @@ const  authService = {
 
      generateAndSendOtpForLogin:async function(payload:any ) {
       try{
-        const { phone, id, username}  =  payload
+        const { phone, id, username ,role}  =  payload
         let updates = await prismaClient.users.update({
            where:{
              id
