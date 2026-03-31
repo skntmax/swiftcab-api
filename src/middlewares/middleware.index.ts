@@ -124,7 +124,6 @@ export const middlewares = {
       } , 
 
     validateUser : async function(req:Request, res:Response, next:NextFunction):Promise<any> {
-    
       try{
         req.userObj={userId:"" , username:"",roleTypeName: ""}       
         const token = req.headers['authorization']        
@@ -201,7 +200,6 @@ export const middlewares = {
 
 
     roleWisePermission :  async function(req:Request, res:Response, next:NextFunction):Promise<any> {
-    
         try{
           req.userObj={userId:"" , username:"",roleTypeName: ""}       
           const token = req.headers['authorization']

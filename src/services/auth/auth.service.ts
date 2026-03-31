@@ -551,9 +551,7 @@ const  authService = {
                   
             return failureReturn(err)
             }
-         },
-
-     
+         },     
   }
 
 

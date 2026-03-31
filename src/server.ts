@@ -64,7 +64,6 @@ if (multiCore && cluster.isPrimary) {
     });
 }
 
-
 // intialise uploads  folder 
 let uploadDir =  path.join(__dirname , './assets/uploads')
 if (!fs.existsSync(uploadDir)) {
