@@ -54,3 +54,34 @@ Let me know if you'd like to auto-redirect HTTP to HTTPS too.
 <!-- delete process at some port in windows  -->
 netstat -ano | findstr :5000
 taskkill /PID 12345 /F
+
+
+if want to skip any particualr migration
+cross-env NODE_ENV=PROD dotenv -e .env.production \
+npx prisma migrate resolve --applied 20251114191537_is_active_field
+
+cross-env NODE_ENV=PROD dotenv -e .env.production \
+npx prisma migrate deploy
+
+
+in case of if conflicts of users , only this thing works 
+
+  select  * from  users 
+
+
+  select (id+1) as val from users  order by created_on desc  limit 97 ;
+
+  alter SEQUENCE users_id_seq START WITH 98 ;
+
+  SELECT setval(pg_get_serial_sequence('"users"', 'id'), 98, false);
+
+
+
+
+    // interservice communication via  api gateway  sample code 
+
+      let response : any = await paymentClient.json('/v1/payment/health-check')
+      console.log("response",response)
+
+
+    sudo rsync -avz --exclude 'node_modules'  root@193.203.160.116:/var/www/ /var/www/

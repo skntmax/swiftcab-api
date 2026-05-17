@@ -352,8 +352,8 @@ model utils_config {
 model users_have_rides {
   id Int @id @default(autoincrement())
   
-  vhicle_driver Int @unique  
-  assigned_driver_to_vhicle driver_belongs_to_owner? @relation(fields: [vhicle_driver] , references: [id] , name: "assigned_driver_to_vhicle")
+  vhicle_driver Int   
+  assigned_driver_to_vhicle driver_belongs_to_owner @relation(fields: [vhicle_driver] , references: [id] , name: "assigned_driver_to_vhicle")
   
   
   pickup_date DateTime? 
@@ -405,14 +405,21 @@ model users_have_rides {
   travel_way       Int
   ride_travel_way  travel_ways @relation(fields: [travel_way], references: [id])
 
+  universal_ride_id String?
+  cancelled_by Int?
+  reason String?
+
   otp_varified Boolean @default(false) // trip started 
   is_active Boolean @default(false) //  ride is active or not 
+
+  ride_finished Boolean @default(false)
 
   otp  Int? 
   ride_started Boolean @default(false) // will be true , otp_varified  turned true   
   
   total_fare Int
   payment_method payMethod @default(CASH)
+  payment_paid Boolean @default(false)
   
   created_on DateTime @default(now())
   updated_on DateTime
@@ -589,7 +596,7 @@ model  driver_belongs_to_owner  {
    assigned_vhicle_to_driver vhicle?  @relation(fields: [assigned_vhicle] , references: [id], name: "assigned_vhicle_to_driver")
   
   // for users has rides  table 
-  assigned_driver_to_vhicle  users_have_rides? @relation(name: "assigned_driver_to_vhicle") 
+  assigned_driver_to_vhicle  users_have_rides[] @relation(name: "assigned_driver_to_vhicle") 
   
   self Boolean @default(false)
   

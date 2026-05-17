@@ -382,6 +382,8 @@ import { Request, Response } from "express"
                   uhr.destination_lng,
                   uhr.destination_name,
                   uhr.otp,
+                  uhr.payment_paid,
+                  uhr.ride_finished ,
 
                   u.id                AS driver_id,
                   u.username,

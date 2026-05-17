@@ -89,4 +89,10 @@ export const GOE_HASH_KEYS = {
     NOIDA_GEO_HASH:"driver:location:noida:geo", // for driver location
 }
 
+
+export function stripTrailingSlash(url: string): string {
+    return url.replace(/\/+$/, "");
+}
+
+
 export default Object.freeze(constants)  
