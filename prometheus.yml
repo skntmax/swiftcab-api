@@ -4,4 +4,4 @@ global:
 scrape_configs:
 - job_name: prometheus
   static_configs:
-  - targets: [ "210.79.129.248" ]
+  - targets: [ "https://api-gateway.365itsolution.com/" ]

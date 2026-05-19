@@ -54,9 +54,10 @@ if (multiCore && cluster.isPrimary) {
     middlewares.globalMiddlewares(app);
 
     app.get(`/${version}/metrics`, async (req, res) => {
-    res.set("Content-Type", register.contentType);
-    res.end(await register.metrics());
+        res.set("Content-Type", register.contentType);
+        res.end(await register.metrics());
     });
+    
     // Routes
     app.use(`/${version}/auth`, AESSecurtiyEncryption, authRouter);
     app.use(`/${version}/owner`, AESSecurtiyEncryption, ownerRouter);
