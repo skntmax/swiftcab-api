@@ -22,7 +22,7 @@ import pmClient from "prom-client"
 // Initialize Prometheus metrics
 const collectDefaultMetrics = pmClient.collectDefaultMetrics;
 const Registry = pmClient.Registry;
-const register = new Registry();
+export const register = new Registry();
 collectDefaultMetrics({ register });
 
 
@@ -53,7 +53,7 @@ if (multiCore && cluster.isPrimary) {
     // Apply global middlewares
     middlewares.globalMiddlewares(app);
 
-    app.get("/metrics", async (req, res) => {
+    app.get(`/${version}/metrics`, async (req, res) => {
     res.set("Content-Type", register.contentType);
     res.end(await register.metrics());
     });
