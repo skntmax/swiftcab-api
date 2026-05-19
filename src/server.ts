@@ -53,7 +53,7 @@ if (multiCore && cluster.isPrimary) {
     // Apply global middlewares
     middlewares.globalMiddlewares(app);
 
-    app.get(`/${version}/metrics`, async (req, res) => {
+    app.get(`/metrics`, async (req, res) => {
         res.set("Content-Type", register.contentType);
         res.end(await register.metrics());
     });
