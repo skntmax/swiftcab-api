@@ -17,6 +17,15 @@ import cluster from "cluster";
 import os from 'os'
 import dotenv from 'dotenv';
 import all_env from "./config/dotenv";
+import pmClient from "prom-client"
+
+// Initialize Prometheus metrics
+const collectDefaultMetrics = pmClient.collectDefaultMetrics;
+const Registry = pmClient.Registry;
+const register = new Registry();
+collectDefaultMetrics({ register });
+
+
 let port =  process.env.PORT  || 4000  
 export let version:String =  process.env.VERSION || "v1" 
 const  multiCore= all_env.MULTI_CORE==="true" 
@@ -44,6 +53,10 @@ if (multiCore && cluster.isPrimary) {
     // Apply global middlewares
     middlewares.globalMiddlewares(app);
 
+    app.get("/metrics", async (req, res) => {
+    res.set("Content-Type", register.contentType);
+    res.end(await register.metrics());
+    });
     // Routes
     app.use(`/${version}/auth`, AESSecurtiyEncryption, authRouter);
     app.use(`/${version}/owner`, AESSecurtiyEncryption, ownerRouter);
