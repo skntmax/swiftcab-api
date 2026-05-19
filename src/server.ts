@@ -17,13 +17,7 @@ import cluster from "cluster";
 import os from 'os'
 import dotenv from 'dotenv';
 import all_env from "./config/dotenv";
-import pmClient from "prom-client"
-
-// Initialize Prometheus metrics
-const collectDefaultMetrics = pmClient.collectDefaultMetrics;
-const Registry = pmClient.Registry;
-export const register = new Registry();
-collectDefaultMetrics({ register });
+import { register, httpMetricsMiddleware } from "./metrics/httpMetrics";
 
 
 let port =  process.env.PORT  || 4000  
@@ -52,6 +46,7 @@ if (multiCore && cluster.isPrimary) {
 
     // Apply global middlewares
     middlewares.globalMiddlewares(app);
+    app.use(httpMetricsMiddleware);
 
     app.get(`/metrics`, async (req, res) => {
         res.set("Content-Type", register.contentType);
