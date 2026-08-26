@@ -7,13 +7,17 @@ import { Logger } from "@nestjs/common";
 import { AppModule } from "./app.module";
 import { createExpressApp, API_VERSION } from "./bootstrap/create-express-app";
 import all_env from "./config/dotenv";
+import { loadSecretsFromVault } from "./config/loadingEnv";
 import { ConsulService } from "./infra/consul/consul.service";
 import { DryRunService } from "./modules/dry-run/dry-run.service";
 import { setDryRunService } from "./modules/dry-run/dry-run.accessor";
+import { VaultService } from "./infra/vault/vault.service";
 
 
 async function bootstrapWorker() {
   const logger = new Logger("Bootstrap");
+  await loadSecretsFromVault("swc-api");
+
   const expressApp = createExpressApp();
   const app = await NestFactory.create(
     AppModule,
@@ -22,6 +26,7 @@ async function bootstrapWorker() {
   );
   app.enableShutdownHooks();
   setDryRunService(app.get(DryRunService));
+  app.get(VaultService).logStatus();
 
   const port = Number(process.env.PORT) || 4000;
   await app.listen(port);

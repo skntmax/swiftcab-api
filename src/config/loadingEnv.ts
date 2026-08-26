@@ -23,3 +23,17 @@ const shared = sharedMeshEnvPath();
 if (shared && fs.existsSync(shared)) {
   dotenv.config({ path: shared });
 }
+
+/** Call from main before NestFactory — loads Vault KV into process.env */
+export async function loadSecretsFromVault(serviceName: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { preloadVaultSecrets } = require(path.resolve(
+    process.cwd(),
+    "..",
+    "env",
+    "vault-preload.cjs",
+  )) as {
+    preloadVaultSecrets: (o: { serviceName: string }) => Promise<unknown>;
+  };
+  await preloadVaultSecrets({ serviceName });
+}
