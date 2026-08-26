@@ -1,0 +1,33 @@
+# Local stack: Grafana + Loki + Prometheus (optional dev helpers).
+# Start API with LOKI_HOST=http://localhost:3100 and scrape /metrics from Prometheus.
+#
+# Usage: docker compose -f observability/docker-compose.yml up -d
+# Grafana: http://localhost:3001 (admin / admin) — add Loki http://loki:3100, Prometheus http://prometheus:9090
+
+services:
+  loki:
+    image: grafana/loki:2.9.8
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - "3100:3100"
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    ports:
+      - "9090:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_DEFAULT_THEME: dark
+    depends_on:
+      - loki
+      - prometheus

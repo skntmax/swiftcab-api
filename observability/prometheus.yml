@@ -1,0 +1,10 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: swiftcab-api
+    metrics_path: /metrics
+    static_configs:
+      # API must expose METRICS (default). On Mac/Windows Docker Desktop use host.docker.internal.
+      # On Linux, set extra_hosts in compose or replace with your host IP.
+      - targets: ["host.docker.internal:5001"]

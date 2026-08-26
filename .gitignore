@@ -1,0 +1,31 @@
+# Dependencies & build
+/node_modules
+/dist
+/coverage
+/build
+
+# Env / secrets (keep examples)
+.env
+.env.*
+!.env.mesh.example
+!.env.example
+
+# Prisma generated client (if emitted under src)
+/src/generated/prisma
+
+# Logs & local runtime
+logs/
+*.log
+npm-debug.log*
+.pm2/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Local / tooling leftovers
+.docker-build/
+.tools/

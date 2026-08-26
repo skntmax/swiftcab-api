@@ -1,0 +1,684 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+} 
+
+
+enum KycStatus {
+  INITIATED
+  PENDING
+  VERIFIED
+  COMPLETED
+}
+
+
+enum payMethod {
+  UPI
+  CASH
+  ONLINE
+}
+
+
+enum LoginBy {
+  SWIFTCAB
+  GOOGLE
+  FACEBOOK
+  MICROSOFT 
+  OTHER
+}
+
+model vhicle {
+  id       Int    @id @default(autoincrement())
+  username String
+  name     String
+  rc       String
+ 
+  is_kyc Boolean @default(false)
+  vin String?   // -- Vehicle Identification Number
+  license_plate String?
+  manufacturer String?
+  model String?
+  year DateTime?
+  color String?
+  engine_number String? 
+  chassis_number String?
+  fuel_type String?
+  transmission String? // -- Manual, Automatic
+
+  kyc_varification KycStatus @default(PENDING) // Default value set to INITIATED
+
+  is_active Boolean @default(true)
+   
+  vhicle_type_id  Int 
+  vhicle_owner_id  Int 
+
+  // relations 
+  v_type  type_of_vhicle @relation(fields: [vhicle_type_id] , references: [id ])
+  vh_owner  users @relation(fields: [vhicle_owner_id] , references: [id]) 
+   
+
+  ss_one String? @default("")
+  ss_two String? @default("")
+  rc_doc String? 
+   
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  
+  vhicles vhicle_has_other_docs[] @relation("multiple_users_can_have_multiple_doc_of_vhicle")
+
+  services vhicle_provides_services[]
+
+  // engaged with which vhicle
+  engaged_with_which_vhicle driver_profile ? @relation("engaged_with_which_vhicle")   
+
+  //  vhicle assigned to  driver
+  assigned_vhicle_to_driver driver_belongs_to_owner ? @relation("assigned_vhicle_to_driver")
+
+}
+
+
+model vhicle_has_other_docs {
+   id Int @id @default(autoincrement())
+
+   vhicle_id Int
+   vhicles vhicle @relation(fields: [vhicle_id] , references: [id] , name: "multiple_users_can_have_multiple_doc_of_vhicle" )
+   
+   doc_id String?
+   basePath String? 
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+} 
+
+model type_of_vhicle {
+  id Int @id @default(autoincrement())
+    
+  vhicle_type String
+  disc String
+  
+  v_type vhicle[]   // 1-1 relation
+  avatar  String? 
+  is_active Boolean @default(false)
+  // vhicle_type_relation  owner_has_vhicles[]
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+}
+
+model vhicle_services {
+  id           Int      @id @default(autoincrement())
+  service_name String
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+
+  // Relation with vhicle_provides_services
+  providers vhicle_provides_services[]
+  utils     services_have_utils[]
+}
+
+
+model owner_has_vhicles{
+  id  Int @id @default(autoincrement())
+  owner Int
+  v_type Int 
+
+  // owner_of_vhicle users @relation(fields: [owner] , references: [id])
+  // vhicle_type_relation type_of_vhicle @relation(fields: [v_type], references: [id])  
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+model vhicle_provides_services {
+  id Int @id @default(autoincrement())
+
+  vhicle_id  Int
+  service_id Int
+  engaged Boolean @default(false)
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+
+  // Relations
+  vhicle         vhicle          @relation(fields: [vhicle_id], references: [id])
+  vhicle_service vhicle_services @relation(fields: [service_id], references: [id])
+ 
+  @@unique([vhicle_id, service_id]) // Ensures unique combinations of vhicle and service
+}
+
+model services_have_utils {
+  id         Int      @id @default(autoincrement())
+  service_id Int
+  guide      Boolean  @default(false)
+  food       Boolean  @default(false)
+  water      Boolean  @default(false)
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  // Relation to vhicle_services
+  service vhicle_services @relation(fields: [service_id], references: [id])
+}
+
+model users {
+  id       Int    @id @default(autoincrement())
+  username String @default("")
+  email String @unique
+  first_name String?
+  last_name String?
+  phone_no String?
+  is_active Boolean @default(false)
+  city_id  Int? @unique
+  locality_id Int? @unique 
+  password String
+  otp String?
+  expiresIn DateTime? 
+  isLoggedIn Boolean?
+  traffic_from  LoginBy  @default(SWIFTCAB)  
+  avatar String? 
+ 
+  users_city cities? @relation(fields: [city_id] , references: [id])
+  users_locality localities? @relation(fields: [locality_id] , references: [id])
+  vh_owner vhicle[]
+  user_has_rides users_have_rides[]
+  
+  // owner_of_vhicle owner_has_vhicles[] 
+  active_role user_has_roles[]
+
+  // driver belings to owners or to an owner   
+  owner_id driver_belongs_to_owner[] @relation("owner_has_drivers") 
+  driver_id driver_belongs_to_owner[] @relation("active_driver")
+   
+  // driver profile 
+  driver_profile_id driver_profile? @relation("driver_profile")
+  
+  // engaged with  which owner 
+  engaged_with_which_owner driver_profile ? @relation("engaged_with_which_owner") 
+  
+  // driver assigned by 
+  driver_assigned_by driver_belongs_to_owner[] @relation("driver_assigned_by")
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+model type_of_user {
+  id           Int      @id @default(autoincrement())
+  user_type    String
+  created_on   DateTime @default(now())
+  updated_on   DateTime
+}
+
+model countries {
+  id         Int      @id @default(autoincrement())
+  country    String
+  cities     states[] @relation("countries_have_many_states")
+  created_on DateTime @default(now())
+  updated_on DateTime 
+}
+
+model states {
+  id    Int    @id @default(autoincrement())
+  state String
+
+  // for countries 
+  country_id Int
+  country    countries @relation(fields: [country_id], references: [id], name: "countries_have_many_states")
+
+  // states have many cities 
+  states cities[] @relation("states_have_many_cities")
+
+  state_cty_mapper states_have_cities[]
+  // source_state users_have_rides[]
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+model cities {
+  id   Int    @id @default(autoincrement())
+  city String
+
+  // city 
+  state_id Int
+  states   states @relation(fields: [state_id], references: [id], name: "states_have_many_cities")
+
+  // city can have many localities
+  localities localities[] @relation("cities_have_many_localities")
+
+  state_cty_mapper states_have_cities[]
+  users_city users?
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+model localities {
+  id   Int    @id @default(autoincrement())
+  locality String
+
+  //  city may have or more localitites
+  city_id    Int
+  localities cities @relation(fields: [city_id], references: [id], name: "cities_have_many_localities")
+
+
+  localities_r1 shc_have_localities[]
+  users_locality users?
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+model states_have_cities {
+id   Int    @id @default(autoincrement()) 
+  state_id Int
+  city_id  Int
+
+  state states @relation(fields: [state_id], references: [id])
+  city  cities @relation(fields: [city_id], references: [id])
+
+   state_have_cities  shc_have_localities[]
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  // @@id([state_id, city_id]) // Composite primary key
+}
+
+ model  shc_have_localities {
+     id   Int    @id @default(autoincrement()) 
+
+     shc_id Int
+     locality_id Int
+     price_per_km Int
+
+     state_have_cities states_have_cities @relation(fields: [shc_id] , references: [id])
+     localities_r1 localities @relation(fields: [locality_id] , references: [id])
+
+      // source_location users_have_rides[] @relation("source_address")
+      // destination_location users_have_rides[] @relation("destination_address")
+     created_on DateTime @default(now())
+     updated_on DateTime
+
+ }
+
+
+
+model utils_status_names {
+  id Int @id @default(autoincrement())
+  name String
+
+  service_utility_name_relation utils_config[]
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+
+
+model utils_status {
+  id Int @id @default(autoincrement())
+  status String
+
+  service_utility_status_relation utils_config[]
+  created_on DateTime @default(now())
+  updated_on DateTime
+}
+
+
+
+model utils_config {
+   id Int @id @default(autoincrement()) 
+
+   usn_id  Int
+   us_id Int
+
+
+   service_utility_name_relation utils_status_names @relation(fields: [usn_id]  , references: [id])
+   service_utility_status_relation utils_status @relation(fields: [us_id]  , references: [id])
+
+
+  have_guid  users_have_rides[] @relation("is_user_have_guid")
+  have_food users_have_rides[] @relation("is_user_have_food")
+  have_water users_have_rides[] @relation("is_user_have_water")
+  
+  created_on DateTime @default(now())
+  updated_on DateTime
+   
+
+}
+
+
+model users_have_rides {
+  id Int @id @default(autoincrement())
+  
+  vhicle_driver Int   
+  assigned_driver_to_vhicle driver_belongs_to_owner @relation(fields: [vhicle_driver] , references: [id] , name: "assigned_driver_to_vhicle")
+  
+  
+  pickup_date DateTime? 
+  pickup_time DateTime?
+  drop_time  DateTime?
+  return_date  DateTime?
+  distance String?
+  
+  
+  user_id Int   // customer user id 
+  user_has_rides users @relation(fields: [user_id] , references: [id] )
+
+  // state_id Int
+  // source_state states @relation(fields: [state_id], references: [id])
+
+
+
+  //  source  location  , lat  , lng   
+  // for future booking ,
+  // source Int 
+  // source_location shc_have_localities @relation(fields: [source] , references: [id] ,name: "source_address") 
+  
+  
+ // for  quick booking 
+  source_name String?
+  source_lat  Float? 
+  source_lng  Float? 
+
+
+ // for future booking ,
+  // destination  Int
+  // destination_location shc_have_localities @relation(fields: [destination] , references: [id], name: "destination_address")
+
+ // for  quick booking  ,   
+  destination_name String?
+  destination_lat  Float? 
+  destination_lng  Float? 
+
+
+  is_guide Int    
+  have_guid utils_config @relation(fields: [is_guide] , references: [id] ,name: "is_user_have_guid")
+
+  is_food   Int  
+  have_food utils_config @relation(fields: [is_food] , references: [id],name: "is_user_have_food")
+
+  is_water Int 
+  have_water utils_config @relation(fields: [is_water] , references: [id],name: "is_user_have_water")
+
+  travel_way       Int
+  ride_travel_way  travel_ways @relation(fields: [travel_way], references: [id])
+
+  universal_ride_id String?
+  cancelled_by Int?
+  reason String?
+
+  otp_varified Boolean @default(false) // trip started 
+  is_active Boolean @default(false) //  ride is active or not 
+
+  ride_finished Boolean @default(false)
+
+  otp  Int? 
+  ride_started Boolean @default(false) // will be true , otp_varified  turned true   
+  
+  total_fare Int
+  payment_method payMethod @default(CASH)
+  payment_paid Boolean @default(false)
+  
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+}
+
+
+model roles {
+   id Int @id @default(autoincrement())
+   name String 
+  
+   label String?
+   created_on DateTime @default(now())
+   updated_on DateTime
+   is_active Boolean @default(true) 
+   
+   user_role user_has_roles[] @relation("user_has_roles")
+   role_perm role_has_permissions[] @relation("role_perm")
+   roles_have_many_capabilities capabilities[] @relation("roles_have_many_capabilities")
+   role_nav_perm  nav_has_permission_by_role[] @relation("nav_perm_by_roles")
+   @@unique([name,label])
+}
+
+model capabilities {
+   id Int @id @default(autoincrement())
+   capability_name String 
+   capability_identifier String? 
+   is_active Boolean @default(true)
+
+   role_id Int
+   roles_have_many_capabilities roles @relation(fields: [role_id] , references: [id] , name: "roles_have_many_capabilities" )
+  
+   capability_have_permissions capabilities_have_permissions[] @relation("capability_have_permissions" )
+   created_on DateTime @default(now())
+   updated_on DateTime
+   
+   @@unique([capability_name, capability_identifier])
+}
+
+
+model permissions {
+    id Int @id @default(autoincrement())
+    permission_name String
+    permission_identifer String?
+
+    created_on DateTime @default(now())
+    updated_on DateTime
+    is_active Boolean @default(true)
+
+    active_role_perm role_has_permissions[] @relation("active_role_perm")
+    permission_occupied_by_capability capabilities_have_permissions[] @relation("permission_occupied_by_capability")
+    permission_identifier sub_nav_items[]
+    @@unique([permission_name, permission_identifer])
+}
+
+model capabilities_have_permissions {
+  id Int @id @default(autoincrement())
+  
+  capability_id Int
+  permission_id Int
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  capability_have_permissions capabilities @relation(fields: [capability_id] , references: [id] , name: "capability_have_permissions" )
+  permission_occupied_by_capability permissions @relation(fields: [permission_id], references: [id] , name:"permission_occupied_by_capability")    
+
+  @@unique([capability_id ,permission_id])
+}
+
+model user_has_roles {
+  id Int @id @default(autoincrement())
+  
+  user_id Int
+  role_id Int
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  user_role roles @relation(fields: [role_id] , references: [id]  , name: "user_has_roles") 
+  active_role  users @relation(fields: [user_id], references: [id])    
+
+}
+
+
+
+model role_has_permissions {
+  id Int @id @default(autoincrement())
+  
+  role_id Int
+  perm_id Int
+
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  role_perm roles @relation(fields: [role_id] , references: [id] , name: "role_perm" )
+  active_role_perm  permissions @relation(fields: [perm_id], references: [id] , name:"active_role_perm")    
+
+}
+
+
+model nav_items {
+  id Int @id @default(autoincrement())
+
+  nav_item String?
+  sub_menu Boolean @default(false)
+  href String?
+  icon String?
+  created_on DateTime @default(now())
+  updated_on DateTime   
+
+  sub_nav_belogs_to sub_nav_items[]
+  nav_item_perm_by_role  nav_has_permission_by_role[] @relation("nav_item_perm_by_role")
+  is_active Boolean @default(true)
+}
+
+model sub_nav_items  {
+
+  id Int @id @default(autoincrement())
+
+  sub_nav_item String?
+  sub_menu Boolean @default(false)
+  href String?
+  icon String?
+  nav_item_id Int
+  is_active Boolean @default(true)
+  sub_nav_belogs_to  nav_items @relation(fields: [nav_item_id] , references: [id])
+  extra_paths String @default("[]")
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  permission_id  Int?
+  permission_identifier permissions? @relation(fields: [permission_id] , references: [id] )    
+  @@unique([permission_id])
+}
+
+ 
+model nav_has_permission_by_role {
+  id Int @id @default(autoincrement())
+
+   role_id Int
+   nav_item_id Int
+
+   role_nav_perm  roles @relation( fields: [role_id],  references: [id] ,  name :"nav_perm_by_roles") 
+   nav_item_perm_by_role nav_items @relation( fields: [nav_item_id],  references: [id] , name: "nav_item_perm_by_role") 
+
+  created_on DateTime @default(now())
+  updated_on DateTime   
+
+  @@unique([role_id ,nav_item_id])
+}
+
+model travel_ways {
+  id Int @id @default(autoincrement())
+
+  travel_way String?
+  created_on DateTime @default(now())
+  updated_on DateTime
+
+  ride_travel_way users_have_rides []     
+}
+
+
+model  driver_belongs_to_owner  {
+   id Int @id @default(autoincrement())   
+
+   owner  Int   
+   owner_id users @relation(fields: [owner] , references: [id] , name:"owner_has_drivers")
+
+   driver Int
+   driver_id users @relation(fields: [driver] , references: [id], name: "active_driver")    
+   
+   assigned_vhicle  Int? @unique
+   assigned_vhicle_to_driver vhicle?  @relation(fields: [assigned_vhicle] , references: [id], name: "assigned_vhicle_to_driver")
+  
+  // for users has rides  table 
+  assigned_driver_to_vhicle  users_have_rides[] @relation(name: "assigned_driver_to_vhicle") 
+  
+  self Boolean @default(false)
+  
+  updated_by  Int
+  driver_assigned_by  users @relation(fields: [updated_by], references: [id], name:"driver_assigned_by")
+  
+  engaged Boolean @default(false)
+  is_active Boolean  @default(true)
+  created_on DateTime @default(now())
+  updated_on DateTime
+ 
+}
+
+model Banks {
+  id         Int      @id @default(autoincrement())
+  bank_name  String?  @db.VarChar(255) // optional, you can remove @db.VarChar if using SQLite or PostgreSQL
+  created_on DateTime @default(now())
+  updated_on DateTime @updatedAt        // automatically updates on every update
+
+  @@map("banks")                         // optional: maps to "banks" table in DB
+  @@index([bank_name])
+  
+  bank_has_branch bank_branch[]
+  drive_has_bank_account driver_profile[]                  // optional: adds index on bank_name
+}
+
+model bank_branch {
+  id         Int      @id @default(autoincrement())
+  branch_name  String?  @db.VarChar(255) // optional, you can remove @db.VarChar if using SQLite or PostgreSQL
+  
+  bank_id Int
+  bank_has_branch Banks @relation(fields: [bank_id] , references: [id] )
+  created_on DateTime @default(now())
+  updated_on DateTime @updatedAt        // automatically updates on every update
+                  // optional: adds index on bank_name
+  bank_have_branch driver_profile[] 
+}
+
+model  driver_profile  {
+   id Int @id @default(autoincrement())   
+
+   DL  String?
+   RC String?
+   insurance String?
+   pan_card String?
+   adhar_card String?
+   passbook String?
+   is_varified  KycStatus @default(INITIATED)
+   comment String?
+   driver Int @unique
+   driver_profile_id users @relation(fields: [driver] , references: [id], name: "driver_profile")    
+
+  profile_pic String?  
+  engaged Boolean? @default(false)
+  
+  engaged_with_owner Int? @unique
+  engaged_with_which_owner users? @relation(fields: [engaged_with_owner] , references: [id], name: "engaged_with_which_owner")    
+  
+      
+  engaged_with_vhicle Int? @unique
+  engaged_with_which_vhicle vhicle? @relation(fields: [engaged_with_vhicle] , references: [id], name: "engaged_with_which_vhicle")    
+      
+  // wallet info 
+  wallet_code  String?     
+  wallet_balance  Int?    @default(0)
+  
+  // bank related info 
+  bank_account Int
+  drive_has_bank_account  Banks @relation(fields: [bank_account] , references: [id])
+
+  bank_account_no BigInt? @unique
+
+  ifsc String? 
+
+  bank_account_branch Int
+  bank_have_branch  bank_branch @relation(fields: [bank_account_branch] , references: [id])
+
+
+  is_bank_varified Boolean? @default(false) 
+  is_active Boolean  @default(false)
+
+  created_on DateTime @default(now())
+  updated_on DateTime @default(now())
+
+
+}

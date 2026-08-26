@@ -1,0 +1,49 @@
+{
+  "apps": [
+    {
+      "name": "my-app-6001",
+      "script": "./src/server.ts",
+      "watch": true,
+      "env_file": ".env.development",
+      "env": {
+        "PORT": "6001"
+      }
+    },
+    {
+      "name": "my-app-6002",
+      "script": "./src/server.ts",
+      "watch": true,
+      "env_file": ".env.development",
+      "env": {
+        "PORT": "6002"
+      }
+    },
+    {
+      "name": "my-app-6003",
+      "script": "./src/server.ts",
+      "watch": true,
+      "env_file": ".env.development",
+      "env": {
+        "PORT": "6003"
+      }
+    },
+    {
+      "name": "my-app-6004",
+      "script": "./src/server.ts",
+      "watch": true,
+      "env_file": ".env.development",
+      "env": {
+        "PORT": "6004"
+      }
+    },
+    {
+      "name": "my-app-6005",
+      "script": "./src/server.ts",
+      "watch": true,
+      "env_file": ".env.development",
+      "env": {
+        "PORT": "6005"
+      }
+    }
+  ]
+}
